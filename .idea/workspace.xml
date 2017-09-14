@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1e9f67ac-cb18-43ab-ab94-19d705702529" name="Default" comment="" />
+    <list default="true" id="1e9f67ac-cb18-43ab-ab94-19d705702529" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Bot_Main.py" afterPath="$PROJECT_DIR$/Bot_Main.py" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,63 +16,11 @@
       <file leaf-file-name="Bot_Main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Bot_Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="41" column="0" lean-forward="true" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+            <state relative-caret-position="376">
+              <caret line="234" column="18" lean-forward="false" selection-start-line="234" selection-start-column="18" selection-end-line="234" selection-end-column="18" />
               <folding>
+                <element signature="e#0#14#0" expanded="true" />
                 <element signature="e#228#957#0" expanded="false" />
-                <element signature="e#235#943#0" expanded="false" />
-                <element signature="e#997#1086#0" expanded="false" />
-                <element signature="e#1135#1298#0" expanded="false" />
-                <element signature="e#1240#1298#0" expanded="false" />
-                <element signature="e#1359#1849#0" expanded="false" />
-                <element signature="e#1394#1849#0" expanded="false" />
-                <element signature="e#1562#1849#0" expanded="false" />
-                <element signature="e#1688#1818#0" expanded="false" />
-                <element signature="e#1724#1818#0" expanded="false" />
-                <element signature="e#1909#1958#0" expanded="false" />
-                <element signature="e#2046#3123#0" expanded="false" />
-                <element signature="e#2081#3077#0" expanded="false" />
-                <element signature="e#2149#2302#0" expanded="false" />
-                <element signature="e#2216#2302#0" expanded="false" />
-                <element signature="e#2432#3077#0" expanded="false" />
-                <element signature="e#3206#3455#0" expanded="false" />
-                <element signature="e#3236#3455#0" expanded="false" />
-                <element signature="e#3295#3376#0" expanded="false" />
-                <element signature="e#3518#3603#0" expanded="false" />
-                <element signature="e#3717#5467#0" expanded="false" />
-                <element signature="e#3824#3957#0" expanded="false" />
-                <element signature="e#3898#3957#0" expanded="false" />
-                <element signature="e#4126#4326#0" expanded="false" />
-                <element signature="e#4177#4326#0" expanded="false" />
-                <element signature="e#4532#5424#0" expanded="false" />
-                <element signature="e#4698#4830#0" expanded="false" />
-                <element signature="e#4879#5012#0" expanded="false" />
-                <element signature="e#5587#7002#0" expanded="false" />
-                <element signature="e#5694#5827#0" expanded="false" />
-                <element signature="e#5768#5827#0" expanded="false" />
-                <element signature="e#5995#6122#0" expanded="false" />
-                <element signature="e#6272#6959#0" expanded="false" />
-                <element signature="e#6590#6782#0" expanded="false" />
-                <element signature="e#7113#8243#0" expanded="false" />
-                <element signature="e#7220#7353#0" expanded="false" />
-                <element signature="e#7294#7353#0" expanded="false" />
-                <element signature="e#7483#7541#0" expanded="false" />
-                <element signature="e#7663#8200#0" expanded="false" />
-                <element signature="e#8282#8347#0" expanded="false" />
-                <element signature="e#8408#8941#0" expanded="false" />
-                <element signature="e#8481#8899#0" expanded="false" />
-                <element signature="e#8551#8702#0" expanded="false" />
-                <element signature="e#8743#8899#0" expanded="false" />
-                <element signature="e#9004#9515#0" expanded="false" />
-                <element signature="e#9013#9321#0" expanded="false" />
-                <element signature="e#9603#10571#0" expanded="false" />
-                <element signature="e#9710#9843#0" expanded="false" />
-                <element signature="e#9784#9843#0" expanded="false" />
-                <element signature="e#10035#10087#0" expanded="false" />
-                <element signature="e#10681#11830#0" expanded="false" />
-                <element signature="e#10716#11774#0" expanded="false" />
-                <element signature="e#10948#11007#0" expanded="false" />
-                <element signature="e#11186#11268#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -84,6 +34,11 @@
         <option value="Python Script" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>server</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="ROOT_SYNC" value="DONT_SYNC" />
@@ -140,8 +95,8 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/GitHub/PortableGit_d7effa1a4a322478cd29c826b52a0c118ad3db11/cmd/git.exe" />
-    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="last_opened_file_path" value="C:/Program Files/Git/bin/git.exe" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -155,17 +110,61 @@
       </list>
     </option>
   </component>
+  <component name="RunManager" selected="Python.Bot_Main">
+    <configuration name="Bot_Main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Program Files\Python35\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="rynaliticsbot" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Bot_Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Program Files\Python35\python.exe" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="rynaliticsbot" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Python.Bot_Main" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -184,70 +183,26 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="7" />
+      <option name="time" value="10" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://C:/Program Files/Python35/Lib/site-packages/discord/http.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="207" column="0" lean-forward="false" selection-start-line="207" selection-start-column="0" selection-end-line="207" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Bot_Main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="41" column="0" lean-forward="true" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+        <state relative-caret-position="376">
+          <caret line="234" column="18" lean-forward="false" selection-start-line="234" selection-start-column="18" selection-end-line="234" selection-end-column="18" />
           <folding>
+            <element signature="e#0#14#0" expanded="true" />
             <element signature="e#228#957#0" expanded="false" />
-            <element signature="e#235#943#0" expanded="false" />
-            <element signature="e#997#1086#0" expanded="false" />
-            <element signature="e#1135#1298#0" expanded="false" />
-            <element signature="e#1240#1298#0" expanded="false" />
-            <element signature="e#1359#1849#0" expanded="false" />
-            <element signature="e#1394#1849#0" expanded="false" />
-            <element signature="e#1562#1849#0" expanded="false" />
-            <element signature="e#1688#1818#0" expanded="false" />
-            <element signature="e#1724#1818#0" expanded="false" />
-            <element signature="e#1909#1958#0" expanded="false" />
-            <element signature="e#2046#3123#0" expanded="false" />
-            <element signature="e#2081#3077#0" expanded="false" />
-            <element signature="e#2149#2302#0" expanded="false" />
-            <element signature="e#2216#2302#0" expanded="false" />
-            <element signature="e#2432#3077#0" expanded="false" />
-            <element signature="e#3206#3455#0" expanded="false" />
-            <element signature="e#3236#3455#0" expanded="false" />
-            <element signature="e#3295#3376#0" expanded="false" />
-            <element signature="e#3518#3603#0" expanded="false" />
-            <element signature="e#3717#5467#0" expanded="false" />
-            <element signature="e#3824#3957#0" expanded="false" />
-            <element signature="e#3898#3957#0" expanded="false" />
-            <element signature="e#4126#4326#0" expanded="false" />
-            <element signature="e#4177#4326#0" expanded="false" />
-            <element signature="e#4532#5424#0" expanded="false" />
-            <element signature="e#4698#4830#0" expanded="false" />
-            <element signature="e#4879#5012#0" expanded="false" />
-            <element signature="e#5587#7002#0" expanded="false" />
-            <element signature="e#5694#5827#0" expanded="false" />
-            <element signature="e#5768#5827#0" expanded="false" />
-            <element signature="e#5995#6122#0" expanded="false" />
-            <element signature="e#6272#6959#0" expanded="false" />
-            <element signature="e#6590#6782#0" expanded="false" />
-            <element signature="e#7113#8243#0" expanded="false" />
-            <element signature="e#7220#7353#0" expanded="false" />
-            <element signature="e#7294#7353#0" expanded="false" />
-            <element signature="e#7483#7541#0" expanded="false" />
-            <element signature="e#7663#8200#0" expanded="false" />
-            <element signature="e#8282#8347#0" expanded="false" />
-            <element signature="e#8408#8941#0" expanded="false" />
-            <element signature="e#8481#8899#0" expanded="false" />
-            <element signature="e#8551#8702#0" expanded="false" />
-            <element signature="e#8743#8899#0" expanded="false" />
-            <element signature="e#9004#9515#0" expanded="false" />
-            <element signature="e#9013#9321#0" expanded="false" />
-            <element signature="e#9603#10571#0" expanded="false" />
-            <element signature="e#9710#9843#0" expanded="false" />
-            <element signature="e#9784#9843#0" expanded="false" />
-            <element signature="e#10035#10087#0" expanded="false" />
-            <element signature="e#10681#11830#0" expanded="false" />
-            <element signature="e#10716#11774#0" expanded="false" />
-            <element signature="e#10948#11007#0" expanded="false" />
-            <element signature="e#11186#11268#0" expanded="false" />
           </folding>
         </state>
       </provider>

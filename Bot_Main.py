@@ -3,8 +3,9 @@ from discord.ext import commands
 from datetime import datetime
 import io
 import matplotlib.pyplot as plt
+import asyncio
 
-bot = commands.Bot(command_prefix="_", self_bot=True)
+bot = commands.Bot(command_prefix="_")
 
 reaction_text = ''
 
@@ -48,46 +49,32 @@ async def on_ready():
     print('------')
 
 
-@bot.event
-async def on_message(message):
-    try:
-        await bot.process_commands(message)
-    except discord.errors.HTTPException as err:
-        await bot.send_message(message.channel, err)
-        raise
-
-
-@bot.event
-async def on_reaction_add(reaction, user):
-    if user.id == bot.user.id:
-        print("Reaction at " + datetime.now().strftime("%H:%M:%S"))
-        global reaction_text
-        if reaction.emoji == '\U0001F643' and reaction_text != '':
-            await bot.remove_reaction(reaction.message, reaction.emoji, user)
-            for a in reaction_text.lower():
-                if a.isalpha():
-                    emoji = get_alpha_emoji(a)
-                    await bot.add_reaction(reaction.message, emoji)
-            reaction_text = ''
+# @bot.event
+# async def on_message(message):
+#     try:
+#         await bot.process_commands(message)
+#     except discord.errors.HTTPException as err:
+#         await bot.send_message(message.channel, err)
+#         raise
 
 
 @bot.command(pass_context=True)
 async def test(ctx):
-    await bot.add_reaction(ctx.message, '\U0001F44D')
+    await ctx.message.add_reaction('\U0001F44D')
 
 
 @bot.command(pass_context=True)
 async def whoisplaying(ctx, *, game_title: str):
     if game_title is not None:
         users = []
-        for a in ctx.message.server.members:
+        for a in ctx.guild.members:
             if a.game is not None and a.game.name is not None:
                 if a.game.name.lower() == game_title.lower():
                     users.append(a.name)
         if len(users) == 0:
-            await bot.say("No users found playing {}.".format(game_title))
+            await ctx.send("No users found playing {}.".format(game_title))
         else:
-            title = "Server: {}".format(ctx.message.server.name)
+            title = "Server: {}".format(ctx.guild.name)
             header = "Game: {}".format(game_title)
 
             users.sort()
@@ -95,53 +82,31 @@ async def whoisplaying(ctx, *, game_title: str):
             for a in users:
                 body = "{}\n{}".format(body, a)
 
-            embed = discord.Embed(title=title, color=0xff0000)
-            embed.add_field(name=header, value=body)
+            em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            em.add_field(name=header, value=body)
 
-            # embed.add_field(name="Disclaimer", value="Sorry folks, this command is on my self-bot so it only works for me")
-
-            footer = "As of {}".format(datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
-            embed.set_footer(text=footer)
-
-            await bot.say(embed=embed)
+            await ctx.send(embed=em)
     else:
-        print("No game specified.")
+        ctx.send("No game specified.")
 
 
-@bot.command(pass_context=True)
-async def prime(ctx, *, react: str = None):
-    if react is not None:
-        global reaction_text
-        reaction_text = react
-        # await bot.edit_message(ctx.message, 'Reaction primed. Trigger with \U0001F643')
-        # await asyncio.sleep(1)
-        await bot.delete_message(ctx.message)
-
-
-@bot.command(pass_context=True)
-async def unprime(ctx):
-    global reaction_text
-    reaction_text = ""
-    await bot.delete_message(ctx.message)
-
-
-@bot.command(pass_context=True)
+@bot.command()
 async def channels(ctx, server_id: str = None, print_local: bool = False):
     if server_id is None or server_id.lower() == "here":
-        server = ctx.message.server
+        server = ctx.guild
     else:
-        server = bot.get_server(server_id)
+        server = bot.get_guild(int(server_id))
         if server is None:
-            await bot.say("I'm not in that server.")
+            await ctx.send("I'm not in that server.")
             return
 
-    title = str.format("Server: {} (ID {})", server.name, server.id)
+    title = str.format("Server: {0.name} (ID {0.id})", server)
 
     chans = server.channels
     text_avail = []
     text_hidden = []
     for a in chans:
-        if a.type == discord.ChannelType.text:
+        if type(a) is discord.TextChannel:
             if a.permissions_for(server.me).read_messages:
                 text_avail.append(a.name)
             else:
@@ -156,156 +121,129 @@ async def channels(ctx, server_id: str = None, print_local: bool = False):
     for b in range(num_segments):
         start = b*display_size
         end = (b+1)*display_size - 1
-        embed = discord.Embed(title=title, color=0xff0000)
+        em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
 
         if text_avail[start:end]:
             text_avail_body = "\n".join(text_avail[start:end])
-            embed.add_field(name='Unhidden text channels', value=text_avail_body)
+            em.add_field(name='Unhidden text channels', value=text_avail_body)
 
         if text_hidden[start:end]:
             text_hidden_body = "\n".join(text_hidden[start:end])
-            embed.add_field(name='Hidden text channels', value=text_hidden_body)
+            em.add_field(name='Hidden text channels', value=text_hidden_body)
 
         icon_url = server.icon_url
-        embed.set_thumbnail(url=icon_url)
+        em.set_thumbnail(url=icon_url)
 
-        footer = "Page {}/{}, As of {}".format(b+1, num_segments, datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
-        embed.set_footer(text=footer)
+        footer = "Page {}/{}".format(b+1, num_segments)
+        em.set_footer(text=footer)
 
         if print_local:
-            await bot.say(embed=embed)
+            await ctx.send(embed=em)
         else:
-            await bot.send_message(destination=bot.get_channel('329691248707502100'), embed=embed)
+            await bot.get_channel(329691248707502100).send(embed=em)
 
-    await bot.delete_message(ctx.message)
+    await ctx.message.delete()
 
 
 @bot.command(pass_context=True)
 async def hiddenchannels(ctx, server_id: str = None, print_local: bool = False):
     if server_id is None or server_id.lower() == "here":
-        server = ctx.message.server
+        server = ctx.guild
     else:
-        server = bot.get_server(server_id)
+        server = bot.get_guild(int(server_id))
         if server is None:
-            await bot.say("I'm not in that server.")
+            await ctx.send("I'm not in that server.")
             return
 
-    title = "Hidden Channels in Server: {} (ID: {})".format(server.name, server.id)
+    title = "Hidden Channels in Server: {0.name} (ID: {0.id})".format(server)
 
     chans = server.channels
     hidden_channels = []
     for a in chans:
-        if a.type == discord.ChannelType.text and not a.permissions_for(server.me).read_messages:
+        if type(a) == discord.TextChannel and not a.permissions_for(server.me).read_messages:
             hidden_channels.append(a)
 
     hidden_channels.sort(key=lambda chan: chan.name)
 
     num_segments = int(len(hidden_channels)/25) + 1
     for b in range(num_segments):
-        embed = discord.Embed(title=title, color=0xff0000)
-        embed.set_thumbnail(url=server.icon_url)
+        em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+        em.set_thumbnail(url=server.icon_url)
 
-        footer = "Page {}/{}, As of {}".format(b+1, num_segments, datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
-        embed.set_footer(text=footer)
+        footer = "Page {}/{}".format(b+1, num_segments)
+        em.set_footer(text=footer)
 
         for a in hidden_channels[b*25:b*25+24]:
             if a.topic is not None and a.topic != "":
-                embed.add_field(name=a.name, value=a.topic)
+                em.add_field(name=a.name, value=a.topic)
             else:
-                embed.add_field(name=a.name, value="(No channel topic)")
+                em.add_field(name=a.name, value="(No channel topic)")
 
         if print_local:
-            await bot.say(embed=embed)
+            await ctx.send(embed=em)
         else:
-            await bot.send_message(destination=bot.get_channel('329691231498272769'), embed=embed)
+            await bot.get_channel(329691231498272769).send(embed=em)
 
-    await bot.delete_message(ctx.message)
+    await ctx.message.delete()
 
 
 @bot.command(pass_context=True)
 async def roles(ctx, server_id: str = None, print_local: bool = False):
     if server_id is None or server_id.lower() == "here":
-        server = ctx.message.server
+        server = ctx.guild
     else:
-        server = bot.get_server(server_id)
+        server = bot.get_guild(int(server_id))
         if server is None:
-            await bot.say("I'm not in that server.")
+            await ctx.send("I'm not in that server.")
             return
 
-    title = "Server: {} (ID {})".format(server.name, server.id)
+    title = "Server: {0.name} (ID {0.id})".format(server)
 
     role_list = []
     for a in server.role_hierarchy:
-        if not a.is_everyone:
+        if not a.is_default():
             role_list.append(a.name)
 
-    display_size = 50
+    display_size = 80
     num_segments = int(len(role_list)/display_size) + 1
     for b in range(num_segments):
-        embed = discord.Embed(title=title, color=0xff0000)
+        embed = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
         embed.set_thumbnail(url=server.icon_url)
 
-        embed.add_field(name='Roles', value='\n'.join(role_list[b*display_size:(b+1)*display_size-1]))
+        embed.add_field(name='Roles', value=', '.join(role_list[b*display_size:(b+1)*display_size-1]))
 
-        footer = "Page {}/{}, As of {}".format(b+1, num_segments, datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
+        footer = "Page {}/{}".format(b+1, num_segments)
         embed.set_footer(text=footer)
 
         if print_local:
-            await bot.say(embed=embed)
+            await ctx.send(embed=embed)
         else:
-            await bot.send_message(destination=bot.get_channel('329691241111355392'), embed=embed)
+            await bot.get_channel(329691241111355392).send(embed=embed)
 
-    await bot.delete_message(ctx.message)
+    await ctx.message.delete()
 
 
 @bot.command()
-async def now():
-    await bot.say(datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
+async def now(ctx):
+    await ctx.send(datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
 
 
-@bot.command(pass_context=True)
-async def embed(ctx):
-    split = ctx.message.content.split(" ", 1)
-    if len(split) > 1:
-        parts = split[1].split(" | ")
-        if len(parts) == 3:
-            embed = discord.Embed(title=parts[0], color=0xff0000)
-            embed.add_field(name=parts[1], value=parts[2])
-            await bot.say(embed=embed)
-        if len(parts) == 4:
-            embed = discord.Embed(title=parts[0], color=int(parts[3]))
-            embed.add_field(name=parts[1], value=parts[2])
-            await bot.say(embed=embed)
-    await bot.delete_message(ctx.message)
-
-
-@bot.command(pass_context=True)
-async def cooldog(ctx):
-    string = """╭━━━━━╮               This is cooldog. Help
-╰┃ ┣▇━▇                cooldog take over 
- ┃ ┃  ╰━▅╮ Discord by pasting
- ╰┳╯ ╰━━┳╯        him in 10 other
-  ╰╮ ┳━━╯            servers or he
- ▕▔▋ ╰╮╭━╮   will never be a cool dog
-╱▔╲▋╰━┻┻╮╲╱▔▔▔╲
-▏  ▔▔▔▔▔▔▔  O O┃ 
-╲╱▔╲▂▂▂▂╱▔╲▂▂▂╱
- ▏╳▕▇▇▕ ▏╳▕▇▇▕
- ╲▂╱╲▂╱ ╲▂╱╲▂╱"""
-    embed = discord.Embed(title="Cooldog", color=0xff0000)
-    embed.add_field(name="The dog himself", value=string)
-    await bot.delete_message(ctx.message)
-    await bot.say("", embed=embed)
+@bot.command()
+async def ping(ctx):
+    start = datetime.now()
+    await (await bot.ws.ping())
+    td = datetime.now() - start
+    await ctx.send("Pong. Response time: {} ms".format(td.total_seconds() * 1000))
 
 
 @bot.command(pass_context=True)
 async def userchart(ctx, server_id: str = None):
     if server_id is None or server_id.lower() == "here":
-        server = ctx.message.server
+        server = ctx.guild
     else:
-        server = bot.get_server(server_id)
+        server = bot.get_guild(int(server_id))
         if server is None:
-            await bot.say("I'm not in that server.")
+            await ctx.send("I'm not in that server.")
             return
 
     members = []
@@ -315,9 +253,12 @@ async def userchart(ctx, server_id: str = None):
     members.sort(key=lambda mem: mem.joined_at)
     (x, y) = ([], [])
     for m in range(members.__len__()):
+        if m > 0:
+            x.append(members[m].joined_at)
+            y.append(m)
         x.append(members[m].joined_at)
         y.append(m+1)
-    x.append(datetime.now())
+    x.append(ctx.message.created_at)
     y.append(len(members))
 
     plt.clf()
@@ -330,21 +271,24 @@ async def userchart(ctx, server_id: str = None):
 
     f = io.BytesIO()
     plt.savefig(f, format='png')
-    await bot.send_file(destination=ctx.message.channel, fp=f.getbuffer(), filename="userchart.png")
+    await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
     f.close()
 
 
 @bot.command(pass_context=True)
-async def commonmembers(ctx, server1_id: str, server2_id: str = None):
+async def commonmembers(ctx, server1_id: int, server2_id: int = None):
     if server1_id is not None:
         if server2_id is None:
-            server2 = ctx.message.server
+            server2 = ctx.guild
         else:
-            server2 = bot.get_server(server2_id)
+            server2 = bot.get_guild(server2_id)
 
-        server1 = bot.get_server(server1_id)
-        if server1 is None or server2 is None:
-            await bot.say("I'm not in that server.")
+        server1 = bot.get_guild(server1_id)
+        if server1 is None:
+            await ctx.send("I'm not in that server1.")
+            return
+        if server2 is None:
+            await ctx.send("I'm not in that server2.")
             return
 
         server1_members = []
@@ -357,14 +301,62 @@ async def commonmembers(ctx, server1_id: str, server2_id: str = None):
                 both_members.append(str(a))
         both_members.sort()
 
-        embed = discord.Embed(title="Common Members", color=0xff0000)
-        embed.add_field(name="Server 1: \"{}\"".format(server1.name), value="{} members".format(server1.member_count))
-        embed.add_field(name="Server 2: \"{}\"".format(server2.name), value="{} members".format(server2.member_count))
-        embed.add_field(name="{} users are in both servers:".format(len(both_members)), value="\n".join(both_members), inline=False)
+        em = discord.Embed(title="Common Members", color=0xff0000)
+        em.add_field(name="Server 1: \"{}\"".format(server1.name), value="{} members".format(server1.member_count))
+        em.add_field(name="Server 2: \"{}\"".format(server2.name), value="{} members".format(server2.member_count))
+        em.add_field(name="{} users are in both servers:".format(len(both_members)), value="\n".join(both_members), inline=False)
 
-        await bot.say(embed=embed)
+        await ctx.send(embed=em)
     else:
-        await bot.say("No server specified.")
+        await ctx.send("No server specified.")
+
+
+@bot.command(pass_context=True)
+async def userinfo(ctx, name: str = None):
+    """Get user info. Ex: >info @user"""
+    if name is None:
+        user = ctx.message.author
+    else:
+        try:
+            user = ctx.message.mentions[0]
+        except:
+            user = ctx.guild.get_member_named(name)
+        if not user:
+            user = ctx.guild.get_member(name)
+        if not user:
+            await ctx.send('Could not find user.')
+            return
+
+    # Thanks to IgneelDxD for help on this
+    if user.avatar_url[54:].startswith('a_'):
+        avi = 'https://images.discordapp.net/avatars/' + user.avatar_url[35:-10]
+    else:
+        avi = user.avatar_url
+
+    role = user.top_role.name
+    if role == "@everyone":
+        role = "N/A"
+    voice_state = None if not user.voice else user.voice.channel
+    em = discord.Embed(timestamp=ctx.message.created_at, colour=0xff0000)
+    em.add_field(name='User ID', value=user.id, inline=True)
+    em.add_field(name='Nick', value=user.nick, inline=True)
+    em.add_field(name='Status', value=user.status, inline=True)
+    em.add_field(name='In Voice', value=voice_state, inline=True)
+    em.add_field(name='Game', value=user.game, inline=True)
+    em.add_field(name='Highest Role', value=role, inline=True)
+    em.add_field(name='Account Created', value=user.created_at.__format__('%A, %d. %B %Y @ %H:%M:%S'))
+    em.add_field(name='Join Date', value=user.joined_at.__format__('%A, %d. %B %Y @ %H:%M:%S'))
+    em.set_thumbnail(url=avi)
+    em.set_author(name=user, icon_url='https://i.imgur.com/RHagTDg.png')
+    await ctx.send(embed=em)
+
+    # await ctx.message.delete()
+
+
+@bot.command()
+async def rename(ctx, name: str):
+    await bot.user.edit(username=name)
+    ctx.send("Bot username changed.")
 
 
 bot.run('MzU3Njk1Nzg3NzkyMzM0ODQ4.DJtp_w.pvYRwMjVKouvDZt55MeKB6KfU3Q')
