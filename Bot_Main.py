@@ -390,8 +390,9 @@ async def userinfo(ctx, name: str = None):
 
 @bot.command()
 async def rename(ctx, name: str):
-    await bot.user.edit(username=name)
-    ctx.send("Bot username changed.")
+    if ctx.message.author.id == 185095270986547200:
+        await bot.user.edit(username=name)
+        ctx.send("Bot username changed.")
 
 
 bot.run('MzU3Njk1Nzg3NzkyMzM0ODQ4.DJtp_w.pvYRwMjVKouvDZt55MeKB6KfU3Q')
