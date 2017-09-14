@@ -3,7 +3,6 @@ from discord.ext import commands
 from datetime import datetime
 import io
 import matplotlib.pyplot as plt
-import asyncio
 
 bot = commands.Bot(command_prefix="_")
 
@@ -58,12 +57,12 @@ async def on_ready():
 #         raise
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def test(ctx):
     await ctx.message.add_reaction('\U0001F44D')
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def whoisplaying(ctx, *, game_title: str):
     if game_title is not None:
         users = []
@@ -78,16 +77,15 @@ async def whoisplaying(ctx, *, game_title: str):
             header = "Game: {}".format(game_title)
 
             users.sort()
-            body = ""
-            for a in users:
-                body = "{}\n{}".format(body, a)
+            body = "\n".join(users)
 
             em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
             em.add_field(name=header, value=body)
 
             await ctx.send(embed=em)
+            await ctx.message.delete()
     else:
-        ctx.send("No game specified.")
+        await ctx.send("No game specified.")
 
 
 @bot.command()
@@ -145,7 +143,7 @@ async def channels(ctx, server_id: str = None, print_local: bool = False):
     await ctx.message.delete()
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def hiddenchannels(ctx, server_id: str = None, print_local: bool = False):
     if server_id is None or server_id.lower() == "here":
         server = ctx.guild
@@ -187,7 +185,7 @@ async def hiddenchannels(ctx, server_id: str = None, print_local: bool = False):
     await ctx.message.delete()
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def roles(ctx, server_id: str = None, print_local: bool = False):
     if server_id is None or server_id.lower() == "here":
         server = ctx.guild
@@ -236,7 +234,7 @@ async def ping(ctx):
     await ctx.send("Pong. Response time: {} ms".format(td.total_seconds() * 1000))
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def userchart(ctx, server_id: str = None):
     if server_id is None or server_id.lower() == "here":
         server = ctx.guild
@@ -275,7 +273,44 @@ async def userchart(ctx, server_id: str = None):
     f.close()
 
 
-@bot.command(pass_context=True)
+@bot.command()
+async def rolechart(ctx, server_id: str = None):
+    if server_id is None or server_id.lower() == "here":
+        server = ctx.guild
+    else:
+        server = bot.get_guild(int(server_id))
+        if server is None:
+            await ctx.send("I'm not in that server.")
+            return
+
+    role_list = []
+    role_size = []
+    role_colors = []
+    for a in server.role_hierarchy:
+        if not a.is_default():
+            role_list.append(a)
+            role_size.append(len(a.members))
+            rgb = list(a.color.to_rgb())
+            rgba = [1., 1., 1., 1.]
+            for b in range(3):
+                rgba[b] = rgb[b] / 256.
+            role_colors.append(tuple(rgba))
+
+    plt.clf()
+    plt.bar(range(len(role_list)), role_size, tick_label=role_list, color=role_colors, width=1.)
+    plt.xticks(rotation=90, size='xx-small')
+    plt.xlabel("Role")
+    plt.ylabel("Member count")
+    plt.title("Role distribution for server:\n{}".format(server.name))
+    plt.tight_layout()
+
+    f = io.BytesIO()
+    plt.savefig(f, format='png')
+    await ctx.send(file=discord.File(fp=f.getbuffer(), filename="rolechart.png"))
+    f.close()
+
+
+@bot.command()
 async def commonmembers(ctx, server1_id: int, server2_id: int = None):
     if server1_id is not None:
         if server2_id is None:
@@ -311,7 +346,7 @@ async def commonmembers(ctx, server1_id: int, server2_id: int = None):
         await ctx.send("No server specified.")
 
 
-@bot.command(pass_context=True)
+@bot.command()
 async def userinfo(ctx, name: str = None):
     """Get user info. Ex: >info @user"""
     if name is None:
