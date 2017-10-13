@@ -267,10 +267,9 @@ async def userchart(ctx, server_id: str = None):
     plt.title("Membership growth for server: {0.name}\nNote: This data includes only current members.".format(server))
     plt.tight_layout()
 
-    f = io.BytesIO()
-    plt.savefig(f, format='png')
-    await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
-    f.close()
+    with io.BytesIO() as f:
+        plt.savefig(f, format='png')
+        await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
 
 
 @bot.command()
