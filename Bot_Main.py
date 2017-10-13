@@ -297,17 +297,16 @@ async def rolechart(ctx, server_id: str = None):
             role_colors.append(tuple(rgba))
 
     plt.clf()
-    plt.bar(range(len(role_list)), role_size, tick_label=role_list, color=role_colors, width=1.)
+    plt.bar(range(len(role_list)), role_size, tick_label=role_list, color=role_colors, width=1., edgecolor='k')
     plt.xticks(rotation=90, size='xx-small')
     plt.xlabel("Role")
     plt.ylabel("Member count")
     plt.title("Role distribution for server:\n{}".format(server.name))
     plt.tight_layout()
 
-    f = io.BytesIO()
-    plt.savefig(f, format='png')
-    await ctx.send(file=discord.File(fp=f.getbuffer(), filename="rolechart.png"))
-    f.close()
+    with io.BytesIO() as f:
+        plt.savefig(f, format='png')
+        await ctx.send(file=discord.File(fp=f.getbuffer(), filename="rolechart.png"))
 
 
 @bot.command()
@@ -351,10 +350,9 @@ async def gameschart(ctx, server_id: str = None):
     try:
         plt.tight_layout()
 
-        f = io.BytesIO()
-        plt.savefig(f, format='png')
-        await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
-        f.close()
+        with io.BytesIO() as f:
+            plt.savefig(f, format='png')
+            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
     except ValueError:
         await ctx.send("Something went wrong with fitting the graph to scale.")
 
@@ -381,7 +379,7 @@ async def gamespie(ctx, server_id: str = None):
 
     cutoff = 0
     other_count = 0
-    while len(game_names) >= 20:
+    while len(game_names) >= 10:
         cutoff += 1
         copy = game_names.copy()
         for g in copy:
@@ -394,19 +392,18 @@ async def gamespie(ctx, server_id: str = None):
     if other_count > 0:
         game_names.append("Other")
         game_count.append(other_count)
+    # game_names, game_count = zip(*sorted(zip(game_names, game_count)))
 
     plt.clf()
-    plt.pie(game_count, labels=game_names)
-    plt.xticks(rotation=90, size='xx-small')
-    plt.xlabel("Game (top {} shown)".format(len(game_names)))
-    plt.ylabel("# of Members Playing".format(cutoff+1))
+    patches, texts = plt.pie(game_count, labels=game_names, shadow=True)
+    # for t in texts:
+        # t.set_size('x-small')
     plt.title("Games being played on server:\n{}".format(server.name))
-    # plt.tight_layout()
+    plt.axis('scaled')
 
-    f = io.BytesIO()
-    plt.savefig(f, format='png')
-    await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
-    f.close()
+    with io.BytesIO() as f:
+        plt.savefig(f, format='png')
+        await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
 
 
 @bot.command()
@@ -426,17 +423,24 @@ async def nowstreaming(ctx, server_id: str = None):
 
     streamers.sort(key=lambda mem: mem.display_name)
 
-    if 0 < len(streamers) <= 25:
-        em = discord.Embed(title="Members Streaming (Server: {})".format(server.name), color=0xff0000, timestamp=ctx.message.created_at)
-        em.set_thumbnail(url=server.icon_url)
-        for a in streamers:
-            if a.game.url is not None:
-                em.add_field(name=a.display_name, value="[{}]({})".format(a.game.name, a.game.url))
-            else:
-                em.add_field(name=a.display_name, value="{}".format(a.game.name))
-        await ctx.send(embed=em)
+    if len(streamers) > 0:
+        display_size = 20
+        num_segments = int(len(streamers)/display_size) + 1
+        if num_segments <= 5:
+            for b in range(num_segments):
+                em = discord.Embed(title="Members Streaming (Server: {})".format(server.name), color=0xff0000, timestamp=ctx.message.created_at)
+                em.set_thumbnail(url=server.icon_url)
+                for a in streamers[b*display_size:(b+1)*display_size-1]:
+                    if a.game.url is not None:
+                        em.add_field(name=a.display_name, value="[{}]({})".format(a.game.name, a.game.url))
+                    else:
+                        em.add_field(name=a.display_name, value="{}".format(a.game.name))
+                em.set_footer(text="Page {}/{}".format(b+1, num_segments))
+                await ctx.send(embed=em)
+        else:
+            await ctx.send("{} members streaming on server: {}.".format(len(streamers), server.name))
     else:
-        await ctx.send("{} members streaming on server: {}".format(len(streamers), server.name))
+        await ctx.send("No members streaming on server: {}.".format(server.name))
 
 
 @bot.command()
