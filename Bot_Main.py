@@ -395,8 +395,6 @@ async def gamespie(ctx, server_id: str = None):
         game_names.append("Other")
         game_count.append(other_count)
 
-        game_names, game_count = zip(*sorted(zip(game_names, game_count)))
-
     plt.clf()
     plt.pie(game_count, labels=game_names)
     plt.xticks(rotation=90, size='xx-small')
@@ -526,4 +524,6 @@ async def rename(ctx, name: str):
         ctx.send("Bot username changed.")
 
 
-bot.run('MzU3Njk1Nzg3NzkyMzM0ODQ4.DJtp_w.pvYRwMjVKouvDZt55MeKB6KfU3Q')
+with open('token.txt','r') as f:
+    token = f.readline().strip()
+bot.run(token)
