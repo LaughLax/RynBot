@@ -311,6 +311,137 @@ async def rolechart(ctx, server_id: str = None):
 
 
 @bot.command()
+async def gameschart(ctx, server_id: str = None):
+    if server_id is None or server_id.lower() == "here":
+        server = ctx.guild
+    else:
+        server = bot.get_guild(int(server_id))
+        if server is None:
+            await ctx.send("I'm not in that server.")
+            return
+
+    game_names = []
+    game_count = []
+    for a in server.members:
+        if a.game is not None:
+            if a.game.name not in game_names:
+                game_names.append(a.game.name)
+                game_count.append(1)
+            else:
+                game_count[game_names.index(a.game.name)] += 1
+
+    cutoff = 0
+    while len(game_names) > 50:
+        cutoff += 1
+        copy = game_names.copy()
+        for g in copy:
+            ind = game_names.index(g)
+            if game_count[ind]<=cutoff:
+                game_names.pop(ind)
+                game_count.pop(ind)
+
+    game_names, game_count = zip(*sorted(zip(game_names, game_count)))
+
+    plt.clf()
+    plt.bar(range(len(game_names)), game_count, tick_label=game_names, width=1., edgecolor='k')
+    plt.xticks(rotation=90, size='xx-small')
+    plt.xlabel("Game (top {} shown)".format(len(game_names)))
+    plt.ylabel("# of Members Playing (min. {})".format(cutoff+1))
+    plt.title("Games being played on server:\n{}".format(server.name))
+    try:
+        plt.tight_layout()
+
+        f = io.BytesIO()
+        plt.savefig(f, format='png')
+        await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
+        f.close()
+    except ValueError:
+        await ctx.send("Something went wrong with fitting the graph to scale.")
+
+
+@bot.command()
+async def gamespie(ctx, server_id: str = None):
+    if server_id is None or server_id.lower() == "here":
+        server = ctx.guild
+    else:
+        server = bot.get_guild(int(server_id))
+        if server is None:
+            await ctx.send("I'm not in that server.")
+            return
+
+    game_names = []
+    game_count = []
+    for a in server.members:
+        if a.game is not None:
+            if a.game.name not in game_names:
+                game_names.append(a.game.name)
+                game_count.append(1)
+            else:
+                game_count[game_names.index(a.game.name)] += 1
+
+    cutoff = 0
+    other_count = 0
+    while len(game_names) >= 20:
+        cutoff += 1
+        copy = game_names.copy()
+        for g in copy:
+            ind = game_names.index(g)
+            if game_count[ind]==cutoff:
+                game_names.pop(ind)
+                game_count.pop(ind)
+                other_count += cutoff
+
+    if other_count > 0:
+        game_names.append("Other")
+        game_count.append(other_count)
+
+        game_names, game_count = zip(*sorted(zip(game_names, game_count)))
+
+    plt.clf()
+    plt.pie(game_count, labels=game_names)
+    plt.xticks(rotation=90, size='xx-small')
+    plt.xlabel("Game (top {} shown)".format(len(game_names)))
+    plt.ylabel("# of Members Playing".format(cutoff+1))
+    plt.title("Games being played on server:\n{}".format(server.name))
+    # plt.tight_layout()
+
+    f = io.BytesIO()
+    plt.savefig(f, format='png')
+    await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
+    f.close()
+
+
+@bot.command()
+async def nowstreaming(ctx, server_id: str = None):
+    if server_id is None or server_id.lower() == "here":
+        server = ctx.guild
+    else:
+        server = bot.get_guild(int(server_id))
+        if server is None:
+            await ctx.send("I'm not in that server.")
+            return
+
+    streamers = []
+    for a in server.members:
+        if a.game is not None and a.game.type == 1:
+            streamers.append(a)
+
+    streamers.sort(key=lambda mem: mem.display_name)
+
+    if 0 < len(streamers) <= 25:
+        em = discord.Embed(title="Members Streaming (Server: {})".format(server.name), color=0xff0000, timestamp=ctx.message.created_at)
+        em.set_thumbnail(url=server.icon_url)
+        for a in streamers:
+            if a.game.url is not None:
+                em.add_field(name=a.display_name, value="[{}]({})".format(a.game.name, a.game.url))
+            else:
+                em.add_field(name=a.display_name, value="{}".format(a.game.name))
+        await ctx.send(embed=em)
+    else:
+        await ctx.send("{} members streaming on server: {}".format(len(streamers), server.name))
+
+
+@bot.command()
 async def commonmembers(ctx, server1_id: int, server2_id: int = None):
     if server1_id is not None:
         if server2_id is None:
