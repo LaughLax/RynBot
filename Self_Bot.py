@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-bot = commands.Bot(command_prefix="_", self_bot=True)
+bot = commands.Bot(command_prefix="self_", self_bot=True)
 
 reaction_text = ''
 
