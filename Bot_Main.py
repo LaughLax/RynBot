@@ -542,6 +542,11 @@ async def gitpull(ctx):
     await bot.logout();
 
 
+@bot.command()
+async def quit(ctx):
+    await bot.logout();
+
+
 with open('token.txt','r') as f:
     token = f.readline().strip()
 bot.run(token)
