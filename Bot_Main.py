@@ -539,7 +539,7 @@ async def gitpull(ctx):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
     print("Quitting")
-    bot.close();
+    bot.logout();
 
 
 with open('token.txt','r') as f:
