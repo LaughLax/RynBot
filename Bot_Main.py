@@ -5,6 +5,8 @@ import io
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import os
+import subprocess
 
 bot = commands.Bot(command_prefix="_")
 
@@ -527,6 +529,15 @@ async def rename(ctx, name: str):
     if ctx.message.author.id == 185095270986547200:
         await bot.user.edit(username=name)
         ctx.send("Bot username changed.")
+
+
+@bot.command()
+async def gitpull(ctx):
+    p = subprocess.Popen(["update.sh"],
+        cwd=os.getcwd(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT)
+    bot.close();
 
 
 with open('token.txt','r') as f:
