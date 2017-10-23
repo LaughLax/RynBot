@@ -533,10 +533,12 @@ async def rename(ctx, name: str):
 
 @bot.command()
 async def gitpull(ctx):
+    print("Calling update.sh")
     p = subprocess.Popen(["./update.sh"],
         cwd=os.getcwd(),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
+    print("Quitting")
     bot.close();
 
 
