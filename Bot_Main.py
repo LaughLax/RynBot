@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 import io
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 bot = commands.Bot(command_prefix="_")
