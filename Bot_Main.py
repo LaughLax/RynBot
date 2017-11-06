@@ -325,7 +325,7 @@ async def gameschart(ctx, server_id: str = None):
     game_names = []
     game_count = []
     for a in server.members:
-        if a.game is not None:
+         if not a.bot and a.game is not None and a.game.type != 1:
             if a.game.name not in game_names:
                 game_names.append(a.game.name)
                 game_count.append(1)
@@ -338,7 +338,7 @@ async def gameschart(ctx, server_id: str = None):
         copy = game_names.copy()
         for g in copy:
             ind = game_names.index(g)
-            if game_count[ind]<=cutoff:
+            if game_count[ind] <= cutoff:
                 game_names.pop(ind)
                 game_count.pop(ind)
 
@@ -373,7 +373,7 @@ async def gamespie(ctx, server_id: str = None):
     game_names = []
     game_count = []
     for a in server.members:
-        if a.game is not None:
+         not a.bot and a.game is not None and a.game.type != 1:
             if a.game.name not in game_names:
                 game_names.append(a.game.name)
                 game_count.append(1)
@@ -387,7 +387,7 @@ async def gamespie(ctx, server_id: str = None):
         copy = game_names.copy()
         for g in copy:
             ind = game_names.index(g)
-            if game_count[ind]==cutoff:
+            if game_count[ind] == cutoff:
                 game_names.pop(ind)
                 game_count.pop(ind)
                 other_count += cutoff
@@ -400,7 +400,7 @@ async def gamespie(ctx, server_id: str = None):
     plt.clf()
     patches, texts = plt.pie(game_count, labels=game_names, shadow=True)
     # for t in texts:
-        # t.set_size('x-small')
+    # t.set_size('x-small')
     plt.title("Games being played on server:\n{}".format(server.name))
     plt.axis('scaled')
 
@@ -539,14 +539,14 @@ async def gitpull(ctx):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
     print("Quitting")
-    await bot.logout();
+    await bot.logout()
 
 
 @bot.command()
 async def quit(ctx):
-    await bot.logout();
+    await bot.logout()
 
 
-with open('token.txt','r') as f:
-    token = f.readline().strip()
+with open('token.txt', 'r') as token_file:
+    token = token_file.readline().strip()
 bot.run(token)

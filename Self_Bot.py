@@ -417,7 +417,7 @@ async def gameschart(ctx, server_id: str = None):
     game_names = []
     game_count = []
     for a in server.members:
-        if a.game is not None:
+        if not a.bot and a.game is not None and a.game.type != 1:
             if a.game.name not in game_names:
                 game_names.append(a.game.name)
                 game_count.append(1)
@@ -430,7 +430,7 @@ async def gameschart(ctx, server_id: str = None):
         copy = game_names.copy()
         for g in copy:
             ind = game_names.index(g)
-            if game_count[ind]<=cutoff:
+            if game_count[ind] <= cutoff:
                 game_names.pop(ind)
                 game_count.pop(ind)
 
@@ -465,7 +465,7 @@ async def gamespie(ctx, server_id: str = None):
     game_names = []
     game_count = []
     for a in server.members:
-        if a.game is not None:
+        if not a.bot and a.game is not None and a.game.type != 1:
             if a.game.name not in game_names:
                 game_names.append(a.game.name)
                 game_count.append(1)
@@ -479,7 +479,7 @@ async def gamespie(ctx, server_id: str = None):
         copy = game_names.copy()
         for g in copy:
             ind = game_names.index(g)
-            if game_count[ind]==cutoff:
+            if game_count[ind] == cutoff:
                 game_names.pop(ind)
                 game_count.pop(ind)
                 other_count += cutoff
@@ -538,6 +538,6 @@ async def nowstreaming(ctx, server_id: str = None):
         await ctx.send("No members streaming on server: {}.".format(server.name))
 
 
-with open('selftoken.txt','r') as f:
-    token = f.readline().strip()
+with open('selftoken.txt', 'r') as token_file:
+    token = token_file.readline().strip()
 bot.run(token, bot=False)
