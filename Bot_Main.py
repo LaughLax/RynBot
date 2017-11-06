@@ -373,7 +373,7 @@ async def gamespie(ctx, server_id: str = None):
     game_names = []
     game_count = []
     for a in server.members:
-         not a.bot and a.game is not None and a.game.type != 1:
+         if not a.bot and a.game is not None and a.game.type != 1:
             if a.game.name not in game_names:
                 game_names.append(a.game.name)
                 game_count.append(1)
