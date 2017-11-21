@@ -242,7 +242,7 @@ class Owner:
 
     @commands.command()
     @misc.is_ryn()
-    async def cooldog(ctx):
+    async def cooldog(self, ctx):
         string = """╭━━━━━╮               This is cooldog. Help
     ╰┃ ┣▇━▇                cooldog take over 
      ┃ ┃  ╰━▅╮ Discord by pasting

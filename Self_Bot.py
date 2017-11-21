@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
+from util import misc
 
 bot = commands.Bot(command_prefix="self_", self_bot=True)
 
@@ -42,7 +43,7 @@ async def on_reaction_add(reaction, user):
             await reaction.message.remove_reaction(reaction.emoji, user)
             for a in reaction_text.lower():
                 if a.isalpha():
-                    emoji = get_alpha_emoji(a)
+                    emoji = misc.get_alpha_emoji(a)
                     await reaction.message.add_reaction(emoji)
             reaction_text = ''
 

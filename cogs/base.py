@@ -23,7 +23,7 @@ class Base:
         await ctx.send("Pong. Response time: {} ms".format(td.total_seconds() * 1000))
 
     @commands.command()
-    async def userinfo(ctx, name: str = None):
+    async def userinfo(self, ctx, name: str = None):
         """Get user info. Ex: >info @user
 
         Lifted from appu1232's self-bot."""
