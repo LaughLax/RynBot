@@ -86,14 +86,29 @@ class Owner:
 
     @commands.command()
     @misc.is_ryn()
-    async def gitpull(self, ctx):
-        print("Calling update.sh")
-        subprocess.Popen(["./update.sh"],
-                         cwd=os.getcwd(),
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-        print("Quitting")
-        await self.bot.logout()
+    async def gitpull(self, ctx, *args):
+        if len(args) < 1:
+            ctx.send('Not enough arguments.')
+            return
+        if args[0].lower() == 'pull':
+            if len(args) > 1 and args[1].lower() == 'harder':
+                return_code = subprocess.run(['git','checkout','-f','.'])
+                if return_code > 0:
+                    ctx.send('Checkout failed.')
+                    return
+            return_code = subprocess.run(['git','pull'])
+            if return_code == 0:
+                ctx.send('Git pull successful.')
+            else:
+                ctx.send('Git pull failed. You might try pulling harder next time.')
+
+        # print("Calling update.sh")
+        # subprocess.Popen(["./update.sh"],
+        #                 cwd=os.getcwd(),
+        #                 stdout=subprocess.PIPE,
+        #                 stderr=subprocess.STDOUT)
+        # print("Quitting")
+        # await self.bot.logout()
 
     @commands.command()
     @misc.is_ryn()
@@ -219,7 +234,7 @@ class Owner:
         role_list = []
         for a in server.role_hierarchy:
             if not a.is_default():
-                role_list.append(a.name)
+                role_list.append("({:d}) {}".format(len(a.members), a.name))
 
         display_size = 80
         num_segments = int(len(role_list)/display_size) + 1
@@ -227,7 +242,7 @@ class Owner:
             embed = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_thumbnail(url=server.icon_url)
 
-            embed.add_field(name='Roles', value=', '.join(role_list[b*display_size:(b+1)*display_size-1]))
+            embed.add_field(name='Roles', value='\n'.join(role_list[b*display_size:(b+1)*display_size-1]))
 
             footer = "Page {}/{}".format(b+1, num_segments)
             embed.set_footer(text=footer)
