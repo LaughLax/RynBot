@@ -86,12 +86,12 @@ class Owner:
 
     @commands.command()
     @misc.is_ryn()
-    async def gitpull(self, ctx, *args):
-        if len(args) < 1:
+    async def git(self, ctx, *args):
+        if len(args) < 2:
             ctx.send('Not enough arguments.')
             return
-        if args[0].lower() == 'pull':
-            if len(args) > 1 and args[1].lower() == 'harder':
+        if args[1].lower() == 'pull':
+            if len(args) > 1 and args[2].lower() == 'harder':
                 return_code = subprocess.run(['git','checkout','-f','.'])
                 if return_code > 0:
                     ctx.send('Checkout failed.')
