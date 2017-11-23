@@ -1,18 +1,26 @@
 import discord
 from discord.ext import commands
-from util import misc
 import os
 import subprocess
 
 
 class Owner:
+    """This cog is purely for Ryn's use. Attempts by others will be logged."""
     def __init__(self, bot):
         self.bot = bot
 
+    def __local_check(self, ctx):
+        """Checks to see if Ryn issued the command."""
+        is_ryn = ctx.message.author.id == 185095270986547200
+        if is_ryn:
+            print('Check ran. It\'s Ryn.')
+        else:
+            print('{} tried to run an owner-restricted command'.format(ctx.message.author))
+        return is_ryn
+
     @commands.group()
-    @misc.is_ryn()
     async def cog(self, ctx):
-        """This group holds utilities for maintaining the bot."""
+        """Commands for managing cogs."""
 
         if ctx.invoked_subcommand is None:
             await ctx.invoke(self.bot.get_command('help'), 'util')
@@ -35,8 +43,8 @@ class Owner:
         if name.startswith('cogs.'):
             name = name.split('.', 1)[1]
 
-        if name.lower() == 'util' and ctx.invoked_with.lower() != 'reloadcog':
-            await ctx.send('Cannot unload the util cog unless performing a reload.')
+        if name.lower() == 'owner' and ctx.invoked_with.lower() != 'reload':
+            await ctx.send('Cannot unload the owner cog unless performing a reload.')
         else:
             self.bot.unload_extension('cogs.{}'.format(name))
             await ctx.send('Cog \'{}\' successfully removed.'.format(name))
@@ -57,6 +65,7 @@ class Owner:
 
     @cog.command()
     async def list(self, ctx):
+        """Lists all cogs currently loaded."""
         paginator = commands.Paginator()
 
         for ex in self.bot.extensions:
@@ -73,20 +82,36 @@ class Owner:
     async def cog_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send('Not enough arguments supplied.')
-        elif isinstance(error, commands.CheckFailure):
-            pass
         else:
             raise error
 
     @commands.command()
-    @misc.is_ryn()
     async def renamebot(self, ctx, name: str):
         await self.bot.user.edit(username=name)
         await ctx.send("Bot username changed.")
 
     @commands.command()
-    @misc.is_ryn()
-    async def git(self, ctx, *args):
+    async def git(self, ctx, *, args: str = ''):
+        """Git, plain and 'simple.'
+
+        Runs the specified git command on the server and displays the result."""
+
+        paginator = commands.Paginator()
+
+        stream = subprocess.run(['git {}'.format(args)], shell=True, stderr=subprocess.PIPE)
+        if stream.stdout is not None:
+            for line in str(stream.stdout).split('\n'):
+                paginator.add_line(line.decode('utf-8'))
+        elif stream.stderr is not None:
+            for line in str(stream.stderr).split('\n'):
+                paginator.add_line(line.decode('utf-8'))
+        else:
+            print('wtf')
+
+        for p in paginator.pages:
+            await ctx.send(p)
+
+        """
         if len(args) < 2:
             ctx.send('Not enough arguments.')
             return
@@ -101,27 +126,38 @@ class Owner:
                 ctx.send('Git pull successful.')
             else:
                 ctx.send('Git pull failed. You might try pulling harder next time.')
+        """
 
+    @commands.command()
+    async def update(self, ctx):
+        """Calls an update script and exits.
+
+        This command should only be run if the bot's core needs updating.
+        Also, it doesn't work so it's commented out.
+        If it did work, it would call update.sh, which:
+        * Waits for the bot process to end
+        * Does a git pull
+        * Starts the bot"""
+        pass
         # print("Calling update.sh")
         # subprocess.Popen(["./update.sh"],
-        #                 cwd=os.getcwd(),
-        #                 stdout=subprocess.PIPE,
-        #                 stderr=subprocess.STDOUT)
+        #                  cwd=os.getcwd(),
+        #                  stdout=subprocess.PIPE,
+        #                  stderr=subprocess.STDOUT)
         # print("Quitting")
         # await self.bot.logout()
 
     @commands.command()
-    @misc.is_ryn()
     async def quit(self, ctx):
+        """Logs out and terminates the bot process."""
         await self.bot.logout()
 
     @commands.group(hidden=True)
-    @misc.is_ryn()
     async def sneak(self, ctx):
         """This group contains some sneaky-sneaky stuff."""
 
         if ctx.invoked_subcommand is None:
-            await ctx.invoke(self.bot.get_command('help'), 'sneaky')
+            await ctx.invoke(self.bot.get_command('help'), 'sneak')
 
     @sneak.command()
     async def hiddenchannels(self, ctx, server_id: str = None, print_local: bool = False):
@@ -256,7 +292,6 @@ class Owner:
             await ctx.message.delete()
 
     @commands.command()
-    @misc.is_ryn()
     async def cooldog(self, ctx):
         string = """╭━━━━━╮               This is cooldog. Help
     ╰┃ ┣▇━▇                cooldog take over 
