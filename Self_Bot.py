@@ -37,7 +37,7 @@ async def on_message(message):
 @bot.event
 async def on_reaction_add(reaction, user):
     if user.id == bot.user.id:
-        print("Reaction at " + datetime.now().strftime("%H:%M:%S"))
+        # print("Reaction at " + datetime.now().strftime("%H:%M:%S"))
         global reaction_text
         if reaction.emoji == '\U0001F643' and reaction_text != '':
             await reaction.message.remove_reaction(reaction.emoji, user)

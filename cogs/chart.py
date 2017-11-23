@@ -29,7 +29,8 @@ class Chart:
     async def games(self, ctx, server_id: str = None):
         """A bar chart of games being played on a server.
 
-        The chart will display up to 50 games. If there are more than 50 unique games being played, then a minimum number of players is set so that 50 or less games will be included on the chart."""
+        The chart will display up to 50 games, excluding streamers and bot accounts.
+        If there are more than 50 unique games being played, then a minimum number of players per game is set so that 50 or fewer games will be included on the chart."""
 
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
@@ -80,8 +81,8 @@ class Chart:
     async def games_pie(self, ctx, server_id: str = None):
         """A pie chart of games being played on a server.
 
-        The chart will display up to 10 games. If there are more than 50 unique games being played,
-        then a minimum number of players is set so that 10 or less games will be included on the chart."""
+        The chart will display up to 10 games, excluding streamers and bot accounts.
+        If there are more than 10 unique games being played, a minimum number of players per game is set so that 10 or fewer games will be included on the chart."""
 
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
@@ -175,9 +176,9 @@ class Chart:
     async def users(self, ctx, server_id: str = None):
         """A chart of user growth history on a server.
 
-        This chart does NOT use any historical data.
-        All data is obtained via the 'join date' of each member, meaning this chart will NOT reflect members who
-        have left or been kicked from the server."""
+        This chart does not use any historical data.
+        All data is obtained via the 'join date' of each member,
+        meaning this chart will not reflect members who have left or been kicked from the server."""
 
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
