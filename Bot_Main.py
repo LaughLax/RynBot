@@ -14,7 +14,8 @@ async def on_ready():
     extensions = ['cogs.base',
                   'cogs.chart',
                   'cogs.owner',
-                  'cogs.server']
+                  'cogs.server',
+                  'cogs.my_server']
     for extension in extensions:
         try:
             bot.load_extension(extension)
