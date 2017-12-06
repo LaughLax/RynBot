@@ -1,7 +1,10 @@
 import discord
 from discord.ext import commands
-import os
 import subprocess
+
+
+class StarError(commands.CheckFailure):
+    pass
 
 
 class Owner:
@@ -12,10 +15,8 @@ class Owner:
     def __local_check(self, ctx):
         """Checks to see if Ryn issued the command."""
         is_ryn = ctx.message.author.id == 185095270986547200
-        if is_ryn:
-            print('Check ran. It\'s Ryn.')
-        else:
-            print('{} tried to run an owner-restricted command'.format(ctx.message.author))
+        if not is_ryn:
+            print('{} tried to run an owner-restricted command ({})'.format(ctx.message.author, ctx.invoked_with))
         return is_ryn
 
     @commands.group()
@@ -308,6 +309,89 @@ class Owner:
         em.add_field(name="The dog himself", value=string)
         await ctx.message.delete()
         await ctx.send("", embed=em)
+
+    async def on_raw_reaction_add(self, emoji, message_id, channel_id, user_id):
+        if user_id == 185095270986547200 and channel_id != 355477159629946882:
+            await self.reaction_action('_star', emoji, message_id, channel_id)
+
+    async def reaction_action(self, fmt, emoji, message_id, channel_id):
+        if str(emoji) != '\N{WHITE MEDIUM STAR}':
+            return
+
+        channel = self.bot.get_channel(channel_id)
+        if not isinstance(channel, discord.TextChannel):
+            return
+
+        method = getattr(self, '{}_message'.format(fmt))
+
+        try:
+            await method(channel, message_id)
+        except StarError:
+            pass
+
+    async def _star_message(self, channel, message_id):
+        """Stars a message.
+        Parameters
+        ------------
+        channel: :class:`TextChannel`
+            The channel that the starred message belongs to.
+        message_id: int
+            The message ID of the message being starred.
+        """
+
+        # guild_name = channel.guild.name
+        starboard_channel = self.bot.get_channel(355477159629946882)
+
+        msg = await self.get_message(channel, message_id)
+
+        if msg is None:
+            raise StarError('\N{BLACK QUESTION MARK ORNAMENT} This message could not be found.')
+
+        if (len(msg.content) == 0 and len(msg.attachments) == 0) or msg.type is not discord.MessageType.default:
+            raise StarError('\N{NO ENTRY SIGN} This message cannot be starred.')
+
+        # at this point, we either edit the message or we create a message
+        # with our star info
+        content, embed = self.get_emoji_message(msg)
+
+        await starboard_channel.send(content, embed=embed)
+
+    async def get_message(self, channel, message_id):
+        try:
+            o = discord.Object(id=message_id + 1)
+            pred = lambda m: m.id == message_id
+            # don't wanna use get_message due to poor rate limit (1/1s) vs (50/1s)
+            msg = await channel.history(limit=1, before=o).next()
+
+            if msg.id != message_id:
+                return None
+
+            return msg
+        except Exception:
+            return None
+
+    def get_emoji_message(self, message):
+        emoji = '\N{WHITE MEDIUM STAR}'
+
+        content = '{} {} {} ID: {}'.format(emoji, message.guild.name, message.channel.mention, message.id)
+
+        embed = discord.Embed(description=message.content)
+        if message.embeds:
+            data = message.embeds[0]
+            if data.type == 'image':
+                embed.set_image(url=data.url)
+
+        if message.attachments:
+            file = message.attachments[0]
+            if file.url.lower().endswith(('png', 'jpeg', 'jpg', 'gif', 'webp')):
+                embed.set_image(url=file.url)
+            else:
+                embed.add_field(name='Attachment', value='[{}]({})'.format(file.filename, file.url), inline=False)
+
+        embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url_as(format='png'))
+        embed.timestamp = message.created_at
+        embed.colour = 0xff0000
+        return content, embed
 
 
 def setup(bot):
