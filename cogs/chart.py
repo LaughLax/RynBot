@@ -43,7 +43,7 @@ class Chart:
         game_names = []
         game_count = []
         for a in server.members:
-            if not a.bot and a.game is not None and a.game.type != 1:
+            if not a.bot and a.game is not None and a.game.type == 0:
                 if a.game.name not in game_names:
                     game_names.append(a.game.name)
                     game_count.append(1)
@@ -95,7 +95,7 @@ class Chart:
         game_names = []
         game_count = []
         for a in server.members:
-            if not a.bot and a.game is not None and a.game.type != 1:
+            if not a.bot and a.game is not None and a.game.type == 0:
                 if a.game.name not in game_names:
                     game_names.append(a.game.name)
                     game_count.append(1)
