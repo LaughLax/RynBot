@@ -393,6 +393,11 @@ class Owner:
         embed.colour = 0xff0000
         return content, embed
 
+    @commands.command()
+    async def status(self, ctx, type: int, *, text):
+        game = discord.Game(type=type, name=text)
+        await self.bot.change_presence(game=game)
+
 
 def setup(bot):
     bot.add_cog(Owner(bot))
