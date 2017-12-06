@@ -99,7 +99,7 @@ class Owner:
 
         paginator = commands.Paginator()
 
-        stream = subprocess.run(['git {}'.format(args)], shell=True, stderr=subprocess.PIPE)
+        stream = subprocess.run(['git {}'.format(args)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
             for line in str(stream.stdout.decode('utf-8')).split('\n'):
                 paginator.add_line(line)
