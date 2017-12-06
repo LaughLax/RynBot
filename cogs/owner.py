@@ -101,11 +101,11 @@ class Owner:
 
         stream = subprocess.run(['git {}'.format(args)], shell=True, stderr=subprocess.PIPE)
         if stream.stdout is not None:
-            for line in str(stream.stdout).split('\n'):
-                paginator.add_line(line.decode('utf-8'))
+            for line in str(stream.stdout.decode('utf-8')).split('\n'):
+                paginator.add_line(line)
         elif stream.stderr is not None:
-            for line in str(stream.stderr).split('\n'):
-                paginator.add_line(line.decode('utf-8'))
+            for line in str(stream.stderr.decode('utf-8')).split('\n'):
+                paginator.add_line(line)
         else:
             print('wtf')
 
