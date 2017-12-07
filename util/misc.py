@@ -1,9 +1,15 @@
+import discord
 from discord.ext import commands
+
+
+ryn_id = 185095270986547200
+ryn_starboard_id = 355477159629946882
+pub_starboard_id = 382661096303230976
 
 
 def is_ryn():
     def predicate(ctx):
-        return ctx.message.author.id == 185095270986547200
+        return ctx.message.author.id == ryn_id
     return commands.check(predicate)
 
 
@@ -36,3 +42,17 @@ def get_alpha_emoji(char):
         'y': '\U0001F1FE',
         'z': '\U0001F1FF'
     }.get(char, '')
+
+
+async def get_message(channel, message_id):
+    try:
+        o = discord.Object(id=message_id + 1)
+        # don't wanna use get_message due to poor rate limit (1/1s) vs (50/1s)
+        msg = await channel.history(limit=1, before=o).next()
+
+        if msg.id != message_id:
+            return None
+
+        return msg
+    except Exception:
+        return None

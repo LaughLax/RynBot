@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from datetime import datetime
 from util import misc
 
 bot = commands.Bot(command_prefix="self_", self_bot=True)
@@ -16,7 +15,8 @@ async def on_ready():
     extensions = ['cogs.base',
                   'cogs.chart',
                   'cogs.owner',
-                  'cogs.server']
+                  'cogs.server',
+                  'cogs.stars']
     for extension in extensions:
         try:
             bot.load_extension(extension)
