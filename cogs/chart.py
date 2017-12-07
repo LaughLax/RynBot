@@ -147,18 +147,9 @@ class Chart:
                 await ctx.send("I'm not in that server.")
                 return
 
-        role_list = []
-        role_size = []
-        role_colors = []
-        for a in server.role_hierarchy:
-            if not a.is_default():
-                role_list.append(a)
-                role_size.append(len(a.members))
-                rgb = list(a.color.to_rgb())
-                rgba = [1., 1., 1., 1.]
-                for b in range(3):
-                    rgba[b] = rgb[b] / 256.
-                role_colors.append(tuple(rgba))
+        role_list = [a for a in server.role_hierarchy if not a.is_default()]
+        role_size = [len(a.members) for a in role_list]
+        role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
 
         plt.clf()
         plt.bar(range(len(role_list)), role_size, tick_label=role_list, color=role_colors, width=1., edgecolor='k')
