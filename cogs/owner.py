@@ -1,6 +1,10 @@
 import discord
 from discord.ext import commands
 import subprocess
+from util import misc
+import cProfile
+import pstats
+import io
 
 
 class Owner:
@@ -10,7 +14,7 @@ class Owner:
 
     def __local_check(self, ctx):
         """Checks to see if Ryn issued the command."""
-        is_ryn = ctx.message.author.id == 185095270986547200
+        is_ryn = ctx.message.author.id == misc.ryn_id
         if not is_ryn:
             print('{} tried to run an owner-restricted command ({})'.format(ctx.message.author, ctx.invoked_with))
         return is_ryn
@@ -156,8 +160,8 @@ class Owner:
         if ctx.invoked_subcommand is None:
             await ctx.invoke(self.bot.get_command('help'), 'sneak')
 
-    @sneak.command()
-    async def hiddenchannels(self, ctx, server_id: str = None, print_local: bool = False):
+    @sneak.command(name='hiddenchannels')
+    async def hidden_channels(self, ctx, server_id: str = None, print_local: bool = False):
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
         else:
@@ -288,8 +292,8 @@ class Owner:
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             await ctx.message.delete()
 
-    @commands.command()
-    async def cooldog(self, ctx):
+    @commands.command(name='cooldog')
+    async def cool_dog(self, ctx):
         string = """╭━━━━━╮               This is cooldog. Help
     ╰┃ ┣▇━▇                cooldog take over 
      ┃ ┃  ╰━▅╮ Discord by pasting
@@ -306,18 +310,43 @@ class Owner:
         await ctx.message.delete()
         await ctx.send("", embed=em)
 
-
-
-
-
-
-
-
+    @commands.command()
+    async def status(self, ctx, status_type: int, *, text):
+        game = discord.Game(type=status_type, name=text)
+        await self.bot.change_presence(game=game)
 
     @commands.command()
-    async def status(self, ctx, type: int, *, text):
-        game = discord.Game(type=type, name=text)
-        await self.bot.change_presence(game=game)
+    async def profile(self, ctx, *, cmd):
+        [cmd_string, args] = cmd.split(maxsplit=1)
+        while isinstance(self.bot.get_command(cmd_string), commands.Group):
+            splat = args.split(maxsplit=1)
+            cmd_string += ' ' + splat[0]
+            args = splat[1] if len(splat) > 1 else ''
+
+        pr = cProfile.Profile()
+
+        pr.enable()
+        if args != '':
+            await ctx.invoke(self.bot.get_command(cmd_string), args)
+        else:
+            await ctx.invoke(self.bot.get_command(cmd_string))
+        pr.disable()
+        pr.create_stats()
+
+        s = io.StringIO()
+
+
+        paginator = commands.Paginator()
+
+        with io.StringIO() as a:
+            ps = pstats.Stats(pr, stream=s).strip_dirs().sort_stats('tottime')
+            ps.print_stats()
+
+            for line in s.getvalue().split('\n'):
+                paginator.add_line(line)
+
+        # for p in paginator.pages:
+        await ctx.send(paginator.pages[0])
 
 
 def setup(bot):
