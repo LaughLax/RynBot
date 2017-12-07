@@ -1,11 +1,17 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
+import sys
 
 
 class Base:
     def __init__(self, bot):
         self.bot = bot
+
+    async def on_command_error(self, ctx, error):
+        await ctx.message.add_reaction(u'\u274C')
+        print(ctx.message.content, file=sys.stderr)
+        raise error
 
     @commands.command()
     async def test(self, ctx):

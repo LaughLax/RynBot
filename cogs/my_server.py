@@ -1,16 +1,10 @@
 from discord.ext import commands
 import asyncio
-import sys
 
 
 class MyServer:
     def __init__(self, bot):
         self.bot = bot
-
-    async def on_command_error(self, ctx, error):
-        await ctx.message.add_reaction(u'\u274C')
-        print(ctx.message.content, file=sys.stderr)
-        raise error
 
     def __local_check(self, ctx):
         return ctx.guild is not None and ctx.guild.id == 329681826618671104
@@ -22,7 +16,10 @@ class MyServer:
 
     @commands.command(aliases=['iam', 'gibme'])
     async def giveme(self, ctx, *, i_want: str):
-        """Self-assign user roles"""
+        """Self-assign user roles.
+
+        Available roles are:
+        LDSG"""
         id = self._get_role_id(i_want)
         if id is not None:
             conv = commands.RoleConverter()
