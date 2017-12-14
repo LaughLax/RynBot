@@ -14,7 +14,7 @@ class MyServer:
             'LDSG': '357912587498946560'
         }.get(name)
 
-    @commands.command(aliases=['iam', 'gibme'])
+    @commands.command(aliases=['iam', 'gibme', 'gimme'])
     async def giveme(self, ctx, *, i_want: str):
         """Self-assign user roles.
 
