@@ -31,8 +31,6 @@ class MyServer:
             await ctx.message.add_reaction(u'\U0001F44D')
         else:
             await ctx.message.add_reaction(u'\U0001F44E')
-        asyncio.sleep(3)
-        await ctx.message.delete()
 
 
 def setup(bot):
