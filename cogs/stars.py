@@ -30,7 +30,7 @@ class Stars:
             return
 
         channel = self.bot.get_channel(channel_id)
-        if not isinstance(channel, discord.TextChannel):
+        if not isinstance(channel, discord.TextChannel) or (user_id != misc.ryn_id and channel.guild.id != misc.ryn_server_id):
             return
 
         method = getattr(self, '{}_message'.format(fmt))

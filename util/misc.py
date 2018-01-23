@@ -5,6 +5,7 @@ from discord.ext import commands
 ryn_id = 185095270986547200
 ryn_starboard_id = 355477159629946882
 pub_starboard_id = 382661096303230976
+ryn_server_id = 329681826618671104
 
 
 def is_ryn():
