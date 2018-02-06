@@ -9,9 +9,13 @@ class Base:
         self.bot = bot
 
     async def on_command_error(self, ctx, error):
-        await ctx.message.add_reaction(u'\u274C')
-        print(ctx.message.content, file=sys.stderr)
-        raise error
+        if not isinstance(error, commands.errors.CommandNotFound):
+            try:
+                await ctx.message.add_reaction(u'\u274C')
+                print(ctx.message.content, file=sys.stderr)
+            except discord.errors.Forbidden:
+                pass
+            raise error
 
     @commands.command()
     async def test(self, ctx):

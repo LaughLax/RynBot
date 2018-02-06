@@ -21,7 +21,7 @@ class Chart:
     @chart.error
     async def chart_error(self, ctx, error):
         if isinstance(error, commands.BotMissingPermissions):
-            await ctx.send('I don\'t have permissions to post files here.')
+            await ctx.send('I don\'t have permissions to post files here. I need "Attach Files" permission to post charts.')
         else:
             await ctx.send('Error: {}'.format(error))
 
