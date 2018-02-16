@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 
@@ -23,6 +24,9 @@ async def on_ready():
         except Exception as e:
             print('Failed to load extension {}.'.format(extension))
             print(e)
+
+    game = discord.Game(type=1, name="debug mode")
+    await bot.change_presence(game=game)
 
 
 with open('token.txt', 'r') as token_file:
