@@ -5,6 +5,7 @@ from util import misc
 import cProfile
 import pstats
 import io
+import math
 
 
 class Owner:
@@ -356,7 +357,6 @@ class Owner:
         users = ctx.message.mentions
         if not users:
             users = filter(lambda u: name in u.name, self.bot.users)
-            # users = (u for u in self.bot.users if name in u.name)
         if not users:
             await ctx.send('Could not find user `{}`.'.format(name))
             return
@@ -395,6 +395,23 @@ class Owner:
             await user.send("{}\n\n`This message was sent to you by my owner, Ryndinovaia#0903. To send him a message, use the `_owner` command.`".format(message))
         else:
             await ctx.send("Not enough arguments.")
+
+    @commands.command()
+    async def servers(self, ctx):
+        guilds = self.bot.guilds
+        num_guilds = len(guilds)
+
+        paginator = commands.Paginator()
+        paginator.add_line("I am in {} servers, totalling {} unique members.\n".format(num_guilds, len(self.bot.users)))
+
+        max_name_length = len(max(guilds, key=lambda g: len(g.name)).name)
+        max_num_length = int(math.log(max(g.member_count for g in guilds), 10) // 1 + 1)
+
+        for g in guilds:
+            paginator.add_line("{0.name:<{n_len}} | {0.member_count:{m_len}d} members | {0.id}".format(g, n_len=max_name_length, m_len=max_num_length))
+
+        for p in paginator.pages:
+            await ctx.send(p)
 
 
 def setup(bot):
