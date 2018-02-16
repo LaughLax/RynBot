@@ -6,6 +6,8 @@ from util import misc
 
 
 class Base:
+    """Basic-level commands"""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -18,16 +20,18 @@ class Base:
                 pass
             raise error
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def test(self, ctx):
         await ctx.message.add_reaction('\U0001F44D')
 
     @commands.command()
     async def now(self, ctx):
+        """Display the current time in UTC."""
         await ctx.send(datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
 
     @commands.command()
     async def ping(self, ctx):
+        """Check the bot's ping time."""
         start = datetime.now()
         await (await self.bot.ws.ping())
         td = datetime.now() - start
@@ -35,7 +39,7 @@ class Base:
 
     @commands.command()
     async def userinfo(self, ctx, name: str = None):
-        """Get user info. Ex: >info @user
+        """Get user info. Ex: _info @user
 
         Lifted from appu1232's self-bot."""
         if name is None:
@@ -79,6 +83,7 @@ class Base:
 
     @commands.command()
     async def owner(self, ctx, *, message: str = None):
+        """Send a message to the bot owner. Images and Discord-based emoji will not be shown."""
         if message is not None:
             # TODO catch emojis (will require checking ctx.message instead of taking args)
             recipient = await self.bot.get_user_info(misc.ryn_id)

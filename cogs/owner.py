@@ -9,12 +9,12 @@ import math
 
 
 class Owner:
-    """This cog is purely for Ryn's use. Attempts by others will be logged."""
+    """Commands for Ryn's use. Attempts by others will be logged."""
     def __init__(self, bot):
         self.bot = bot
 
     def __local_check(self, ctx):
-        """Checks to see if Ryn issued the command."""
+        """Check to see if Ryn issued the command."""
         is_ryn = ctx.message.author.id == misc.ryn_id
         if not is_ryn and not ctx.invoked_with == "help ":
             print('{} tried to run an owner-restricted command ({})'.format(ctx.message.author, ctx.invoked_with))
@@ -29,7 +29,7 @@ class Owner:
 
     @cog.command()
     async def load(self, ctx, name: str):
-        """Adds a cog to the bot."""
+        """Add a cog to the bot."""
 
         if name.startswith('cogs.'):
             name = name.split('.', 1)[1]
@@ -40,7 +40,7 @@ class Owner:
 
     @cog.command()
     async def unload(self, ctx, name: str):
-        """Removes a cog from the bot."""
+        """Remove a cog from the bot."""
 
         if name.startswith('cogs.'):
             name = name.split('.', 1)[1]
@@ -52,8 +52,8 @@ class Owner:
             await ctx.send('Cog \'{}\' successfully removed.'.format(name))
 
     @cog.command()
-    async def reload(self, ctx, name: str):
-        """Removes and then re-adds a cog to the bot."""
+    async def reload(self, ctx, name: str = 'all'):
+        """Remove and then re-add a cog to the bot."""
 
         if name.lower() == 'all':
             for ex in self.bot.extensions:
@@ -89,6 +89,8 @@ class Owner:
 
     @commands.command()
     async def renamebot(self, ctx, name: str):
+        """Change RynBot's name"""
+
         await self.bot.user.edit(username=name)
         await ctx.send("Bot username changed.")
 
@@ -96,7 +98,7 @@ class Owner:
     async def git(self, ctx, *, args: str = ''):
         """Git, plain and 'simple.'
 
-        Runs the specified git command on the server and displays the result."""
+        Run the specified git command on the server and display the result."""
 
         paginator = commands.Paginator()
 
@@ -151,13 +153,13 @@ class Owner:
 
     @commands.command()
     async def reboot(self, ctx):
-        """Reboots the entire server."""
+        """Reboot the server running RynBot"""
 
         subprocess.run(['reboot'], shell=True)
 
     @commands.command()
     async def quit(self, ctx):
-        """Logs out and terminates the bot process."""
+        """Log out and terminate the bot process"""
         await self.bot.logout()
 
     @commands.group(hidden=True)
@@ -265,6 +267,7 @@ class Owner:
 
     @sneak.command()
     async def roles(self, ctx, server_id: str = None, print_local: bool = False):
+
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
         else:
@@ -319,6 +322,7 @@ class Owner:
 
     @commands.command()
     async def status(self, ctx, status_type: int, *, text):
+        """Set the bot's presence"""
         game = discord.Game(type=status_type, name=text)
         await self.bot.change_presence(game=game)
 
@@ -356,6 +360,7 @@ class Owner:
 
     @commands.command()
     async def usersearch(self, ctx, *, name: str = None):
+        """Look up the ID of a user"""
         if name is None:
             await ctx.send("You didn't give me someone to search for.")
             return
@@ -389,6 +394,7 @@ class Owner:
 
     @commands.command(aliases=['msg'])
     async def message(self, ctx, user_id: int = None, *, message: str = None):
+        """Send a message to a user"""
         if user_id is not None and message is not None:
             try:
                 user = self.bot.get_user(user_id)

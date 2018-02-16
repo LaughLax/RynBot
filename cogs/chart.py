@@ -7,13 +7,15 @@ import matplotlib.pyplot as plt
 
 
 class Chart:
+    """Commands to make charts"""
+
     def __init__(self, bot):
         self.bot = bot
 
     @commands.group()
     @commands.bot_has_permissions(attach_files=True)
     async def chart(self, ctx):
-        """Commands in this group generate charts."""
+        """Commands to generate charts. Use '_help chart' for available charts"""
 
         if ctx.invoked_subcommand is None:
             await ctx.invoke(self.bot.get_command('help'), 'chart')
@@ -27,7 +29,7 @@ class Chart:
 
     @chart.command()
     async def games(self, ctx, server_id: str = None):
-        """A bar chart of games being played on a server.
+        """Display a bar chart of games being played on a server.
 
         The chart will display up to 50 games, excluding streamers and bot accounts.
         If there are more than 50 unique games being played, then a minimum number of players per game is set so that 50 or fewer games will be included on the chart."""
@@ -79,7 +81,7 @@ class Chart:
 
     @chart.command()
     async def games_pie(self, ctx, server_id: str = None):
-        """A pie chart of games being played on a server.
+        """Display a pie chart of games being played on a server.
 
         The chart will display up to 10 games, excluding streamers and bot accounts.
         If there are more than 10 unique games being played, a minimum number of players per game is set so that 10 or fewer games will be included on the chart."""
@@ -132,7 +134,7 @@ class Chart:
 
     @chart.command()
     async def roles(self, ctx, server_id: str = None):
-        """A bar chart of roles on a server.
+        """Display bar chart of roles on a server.
 
         Colors on the chart reflect the color assigned to each role.
         No attempt is made to scale the chart well.
@@ -165,7 +167,7 @@ class Chart:
 
     @chart.command()
     async def users(self, ctx, server_id: str = None):
-        """A chart of user growth history on a server.
+        """Display a chart of user growth history on a server.
 
         This chart does not use any historical data.
         All data is obtained via the 'join date' of each member,

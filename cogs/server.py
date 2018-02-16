@@ -8,6 +8,7 @@ class Server:
 
     @commands.command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
+        """List users playing a specific game."""
         if game_title is not None:
             users = []
             for a in ctx.guild.members:
@@ -35,6 +36,11 @@ class Server:
     @commands.command()
     @commands.has_permissions(manage_channels=True)
     async def channels(self, ctx):
+        """Display a list of all channels on the server to use.
+
+        This command requires the "Manage Channels" permission.
+        If your server has channels you don't want people to know about,
+        be careful using this command!"""
         server = ctx.guild
 
         title = str.format("Server: {0.name} (ID {0.id})", server)
@@ -82,6 +88,11 @@ class Server:
     @commands.command()
     @commands.has_permissions(manage_roles=True)
     async def roles(self, ctx):
+        """Display a list of all roles on the server.
+
+        This command requires the "Manage Roles" permission to use.
+        If your server has channels you don't want people to know about,
+        be careful using this command!"""
         server = ctx.guild
 
         title = "Server: {0.name} (ID {0.id})".format(server)
@@ -109,6 +120,7 @@ class Server:
 
     @commands.command()
     async def nowstreaming(self, ctx, server_id: str = None):
+        """Display a list of all users streaming on the server."""
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
         else:
@@ -143,8 +155,9 @@ class Server:
         else:
             await ctx.send("No members streaming on server: {}.".format(server.name))
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def commonmembers(self, ctx, server1_id: int, server2_id: int = None):
+        """Display a list of users that two servers have in common."""
         if server1_id is not None:
             if server2_id is None:
                 server2 = ctx.guild

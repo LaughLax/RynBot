@@ -3,6 +3,7 @@ import asyncio
 
 
 class MyServer:
+    """Commands exclusively for Ryn's server"""
     def __init__(self, bot):
         self.bot = bot
 
