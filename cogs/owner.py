@@ -15,7 +15,7 @@ class Owner:
     def __local_check(self, ctx):
         """Checks to see if Ryn issued the command."""
         is_ryn = ctx.message.author.id == misc.ryn_id
-        if not is_ryn:
+        if not is_ryn and not ctx.invoked_with == "help ":
             print('{} tried to run an owner-restricted command ({})'.format(ctx.message.author, ctx.invoked_with))
         return is_ryn
 
@@ -333,12 +333,11 @@ class Owner:
         pr.disable()
         pr.create_stats()
 
-        s = io.StringIO()
-
+        # s = io.StringIO()
 
         paginator = commands.Paginator()
 
-        with io.StringIO() as a:
+        with io.StringIO() as s:
             ps = pstats.Stats(pr, stream=s).strip_dirs().sort_stats('tottime')
             ps.print_stats()
 
