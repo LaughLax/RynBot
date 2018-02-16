@@ -153,20 +153,7 @@ class Owner:
     async def reboot(self, ctx):
         """Reboots the entire server."""
 
-        paginator = commands.Paginator()
-
-        stream = subprocess.run(['reboot'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if stream.stdout is not None:
-            for line in str(stream.stdout.decode('utf-8')).split('\n'):
-                paginator.add_line(line)
-        elif stream.stderr is not None:
-            for line in str(stream.stderr.decode('utf-8')).split('\n'):
-                paginator.add_line(line)
-        else:
-            print('wtf')
-
-        for p in paginator.pages:
-            await ctx.send(p)
+        subprocess.run(['reboot'], shell=True)
 
     @commands.command()
     async def quit(self, ctx):
