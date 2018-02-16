@@ -150,6 +150,12 @@ class Owner:
         # await self.bot.logout()
 
     @commands.command()
+    async def reboot(self, ctx):
+        """Reboots the entire server."""
+
+        subprocess.run(['reboot'], shell=True)
+
+    @commands.command()
     async def quit(self, ctx):
         """Logs out and terminates the bot process."""
         await self.bot.logout()
