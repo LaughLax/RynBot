@@ -25,7 +25,7 @@ async def on_ready():
             print('Failed to load extension {}.'.format(extension))
             print(e)
 
-    game = discord.Game(type=1, name="debug mode")
+    game = discord.Game(type=3, name="grass grow")
     await bot.change_presence(game=game)
 
 
