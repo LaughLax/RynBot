@@ -347,6 +347,55 @@ class Owner:
         # for p in paginator.pages:
         await ctx.send(paginator.pages[0])
 
+    @commands.command()
+    async def usersearch(self, ctx, *, name: str = None):
+        if name is None:
+            await ctx.send("You didn't give me someone to search for.")
+            return
+
+        users = ctx.message.mentions
+        if not users:
+            users = filter(lambda u: name in u.name, self.bot.users)
+            # users = (u for u in self.bot.users if name in u.name)
+        if not users:
+            await ctx.send('Could not find user `{}`.'.format(name))
+            return
+
+        if hasattr(users, '__iter__'):
+            users = list(users)
+            if (len(users) > 200):
+                await ctx.send("Over 200 matching users.")
+            else:
+                try:
+                    max_length = len(max(users, key=lambda u: len(u.name)).name)
+                except ValueError:
+                    await ctx.send('Could not find user `{}`.'.format(name))
+                    return
+
+                paginator = commands.Paginator(prefix="```{head:>{n_len}}#xxxx | ID".format(head="User", n_len=max_length))
+
+                for u in users:
+                    paginator.add_line("{username:>{n_len}}#{discrim} | {user_id}".format(username=u.name, n_len=max_length, discrim=u.discriminator, user_id=u.id))
+                for p in paginator.pages:
+                    await ctx.send(p)
+        else:
+            await ctx.send("The ID of user `{}` is `{}`.".format(name, users.id))
+
+    @commands.command(aliases=['msg'])
+    async def message(self, ctx, user_id: int = None, *, message: str = None):
+        if user_id is not None and message is not None:
+            try:
+                user = self.bot.get_user(user_id)
+            except discord.errors.NotFound:
+                await ctx.send("Invalid user ID.")
+                return
+
+            if message.count("`") % 2 == 1:
+                message = message + "`"
+            await user.send("{}\n\n`This message was sent to you by my owner, Ryndinovaia#0903. To send him a message, use the `_owner` command.`".format(message))
+        else:
+            await ctx.send("Not enough arguments.")
+
 
 def setup(bot):
     bot.add_cog(Owner(bot))

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 import sys
+from util import misc
 
 
 class Base:
@@ -75,6 +76,17 @@ class Base:
 
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             await ctx.message.delete()
+
+    @commands.command()
+    async def owner(self, ctx, *, message: str = None):
+        if message is not None:
+            # TODO catch emojis (will require checking ctx.message instead of taking args)
+            recipient = await self.bot.get_user_info(misc.ryn_id)
+            if message.count("`") % 2 == 1:
+                message = message + "`"
+            await recipient.send("{0}\n\n`This message was sent to you by {1.name}#{1.discriminator} ({1.id}). To send him a message, use the `_message` command.`".format(message, ctx.author))
+        else:
+            ctx.send("You didn't give me a message to send!")
 
 
 def setup(bot):
