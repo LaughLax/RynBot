@@ -15,7 +15,7 @@ class Chart:
     @commands.group()
     @commands.bot_has_permissions(attach_files=True)
     async def chart(self, ctx):
-        """Commands to generate charts. Use '_help chart' for available charts"""
+        """Commands to generate charts."""
 
         if ctx.invoked_subcommand is None:
             await ctx.invoke(self.bot.get_command('help'), 'chart')

@@ -328,6 +328,7 @@ class Owner:
 
     @commands.command()
     async def profile(self, ctx, *, cmd):
+        # TODO this next line causes an error if it's profiling a zero-arg command (ie `profile channels`)
         [cmd_string, args] = cmd.split(maxsplit=1)
         while isinstance(self.bot.get_command(cmd_string), commands.Group):
             splat = args.split(maxsplit=1)
@@ -367,14 +368,13 @@ class Owner:
 
         users = ctx.message.mentions
         if not users:
-            users = filter(lambda u: name in u.name, self.bot.users)
+            users = list(filter(lambda u: name in u.name, self.bot.users))
         if not users:
             await ctx.send('Could not find user `{}`.'.format(name))
             return
 
         if hasattr(users, '__iter__'):
-            users = list(users)
-            if (len(users) > 200):
+            if len(users) > 200:
                 await ctx.send("Over 200 matching users.")
             else:
                 try:

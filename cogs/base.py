@@ -12,13 +12,20 @@ class Base:
         self.bot = bot
 
     async def on_command_error(self, ctx, error):
-        if not isinstance(error, commands.errors.CommandNotFound):
-            try:
-                await ctx.message.add_reaction(u'\u274C')
-                print(ctx.message.content, file=sys.stderr)
-            except discord.errors.Forbidden:
-                pass
-            raise error
+        if isinstance(error, commands.errors.CommandNotFound):
+            return
+
+        try:
+            await ctx.message.add_reaction(u'\u274C')
+        except discord.errors.Forbidden:
+            pass
+
+        if isinstance(error, commands.errors.MissingRequiredArgument):
+            await ctx.send("Insufficient arguments. Use `_help [command]` for more info.")
+            return
+
+        print(ctx.message.content, file=sys.stderr)
+        raise error
 
     @commands.command(hidden=True)
     async def test(self, ctx):
