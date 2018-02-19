@@ -72,3 +72,23 @@ async def get_message(channel, message_id):
         return msg
     except Exception:
         return None
+
+
+def embedify_message(message):
+    embed = discord.Embed(description=message.content)
+    if message.embeds:
+        data = message.embeds[0]
+        if data.type == 'image':
+            embed.set_image(url=data.url)
+
+    if message.attachments:
+        file = message.attachments[0]
+        if file.url.lower().endswith(('png', 'jpeg', 'jpg', 'gif', 'webp')):
+            embed.set_image(url=file.url)
+        else:
+            embed.add_field(name='Attachment', value='[{}]({})'.format(file.filename, file.url), inline=False)
+
+    embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url_as(format='png'))
+    embed.timestamp = message.created_at
+    embed.colour = 0xff0000
+    return embed

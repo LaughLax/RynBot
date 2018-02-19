@@ -75,22 +75,7 @@ class Stars:
 
         content = '{} {} {} ID: {}'.format(emoji, message.guild.name, message.channel.mention, message.id)
 
-        embed = discord.Embed(description=message.content)
-        if message.embeds:
-            data = message.embeds[0]
-            if data.type == 'image':
-                embed.set_image(url=data.url)
-
-        if message.attachments:
-            file = message.attachments[0]
-            if file.url.lower().endswith(('png', 'jpeg', 'jpg', 'gif', 'webp')):
-                embed.set_image(url=file.url)
-            else:
-                embed.add_field(name='Attachment', value='[{}]({})'.format(file.filename, file.url), inline=False)
-
-        embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url_as(format='png'))
-        embed.timestamp = message.created_at
-        embed.colour = 0xff0000
+        embed = misc.embedify_message(message)
         return content, embed
 
 
