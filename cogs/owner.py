@@ -16,7 +16,7 @@ class Owner:
     def __local_check(self, ctx):
         """Check to see if Ryn issued the command."""
         is_ryn = ctx.message.author.id == misc.ryn_id
-        if not is_ryn and not ctx.invoked_with == "help ":
+        if not is_ryn and not ctx.invoked_with == "help":
             print('{} tried to run an owner-restricted command ({})'.format(ctx.message.author, ctx.invoked_with))
         return is_ryn
 
@@ -25,7 +25,7 @@ class Owner:
         """Commands for managing cogs."""
 
         if ctx.invoked_subcommand is None:
-            await ctx.invoke(self.bot.get_command('help'), 'util')
+            await ctx.invoke(self.bot.get_command('help'), 'cog')
 
     @cog.command()
     async def load(self, ctx, name: str):
@@ -77,15 +77,16 @@ class Owner:
             await ctx.send(page)
             # await ctx.message.author.send(page)
 
-    @cog.error
-    @load.error
-    @unload.error
-    @reload.error
-    async def cog_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Not enough arguments supplied.')
-        else:
-            raise error
+#    @cog.error
+#    @load.error
+#    @unload.error
+#    @reload.error
+#    async def cog_error(self, ctx, error):
+#        # Does this need to be on its own? I'm leaving it as an example for myself.
+#        if isinstance(error, commands.MissingRequiredArgument):
+#            await ctx.send('Not enough arguments supplied.')
+#        else:
+#            raise error
 
     @commands.command()
     async def renamebot(self, ctx, name: str):
