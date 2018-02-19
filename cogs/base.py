@@ -11,6 +11,23 @@ class Base:
     def __init__(self, bot):
         self.bot = bot
 
+    async def on_ready(self):
+
+        for extension in misc.other_extensions:
+            try:
+                self.bot.load_extension(extension)
+            except Exception as e:
+                log = self.bot.get_cog('cogs.logs')
+                if log is not None:
+                    log.log('Failed to load extension {}.'.format(extension))
+                else:
+                    print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
+                print(e)
+
+        game = discord.Game(type=1, name="debug mode")
+        await self.bot.change_presence(game=game)
+
+    @staticmethod
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.errors.CommandNotFound):
             return
