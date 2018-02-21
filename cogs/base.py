@@ -28,7 +28,7 @@ class Base:
         await self.bot.change_presence(game=game)
 
     @staticmethod
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(ctx, error):
         if isinstance(error, commands.errors.CommandNotFound):
             return
 
