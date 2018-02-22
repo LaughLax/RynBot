@@ -24,7 +24,7 @@ class Base:
                     print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
                 print(e)
 
-        game = discord.Game(type=1, name="debug mode")
+        game = discord.Game(type=3, name="grass grow")
         await self.bot.change_presence(game=game)
 
     @staticmethod
