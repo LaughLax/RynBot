@@ -32,6 +32,7 @@ class Base:
         if isinstance(error, commands.errors.CommandNotFound):
             return
 
+        # Add a reaction to show it failed, if allowed
         try:
             await ctx.message.add_reaction(u'\u274C')
         except discord.errors.Forbidden:
@@ -41,7 +42,12 @@ class Base:
             await ctx.send("Insufficient arguments. Use `_help [command]` for more info.")
             return
 
+        # If it's an unhandled error, print to console
         print(ctx.message.content, file=sys.stderr)
+        if isinstance(error, discord.errors.Forbidden):
+            print('"Forbidden" error!\nResponse:\n{0.response}\nText:\n{0.text}\nStatus: {0.status}\nCode: {0.code}'.format(error), file=sys.stderr)
+            pass
+
         raise error
 
     @commands.command(hidden=True)
