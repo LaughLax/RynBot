@@ -20,7 +20,8 @@ base_extensions = ['cogs.base',
 other_extensions = ['cogs.chart',
                     'cogs.my_server',
                     'cogs.server',
-                    'cogs.stars']
+                    'cogs.stars',
+                    'cogs.polls']
 
 
 def is_ryn():
