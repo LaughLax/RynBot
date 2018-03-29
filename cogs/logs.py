@@ -40,7 +40,7 @@ class Logs:
 
     async def on_message_delete(self, message):
         if message.guild.id == misc.ryn_server_id:
-            content = '{} deleted message in {}'.format(message.author.mention, message.channel.mention)
+            content = 'Message by {} deleted in {}'.format(message.author.mention, message.channel.mention)
 
             embed = misc.embedify_message(message)
 

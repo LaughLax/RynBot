@@ -1,4 +1,5 @@
 from discord.ext import commands
+from util import misc
 
 
 class MyServer:
@@ -7,7 +8,7 @@ class MyServer:
         self.bot = bot
 
     def __local_check(self, ctx):
-        return ctx.guild is not None and ctx.guild.id == 329681826618671104
+        return ctx.guild is not None and ctx.guild.id == misc.ryn_server_id
 
     def _get_role_id(self, name: str):
         return {
