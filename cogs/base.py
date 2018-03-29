@@ -48,6 +48,11 @@ class Base:
             print('"Forbidden" error!\nResponse:\n{0.response}\nText:\n{0.text}\nStatus: {0.status}\nCode: {0.code}'.format(error), file=sys.stderr)
             pass
 
+        if isinstance(error, commands.CommandInvokeError):
+            if isinstance(error.original, discord.errors.Forbidden):
+                print('"Forbidden" error!\nResponse:\n{0.response}\nText:\n{0.text}\nStatus: {0.status}\nCode: {0.code}'.format(error), file=sys.stderr)
+                pass
+
         raise error
 
     @commands.command(hidden=True)
