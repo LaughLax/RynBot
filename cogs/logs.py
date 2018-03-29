@@ -36,7 +36,7 @@ class Logs:
 #           isinstance(error, commands.errors.MissingRequiredArgument)):
 #            return
 #
-#        self.log(ctx.message.content)
+#        await self.log(ctx.message.content)
 
     async def on_message_delete(self, message):
         if message.guild.id == misc.ryn_server_id:
@@ -54,11 +54,11 @@ class Logs:
 
     async def on_member_join(self, member):
         if member.guild.id == misc.ryn_server_id:
-            self.log("<@{}> joined!".format(member.id))
+            await self.log("<@{}> joined!".format(member.id))
 
     async def on_member_remove(self, member):
         if member.guild.id == misc.ryn_server_id:
-            self.log("<@{}> left.".format(member.id))
+            await self.log("<@{}> left.".format(member.id))
 
 #    async def on_member_update(self, before, after):
 #        pass

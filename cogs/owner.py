@@ -101,22 +101,20 @@ class Owner:
 
         Run the specified git command on the server and display the result."""
 
-        paginator_stdout = commands.Paginator(prefix="```\nSTDOUT\n\n")
-        paginator_stderr = commands.Paginator(prefix="```\nSTDERR\n\n")
+        paginator = commands.Paginator()
 
         stream = subprocess.run(['git {}'.format(args)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
+            paginator.add_line("STDOUT:")
             for line in str(stream.stdout.decode('utf-8')).split('\n'):
-                paginator_stdout.add_line(line)
+                paginator.add_line(line)
 
         if stream.stderr is not None:
+            paginator.add_line("\nSTDERR:")
             for line in str(stream.stderr.decode('utf-8')).split('\n'):
-                paginator_stderr.add_line(line)
+                paginator.add_line(line)
 
-        for p in paginator_stdout.pages:
-            await ctx.send(p)
-
-        for p in paginator_stderr.pages:
+        for p in paginator.pages:
             await ctx.send(p)
 
         """
