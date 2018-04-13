@@ -114,7 +114,7 @@ class Polls:
                 # else:
                     # embed.add_field(name='Attachment', value='[{}]({})'.format(file.filename, file.url), inline=False)
 
-            embed.set_image(url='http://laughlax.us.to/poll_results_{}.png'.format(message_id))
+            embed.set_image(url='http://laughlax.us.to/RynBot/poll_results_{}.png'.format(message_id))
             embed.set_author(name=self.bot.user.display_name, icon_url=self.bot.user.avatar_url_as(format='png'))
             # embed.timestamp = message.created_at
             embed.colour = 0xff0000
