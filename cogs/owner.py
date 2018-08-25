@@ -331,7 +331,11 @@ class Owner:
     @commands.command()
     async def profile(self, ctx, *, cmd):
         # TODO this next line causes an error if it's profiling a zero-arg command (ie `profile channels`)
-        [cmd_string, args] = cmd.split(maxsplit=1)
+        try:
+            [cmd_string, args] = cmd.split(maxsplit=1)
+        except ValueError:
+            cmd_string = cmd
+            args = ''
         while isinstance(self.bot.get_command(cmd_string), commands.Group):
             splat = args.split(maxsplit=1)
             cmd_string += ' ' + splat[0]
