@@ -102,7 +102,7 @@ class Owner:
         Run the specified git command on the server and display the result."""
 
         paginator = commands.Paginator()
-        paginator.prefix = '```git'
+        paginator.prefix = '```diff'
 
         stream = subprocess.run(['git {}'.format(args)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
