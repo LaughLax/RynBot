@@ -12,8 +12,8 @@ class MyServer:
 
     def _get_role_id(self, name: str):
         return {
-            'LDSG': '357912587498946560'
-        }.get(name)
+            'ldsg': '357912587498946560'
+        }.get(name.lower())
 
     @commands.command(aliases=['iam', 'gibme', 'gimme'])
     async def giveme(self, ctx, *, i_want: str):
