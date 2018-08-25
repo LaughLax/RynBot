@@ -102,7 +102,6 @@ class Owner:
         Run the specified git command on the server and display the result."""
 
         paginator = commands.Paginator()
-        paginator.prefix = '```diff'
 
         stream = subprocess.run(['git {}'.format(args)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
@@ -394,6 +393,33 @@ class Owner:
                     await ctx.send(p)
         else:
             await ctx.send("The ID of user `{}` is `{}`.".format(name, users.id))
+
+    @commands.command()
+    async def user_servers(self, ctx, user_id: int):
+        user_guilds = []
+        for g in self.bot.guilds:
+            if g.get_member(user_id):
+                user_guilds.append(g)
+
+
+        if not user_guilds:
+            await ctx.send('I have no servers in common with that user.')
+            return
+
+        paginator = commands.Paginator()
+        paginator.add_line("User with ID {} is in {} servers with me.\n".format(user_id, len(user_guilds)))
+
+        max_name_length = len(max(user_guilds, key=lambda g: len(g.name)).name)
+
+        for g in user_guilds:
+            mem = g.get_member(user_id)
+            nick = mem.nick
+            if not nick:
+                nick =  mem.name
+            paginator.add_line("{0.name:<{n_len}} | ({n})".format(g, n_len=max_name_length, n=nick))
+
+        for p in paginator.pages:
+            await ctx.send(p)
 
     @commands.command(aliases=['msg'])
     async def message(self, ctx, user_id: int = None, *, message: str = None):
