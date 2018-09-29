@@ -54,11 +54,11 @@ class Logs:
 
     async def on_member_join(self, member):
         if member.guild.id == misc.ryn_server_id:
-            await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}`) left.".format(member))
+            await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}`) joined.".format(member))
 
     async def on_member_remove(self, member):
         if member.guild.id == misc.ryn_server_id:
-            await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}` left.".format(member))
+            await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}`) left.".format(member))
 
 #    async def on_member_update(self, before, after):
 #        pass
