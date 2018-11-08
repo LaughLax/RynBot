@@ -38,6 +38,7 @@ class Logs:
 #
 #        await self.log(ctx.message.content)
 
+    '''
     async def on_message_delete(self, message):
         if message.guild.id == misc.ryn_server_id:
             content = 'Message by {} deleted in {}'.format(message.author.mention, message.channel.mention)
@@ -51,6 +52,7 @@ class Logs:
             else:
                 print("While trying to log a deleted message, could not reach the #logs channel.")
         pass
+    '''
 
     async def on_member_join(self, member):
         if member.guild.id == misc.ryn_server_id:
