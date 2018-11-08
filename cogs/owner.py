@@ -501,10 +501,10 @@ class Owner:
 
         fn_name = "_eval_expr"
 
-        cmd = cmd.strip("` ")
+        cmd_orig = cmd.strip("` ")
 
         # add a layer of indentation
-        cmd = "\n".join("\t{}".format(i) for i in cmd.splitlines())
+        cmd = "\n".join("\t{}".format(i) for i in cmd_orig.splitlines())
 
         # wrap in async def body
         body = "async def {}():\n{}".format(fn_name, cmd)
@@ -523,15 +523,15 @@ class Owner:
         }
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
 
-        result = (await eval("{}()".format(fn_name), env))
+        result = str(await eval("{}()".format(fn_name), env))
 
         embed = discord.Embed()
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url_as(format='png'))
         embed.timestamp = ctx.message.created_at
         embed.colour = 0xff0000
 
-        embed.add_field(name='Code', value=cmd, inline=False)
-        embed.add_field(name='Result', value=result, inline=False)
+        embed.add_field(name='Code', value=('```python\n' + cmd_orig + '```'), inline=False)
+        embed.add_field(name='Result', value=('```\n' + result + '```'), inline=False)
         
         await ctx.send(embed=embed)
 
