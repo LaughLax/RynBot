@@ -33,7 +33,7 @@ class MyServer:
         else:
             await ctx.message.add_reaction(u'\U0001F44E')
 
-    @commands.command(aliases='civil')
+    @commands.command(aliases=['civil'])
     async def burnitdown(self, ctx):
         msg = await ctx.send('''Wow great discussion 
         *locks channel*
