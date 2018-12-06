@@ -33,6 +33,16 @@ class MyServer:
         else:
             await ctx.message.add_reaction(u'\U0001F44E')
 
+    @commands.command(aliases='civil')
+    async def burnitdown(self, ctx):
+        msg = await ctx.send('''Wow great discussion 
+        *locks channel*
+        Very civil
+        *bans everyone*
+        Lots of fun
+        *burns server to the ground*''')
+        msg.add_reaction('🔥')
+
 
 def setup(bot):
     bot.add_cog(MyServer(bot))
