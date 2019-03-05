@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-class Server:
+class Server(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -12,8 +12,8 @@ class Server:
         if game_title is not None:
             users = []
             for a in ctx.guild.members:
-                if a.game is not None and a.game.name is not None:
-                    if a.game.name.lower() == game_title.lower():
+                if a.activity is not None and a.activity.type == discord.ActivityType.playing and a.activity.name is not None:
+                    if a.activity.name.lower() == game_title.lower():
                         users.append(a.name)
             if len(users) == 0:
                 await ctx.send("No users found playing {}.".format(game_title))
@@ -98,11 +98,12 @@ class Server:
         title = "Server: {0.name} (ID {0.id})".format(server)
 
         role_list = []
-        for a in server.role_hierarchy:
+        for a in server.roles:
             if not a.is_default():
                 role_list.append(a.name)
+        role_list.reverse()
 
-        display_size = 80
+        display_size = 60
         num_segments = int(len(role_list)/display_size) + 1
         for b in range(num_segments):
             embed = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
@@ -131,7 +132,7 @@ class Server:
 
         streamers = []
         for a in server.members:
-            if a.game is not None and a.game.type == 1:
+            if a.activity is not None and a.activity.type == discord.ActivityType.streaming:
                 streamers.append(a)
 
         streamers.sort(key=lambda mem: mem.display_name)
@@ -144,10 +145,10 @@ class Server:
                     em = discord.Embed(title="Members Streaming (Server: {})".format(server.name), color=0xff0000, timestamp=ctx.message.created_at)
                     em.set_thumbnail(url=server.icon_url)
                     for a in streamers[b*display_size:(b+1)*display_size-1]:
-                        if a.game.url is not None:
-                            em.add_field(name=a.display_name, value="[{}]({})".format(a.game.name, a.game.url))
+                        if a.url is not None:
+                            em.add_field(name=a.display_name, value="[{}]({})".format(a.activity.name, a.activity.url))
                         else:
-                            em.add_field(name=a.display_name, value="{}".format(a.game.name))
+                            em.add_field(name=a.display_name, value="{}".format(a.activity.name))
                     em.set_footer(text="Page {}/{}".format(b+1, num_segments))
                     await ctx.send(embed=em)
             else:

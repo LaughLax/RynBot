@@ -7,7 +7,7 @@ class StarError(commands.CheckFailure):
     pass
 
 
-class Stars:
+class Stars(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -18,7 +18,9 @@ class Stars:
         else:
             return self.bot.get_channel(misc.pub_starboard_id)
 
-    async def on_raw_reaction_add(self, emoji, message_id, channel_id, user_id):
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, pl):
+        [emoji, user_id, channel_id, message_id] = [pl.emoji, pl.user_id, pl.channel_id, pl.message_id]
         if self.bot.user.id == user_id:
             if user_id == misc.ryn_id and channel_id != misc.ryn_starboard_id:
                 await self.reaction_action('_star', emoji, message_id, channel_id, user_id)

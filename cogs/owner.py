@@ -9,12 +9,12 @@ import io
 import math
 
 
-class Owner:
+class Owner(commands.Cog):
     """Commands for Ryn's use. Attempts by others will be logged."""
     def __init__(self, bot):
         self.bot = bot
 
-    def __local_check(self, ctx):
+    def cog_check(self, ctx):
         """Check to see if Ryn issued the command."""
         is_ryn = ctx.message.author.id == misc.ryn_id
         if not is_ryn and not ctx.invoked_with == "help":
@@ -282,11 +282,12 @@ class Owner:
         title = "Server: {0.name} (ID {0.id})".format(server)
 
         role_list = []
-        for a in server.role_hierarchy:
+        for a in server.roles:
             if not a.is_default():
                 role_list.append("({:d}) {}".format(len(a.members), a.name))
+        role_list.reverse()
 
-        display_size = 80
+        display_size = 60
         num_segments = int(len(role_list)/display_size) + 1
         for b in range(num_segments):
             embed = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
@@ -405,7 +406,6 @@ class Owner:
         for g in self.bot.guilds:
             if g.get_member(user_id):
                 user_guilds.append(g)
-
 
         if not user_guilds:
             await ctx.send('I have no servers in common with that user.')

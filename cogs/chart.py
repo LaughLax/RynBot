@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
-class Chart:
+class Chart(commands.Cog):
     """Commands to make charts"""
 
     def __init__(self, bot):
@@ -45,12 +45,12 @@ class Chart:
         game_names = []
         game_count = []
         for a in server.members:
-            if not a.bot and a.game is not None and a.game.type == 0:
-                if a.game.name not in game_names:
-                    game_names.append(a.game.name)
+            if not a.bot and a.activity is not None and a.activity.type == discord.ActivityType.playing:
+                if a.activity.name not in game_names:
+                    game_names.append(a.activity.name)
                     game_count.append(1)
                 else:
-                    game_count[game_names.index(a.game.name)] += 1
+                    game_count[game_names.index(a.activity.name)] += 1
 
         cutoff = 0
         while len(game_names) > 50:
@@ -97,12 +97,12 @@ class Chart:
         game_names = []
         game_count = []
         for a in server.members:
-            if not a.bot and a.game is not None and a.game.type == 0:
-                if a.game.name not in game_names:
-                    game_names.append(a.game.name)
+            if not a.bot and a.activity is not None and a.activity.type == discord.ActivityType.playing:
+                if a.activity.name not in game_names:
+                    game_names.append(a.activity.name)
                     game_count.append(1)
                 else:
-                    game_count[game_names.index(a.game.name)] += 1
+                    game_count[game_names.index(a.activity.name)] += 1
 
         cutoff = 0
         other_count = 0
@@ -149,7 +149,8 @@ class Chart:
                 await ctx.send("I'm not in that server.")
                 return
 
-        role_list = [a for a in server.role_hierarchy if not a.is_default()]
+        role_list = [a for a in server.roles if not a.is_default()]
+        role_list.reverse()
         role_size = [len(a.members) for a in role_list]
         role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
 

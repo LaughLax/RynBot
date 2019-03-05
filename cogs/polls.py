@@ -38,8 +38,7 @@ class ActivePoll:
         return totals
 
 
-
-class Polls:
+class Polls(commands.Cog):
     """Poll commands, for Ryn's server only"""
 
     vote_emojis = {'\U00000031\U000020e3': 0,
@@ -59,20 +58,24 @@ class Polls:
         self.bot = bot
         self.active_polls = dict()
 
-    def __local_check(self, ctx):
+    def cog_check(self, ctx):
         return ctx.guild is not None and ctx.guild.id == misc.ryn_server_id
 
-    async def on_raw_reaction_add(self, emoji, message_id, channel_id, user_id):
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, pl):
+        [emoji, message_id, user_id] = [pl.emoji, pl.message_id, pl.user_id]
         if message_id in self.active_polls:
             this_poll = self.active_polls.get(message_id)
             if str(emoji.name) in self.vote_emojis and self.vote_emojis[str(emoji.name)] + 1 <= len(this_poll.options):
                 this_poll.add_vote(user_id, self.vote_emojis[emoji.name])
                 # self.reaction_action(self, "_vote", emoji, message_id, channel_id, user_id)
             elif str(emoji) in self.control_emojis and this_poll.creator_id == user_id:
-                await self.control_poll(emoji, message_id, channel_id, user_id)
+                await self.control_poll(emoji, message_id, pl.channel_id)
         pass
 
-    async def on_raw_reaction_remove(self, emoji, message_id, channel_id, user_id):
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, pl):
+        [emoji, message_id, user_id] = [pl.emoji, pl.message_id, pl.user_id]
         if message_id in self.active_polls:
             this_poll = self.active_polls.get(message_id)
             if str(emoji.name) in self.vote_emojis and self.vote_emojis[str(emoji.name)] + 1 <= len(this_poll.options) and user_id in this_poll.votes:
@@ -80,7 +83,7 @@ class Polls:
                 # self.reaction_action(self, "_unvote", emoji, message_id, channel_id, user_id)
         pass
 
-    async def control_poll(self, emoji, message_id, channel_id, user_id):
+    async def control_poll(self, emoji, message_id, channel_id):
         if str(emoji.name) in self.control_emojis and self.control_emojis[str(emoji.name)] == "stop":
             await self.end_poll(channel_id, message_id)
 

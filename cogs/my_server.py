@@ -2,12 +2,12 @@ from discord.ext import commands
 from util import misc
 
 
-class MyServer:
+class MyServer(commands.Cog):
     """Commands exclusively for Ryn's server"""
     def __init__(self, bot):
         self.bot = bot
 
-    def __local_check(self, ctx):
+    def cog_check(self, ctx):
         return ctx.guild is not None and ctx.guild.id == misc.ryn_server_id
 
     def _get_role_id(self, name: str):
@@ -36,12 +36,12 @@ class MyServer:
     @commands.command(aliases=['civil'])
     async def burnitdown(self, ctx):
         msg = await ctx.send('''Wow great discussion 
-        *locks channel*
-        Very civil
-        *bans everyone*
-        Lots of fun
-        *burns server to the ground*''')
-        msg.add_reaction('🔥')
+*locks channel*
+Very civil
+*bans everyone*
+Lots of fun
+*burns server to the ground*''')
+        await msg.add_reaction('🔥')
 
 
 def setup(bot):

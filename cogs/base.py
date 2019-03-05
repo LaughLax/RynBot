@@ -5,12 +5,13 @@ import sys
 from util import misc
 
 
-class Base:
+class Base(commands.Cog):
     """Basic-level commands"""
 
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener()
     async def on_ready(self):
 
         for extension in misc.other_extensions:
@@ -25,10 +26,10 @@ class Base:
                 print(e)
 
         game = discord.Game(type=3, name="grass grow")
-        await self.bot.change_presence(game=game)
+        await self.bot.change_presence(activity=game)
 
-    @staticmethod
-    async def on_command_error(ctx, error):
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
         if isinstance(error, commands.errors.CommandNotFound):
             return
 
@@ -102,15 +103,16 @@ class Base:
         voice_state = None if not user.voice else user.voice.channel
         em = discord.Embed(timestamp=ctx.message.created_at, colour=0xff0000)
         em.add_field(name='User ID', value=user.id, inline=True)
-        em.add_field(name='Nick', value=user.nick, inline=True)
-        em.add_field(name='Status', value=user.status, inline=True)
-        em.add_field(name='In Voice', value=voice_state, inline=True)
-        em.add_field(name='Game', value=user.game, inline=True)
-        em.add_field(name='Highest Role', value=role, inline=True)
+        if isinstance(user, discord.Member):
+            em.add_field(name='Nick', value=user.nick, inline=True)
+            em.add_field(name='Status', value=user.status, inline=True)
+            em.add_field(name='In Voice', value=voice_state, inline=True)
+            em.add_field(name='Game', value=user.activity.name if user.activity else None, inline=True)
+            em.add_field(name='Highest Role', value=role, inline=True)
         em.add_field(name='Account Created', value=user.created_at.__format__('%A, %d. %B %Y @ %H:%M:%S'))
         em.add_field(name='Join Date', value=user.joined_at.__format__('%A, %d. %B %Y @ %H:%M:%S'))
         em.set_thumbnail(url=avi)
-        em.set_author(name=user, icon_url='https://i.imgur.com/RHagTDg.png')
+        em.set_author(name=user, icon_url='https://cdn.discordapp.com/avatars/185095270986547200/e3d2e0cbfe668125f3f4a20356095e16.png?size=1024')
         await ctx.send(embed=em)
 
         if ctx.me.permissions_in(ctx.channel).manage_messages:
