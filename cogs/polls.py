@@ -103,6 +103,7 @@ class Polls(commands.Cog):
             plt.tight_layout()
 
             plt.savefig('/var/www/html/RynBot/poll_results_{}.png'.format(message_id), format='png')
+            plt.close()
 
             embed = discord.Embed(description="Poll closed.")
             # if message.embeds:

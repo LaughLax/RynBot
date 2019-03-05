@@ -76,6 +76,7 @@ class Chart(commands.Cog):
             with io.BytesIO() as f:
                 plt.savefig(f, format='png')
                 await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
+                plt.close()
         except ValueError:
             await ctx.send("Something went wrong with fitting the graph to scale.")
 
@@ -122,15 +123,16 @@ class Chart(commands.Cog):
         # game_names, game_count = zip(*sorted(zip(game_names, game_count)))
 
         plt.clf()
-        patches, texts = plt.pie(game_count, labels=game_names, shadow=True)
+        patches, texts = plt.pie(game_count, labels=game_names, labeldistance=0.9, shadow=True)
         # for t in texts:
-        # t.set_size('x-small')
+        #     t.set_size('x-small')
         plt.title("Games being played on server:\n{}".format(server.name))
         plt.axis('scaled')
 
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
             await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
+            plt.close()
 
     @chart.command()
     async def roles(self, ctx, server_id: str = None):
@@ -165,6 +167,7 @@ class Chart(commands.Cog):
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
             await ctx.send(file=discord.File(fp=f.getbuffer(), filename="rolechart.png"))
+            plt.close()
 
     @chart.command()
     async def users(self, ctx, server_id: str = None):
@@ -208,6 +211,7 @@ class Chart(commands.Cog):
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
             await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
+            plt.close()
 
     # @chart.command()
     # async def nothing(self, ctx):
