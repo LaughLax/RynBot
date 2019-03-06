@@ -15,7 +15,7 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         try:
-            self.db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysql/mysqld.sock', host='localhost', database='rynbot')
+            self.db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysqld/mysqld.sock', host='localhost', database='rynbot')
         except mysql.connector.Error as err:
             print(err)
             raise err
