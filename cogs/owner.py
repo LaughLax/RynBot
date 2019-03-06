@@ -14,7 +14,11 @@ class Owner(commands.Cog):
     """Commands for Ryn's use. Attempts by others will be logged."""
     def __init__(self, bot):
         self.bot = bot
-        self.db = mysql.connector.connect(host='localhost', database='rynbot')
+        try:
+            self.db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysql/mysqld.sock', host='localhost', database='rynbot')
+        except mysql.connector.Error as err:
+            print(err)
+            raise err
 
     def cog_unload(self):
         self.db.close()
@@ -540,15 +544,18 @@ class Owner(commands.Cog):
         
         await ctx.send(embed=embed)
 
-
+    @commands.command()
     async def sql(self, ctx, *, cmd):
         cur = self.db.cursor()
         try:
             res = cur.execute(cmd)
             await ctx.send(res)
+            print(res)
         except mysql.connector.Error as err:
             await ctx.send(err)
+            print(err)
 
+        cur.close()
 
 
 def setup(bot):
