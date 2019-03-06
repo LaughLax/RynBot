@@ -548,14 +548,15 @@ class Owner(commands.Cog):
     async def sql(self, ctx, *, cmd):
         cur = self.db.cursor()
         try:
-            res = cur.execute(cmd)
+            cur.execute(cmd)
+            res = cur.fetchall()
             await ctx.send(res)
-            print(res)
         except mysql.connector.Error as err:
             await ctx.send(err)
             print(err)
 
         cur.close()
+        self.db.commit()
 
 
 def setup(bot):
