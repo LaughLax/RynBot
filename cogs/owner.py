@@ -7,12 +7,17 @@ import cProfile
 import pstats
 import io
 import math
+import mysql.connector
 
 
 class Owner(commands.Cog):
     """Commands for Ryn's use. Attempts by others will be logged."""
     def __init__(self, bot):
         self.bot = bot
+        self.db = mysql.connector.connect(host='localhost', database='rynbot')
+
+    def cog_unload(self):
+        self.db.close()
 
     def cog_check(self, ctx):
         """Check to see if Ryn issued the command."""
@@ -534,6 +539,16 @@ class Owner(commands.Cog):
         embed.add_field(name='Result', value=('```\n' + result + '```'), inline=False)
         
         await ctx.send(embed=embed)
+
+
+    async def sql(self, ctx, *, cmd):
+        cur = self.db.cursor()
+        try:
+            res = cur.execute(cmd)
+            await ctx.send(res)
+        except mysql.connector.Error as err:
+            await ctx.send(err)
+
 
 
 def setup(bot):
