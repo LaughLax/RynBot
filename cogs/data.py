@@ -74,6 +74,8 @@ class Data(commands.Cog):
     async def population(self, ctx, server=None):
         if not server or ctx.message.author.id != misc.ryn_id:
             server = ctx.guild
+        else:
+            server = self.bot.get_guild(int(server))
 
         self.open_db()
         cur = self.db.cursor()
