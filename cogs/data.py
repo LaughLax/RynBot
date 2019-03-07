@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+from util import misc
+
 from datetime import datetime
 from tzlocal import get_localzone
 
@@ -69,10 +71,13 @@ class Data(commands.Cog):
         pass
 
     @data.command()
-    async def population(self, ctx):
+    async def population(self, ctx, server=None):
+        if not server or ctx.message.author.id != misc.ryn_id:
+            server = ctx.guild
+
         self.open_db()
         cur = self.db.cursor()
-        cur.execute('SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s', (int(ctx.guild.id),))
+        cur.execute('SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s', (server.id,))
         rows = np.array(cur.fetchall())
         cur.close()
         self.close_db()
