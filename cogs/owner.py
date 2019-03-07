@@ -67,7 +67,7 @@ class Owner(commands.Cog):
 
         await ctx.send('Reload operation successful.')
 
-    @cog.command()
+    @cog.command(aliases=['show'])
     async def list(self, ctx):
         """Lists all cogs currently loaded."""
         paginator = commands.Paginator()
@@ -159,11 +159,13 @@ class Owner(commands.Cog):
     async def reboot(self, ctx):
         """Reboot the server running RynBot"""
 
+        await ctx.send('Going down, be back soon!')
         subprocess.run(['reboot'], shell=True)
 
     @commands.command()
     async def quit(self, ctx):
         """Log out and terminate the bot process"""
+        await ctx.send('No, please don\'t kill me!')
         await self.bot.logout()
 
     @commands.group(hidden=True)
