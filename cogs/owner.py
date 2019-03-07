@@ -337,8 +337,14 @@ class Owner(commands.Cog):
     @commands.command()
     async def status(self, ctx, status_type: int, *, text):
         """Set the bot's presence"""
-        game = discord.Game(type=status_type, name=text)
-        await self.bot.change_presence(game=game)
+        tp = {
+            0: discord.ActivityType.playing,
+            1: discord.ActivityType.streaming,
+            2: discord.ActivityType.watching,
+            3: discord.ActivityType.listening,
+        }.get(status_type)
+        game = discord.Activity(type=tp, name=text)
+        await self.bot.change_presence(activity=game)
 
     @commands.command()
     async def profile(self, ctx, *, cmd):
