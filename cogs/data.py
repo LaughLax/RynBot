@@ -78,7 +78,7 @@ class Data(commands.Cog):
         self.close_db()
 
         plt.clf()
-        plt.plot(rows[0,:], rows[1,:])
+        plt.plot(rows[:,0], rows[:,1])
         plt.xticks(rotation=45)
         plt.xlabel("Date")
         plt.ylabel("Member count")
