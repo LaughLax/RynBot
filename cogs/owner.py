@@ -549,7 +549,7 @@ class Owner(commands.Cog):
     async def sql(self, ctx, *, cmd):
         cur = self.db.cursor()
         try:
-            cur.execute(cmd)
+            cur.execute(cmd, multi=';' in cmd)
             res = cur.fetchall()
             await ctx.send(res)
         except mysql.connector.Error as err:

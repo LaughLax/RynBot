@@ -57,7 +57,7 @@ class Data(commands.Cog):
                                  server.member_count))
                 self.open_db()
                 cur = self.db.cursor()
-                cur.executemany("INSERT INTO server_pop_temp (Server, Datetime, UserCount) VALUES (%s, %s, %s)", rows)
+                cur.executemany('INSERT INTO server_pop_temp (Server, Datetime, UserCount) VALUES (%s, %s, %s)', rows)
                 self.db.commit()
                 cur.close()
                 self.close_db()
@@ -72,7 +72,7 @@ class Data(commands.Cog):
     async def population(self, ctx):
         self.open_db()
         cur = self.db.cursor()
-        cur.execute("SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s", ctx.guild.id)
+        cur.execute('SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s', ctx.guild.id)
         rows = np.array(cur.fetchall())
         cur.close()
         self.close_db()
