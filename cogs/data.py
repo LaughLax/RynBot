@@ -59,7 +59,7 @@ class Data(commands.Cog):
                                  server.member_count))
                 self.open_db()
                 cur = self.db.cursor()
-                cur.executemany('INSERT INTO server_pop_temp (Server, Datetime, UserCount) VALUES (%s, %s, %s)', rows)
+                cur.executemany('INSERT IGNORE INTO server_pop_temp (Server, Datetime, UserCount) VALUES (%s, %s, %s)', rows)
                 self.db.commit()
                 cur.close()
                 self.close_db()
