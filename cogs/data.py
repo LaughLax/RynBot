@@ -50,3 +50,7 @@ class Data(commands.Cog):
                 self.close_db()
                 last_hour = now.hour
             await asyncio.sleep(60 * 10)
+
+
+def setup(bot):
+    bot.add_cog(Data(bot))
