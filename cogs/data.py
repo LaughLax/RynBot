@@ -42,6 +42,7 @@ class Data(commands.Cog):
             self.processes_using_db -= 1
             if self.processes_using_db == 0:
                 self.db.close()
+                self.db = None
 
     async def hourly_pop_check(self):
         await self.bot.wait_until_ready()
@@ -73,6 +74,8 @@ class Data(commands.Cog):
         cur = self.db.cursor()
         cur.execute("SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s", ctx.guild.id)
         rows = np.array(cur.fetchall())
+        cur.close()
+        self.close_db()
 
         plt.clf()
         plt.plot(rows[0,:], rows[1,:])
