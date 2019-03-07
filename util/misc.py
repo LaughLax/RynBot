@@ -18,6 +18,7 @@ base_extensions = ['cogs.base',
                    'cogs.logs']
 
 other_extensions = ['cogs.chart',
+                    'cogs.data',
                     'cogs.my_server',
                     'cogs.server',
                     'cogs.stars',
