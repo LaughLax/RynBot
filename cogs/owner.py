@@ -17,6 +17,7 @@ class Owner(commands.Cog):
         try:
             self.db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysqld/mysqld.sock', host='localhost', database='rynbot')
         except mysql.connector.Error as err:
+            self.db = None
             print(err)
             raise err
 
