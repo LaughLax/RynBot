@@ -89,7 +89,7 @@ class Data(commands.Cog):
         plt.xticks(rotation=45)
         plt.xlabel("Date")
         plt.ylabel("Member count")
-        plt.title("Membership growth for server: {0.name}".format(ctx.guild))
+        plt.title("Membership growth for server: {0.name}".format(server))
         plt.tight_layout()
 
         with io.BytesIO() as f:
