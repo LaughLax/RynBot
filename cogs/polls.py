@@ -58,9 +58,6 @@ class Polls(commands.Cog):
         self.bot = bot
         self.active_polls = dict()
 
-    def cog_check(self, ctx):
-        return ctx.guild is not None and ctx.guild.id == misc.ryn_server_id
-
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, pl):
         [emoji, message_id, user_id] = [pl.emoji, pl.message_id, pl.user_id]
