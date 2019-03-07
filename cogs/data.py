@@ -1,8 +1,16 @@
+import discord
 from discord.ext import commands
 from datetime import datetime
 from tzlocal import get_localzone
+
 import mysql.connector
 import asyncio
+
+import numpy as np
+import io
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 
 class Data(commands.Cog):
@@ -10,6 +18,7 @@ class Data(commands.Cog):
         self.bot = bot
 
         self.db = None
+        self.processes_using_db = 0
 
         self.hourly_check_task = self.bot.loop.create_task(self.hourly_pop_check())
 
@@ -21,6 +30,7 @@ class Data(commands.Cog):
         if not self.db:
             try:
                 self.db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysqld/mysqld.sock', host='localhost', database='rynbot')
+                self.processes_using_db += 1
             except mysql.connector.Error as err:
                 self.db = None
                 print(err)
@@ -29,7 +39,9 @@ class Data(commands.Cog):
 
     def close_db(self):
         if self.db:
-            self.db.close()
+            self.processes_using_db -= 1
+            if self.processes_using_db == 0:
+                self.db.close()
 
     async def hourly_pop_check(self):
         await self.bot.wait_until_ready()
@@ -50,6 +62,30 @@ class Data(commands.Cog):
                 self.close_db()
                 last_hour = now.hour
             await asyncio.sleep(60 * 10)
+
+    @commands.group()
+    async def data(self, ctx):
+        pass
+
+    @data.command()
+    async def population(self, ctx):
+        self.open_db()
+        cur = self.db.cursor()
+        cur.execute("SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s", ctx.guild.id)
+        rows = np.array(cur.fetchall())
+
+        plt.clf()
+        plt.plot(rows[0,:], rows[1,:])
+        plt.xticks(rotation=45)
+        plt.xlabel("Date")
+        plt.ylabel("Member count")
+        plt.title("Membership growth for server: {0.name}".format(ctx.guild))
+        plt.tight_layout()
+
+        with io.BytesIO() as f:
+            plt.savefig(f, format='png')
+            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
+        plt.close()
 
 
 def setup(bot):
