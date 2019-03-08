@@ -25,7 +25,7 @@ class Data(commands.Cog):
         self.hourly_check_task = self.bot.loop.create_task(self.hourly_pop_check())
 
     def cog_unload(self):
-        self.close_db()
+        self.force_db_close()
         self.hourly_check_task.cancel()
 
     def open_db(self):
@@ -45,6 +45,10 @@ class Data(commands.Cog):
             if self.processes_using_db == 0:
                 self.db.close()
                 self.db = None
+
+    def force_db_close(self):
+        if self.db:
+            self.db.close()
 
     async def hourly_pop_check(self):
         await self.bot.wait_until_ready()
