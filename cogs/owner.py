@@ -552,7 +552,7 @@ class Owner(commands.Cog):
             print(err)
             raise err
         
-        db.cursor()
+        cur = db.cursor()
         try:
             cur.execute(cmd, multi=';' in cmd)
             res = cur.fetchall()
