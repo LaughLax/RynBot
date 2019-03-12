@@ -327,6 +327,37 @@ class Owner(commands.Cog):
         await ctx.message.delete()
         await ctx.send("", embed=em)
 
+    @commands.command(name='sans')
+    async def ascii_sans(self, ctx):
+        string = '''.                        ⠠⠤⠶⠶⠶⠶⠶⠶⠤⠄
+⠀⠀⠀⠀⠀⠀⠀⠠⠾⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠷⠄
+⠀⠀⠀⠀⠀⠀⠠⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠄
+⠀⠀⠀⠀⠀⠀⠸⠿⠛⠉⠉⠉⠻⠿⠿⠟⠉⠉⠉⠛⠿⠇
+⠀⠀⠀⠀⠀⠀⠸⠇⠀⠀⠶⠀⠸⠿⠿⠇     :large_blue_circle:  ⠸⠇
+⠀⠀⠀⠀⠀⠀⠀⠻⠶⠤⠤⠠⠿⠃⠘⠿⠄⠤⠤⠶⠟
+⠀⠀⠀⠀⠀⠀⠀⠾⠿⠙⠶⠿⠿⠤⠤⠿⠿⠶⠏⠻⠷
+⠀⠀⠀⠀⠀⠀⠀⠻⠶⠜⠰⠭⠩⠍⠭⠍⠭⠱⠠⠶⠟
+⠀⠀⠀⠀⠠⠶⠦⠈⠻⠿⠶⠭⠘⠃⠛⠃⠫⠴⠿⠟⠡⠾⠟⠂
+⠀⠀⠀⠀⠊⠉⠛⠳⠦⠈⠉⠛⠛⠛⠛⠛⠛⠉⠁⠠⠿⠋⠀⠱⠄
+⠀⠀⠀⠔⠀⠀⠄⠀⠉⠳⠦⠄⠳⠶⠶⠃⠠⠤⠞⠛⠁⠠⠂⠀⠙⠄
+⠀⠀⠎⠀⠀⠀⠇⠀⠀⠸⠀⠏⠠⠭⠍⠈⠏⠇⠀⠀⠀⠼⠀⠀⠀⠙⠆
+⠀⠼⠀⠀⠀⠀⠷⠔⠒⠚⠍⠣⠸⠿⠿⠸⠋⠇⠠⠴⠚⠹⠀⠀⠀⠀⠻
+⠀⠻⠄⠀⠀⠰⠁⠀⠀⠀⠗⠹⠸⠿⠿⠸⠉⠇⠇⠀⠀⠈⠇⠀⠀⠀⠸
+⠀⠀⠙⠦⠄⠸⠀⠀⠀⠀⠱⠹⠸⠿⠿⠸⠹⠜⠀⠀⠀⠀⠇⠀⠀⠴⠋
+⠀⠀⠀⠈⠃⠼⠶⠄⠀⠀⠸⠾⠶⠒⠒⠚⠾⠤⠤⠤⠤⠾⠃⠶⠊⠁
+⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉
+⠀⠀⠀⠀⠀⠀⠔⠀⠶⠀⠀⠀⠀⠀⠀⠀⠀⠸⠇⠀⠀⠣
+⠀⠀⠀⠀⠀⠀⠇⠸⠇⠀⠀⠀⠀⠎⠆⠀⠀⠸⠧⠀⠀⠸
+⠀⠀⠀⠀⠀⠰⠁⠾⠁⠀⠀⠀⠠⠇⠱⠀⠀⠸⠿⠀⠀⠀⠇
+⠀⠀⠀⠀⠀⠸⠀⠿⠀⠀⠀⠀⠸⠀⠸⠀⠀⠀⠿⠀⠀⠀⠇
+⠀⠀⠀⠀⠀⠈⠉⠉⠒⠒⠒⠒⠊⠀⠈⠒⠒⠒⠛⠓⠊⠉⠁
+⠀⠀⠀⠀⠠⠶⠶⠤⠲⠶⠀⠀⠀⠀⠀⠀⠠⠷⠶⠶⠂⠤⠶⠦⠄
+⠀⠀⠀⠀⠿⠿⠿⠿⠧⠩⠄⠀⠀⠀⠀⠀⠬⠭⠭⠱⠿⠿⠿⠿⠟'''
+        em = discord.Embed(title='Sans', color=0xff0000)
+        em.add_field(name='The man himself', value=string)
+        await ctx.message.delete()
+        await ctx.send('', embed=em)
+
     @commands.command()
     async def status(self, ctx, status_type: int, *, text):
         """Set the bot's presence"""
