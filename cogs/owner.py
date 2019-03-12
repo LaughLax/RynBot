@@ -322,7 +322,7 @@ class Owner(commands.Cog):
     ╲╱▔╲▂▂▂▂╱▔╲▂▂▂╱
      ▏╳▕▇▇▕ ▏╳▕▇▇▕
      ╲▂╱╲▂╱ ╲▂╱╲▂╱"""
-        em = discord.Embed(title="Cooldog", color=0xff0000)
+        em = discord.Embed(color=0xff0000)
         em.add_field(name="The dog himself", value=string)
         await ctx.message.delete()
         await ctx.send("", embed=em)
@@ -353,7 +353,7 @@ class Owner(commands.Cog):
 ⠀⠀⠀⠀⠀⠈⠉⠉⠒⠒⠒⠒⠊⠀⠈⠒⠒⠒⠛⠓⠊⠉⠁
 ⠀⠀⠀⠀⠠⠶⠶⠤⠲⠶⠀⠀⠀⠀⠀⠀⠠⠷⠶⠶⠂⠤⠶⠦⠄
 ⠀⠀⠀⠀⠿⠿⠿⠿⠧⠩⠄⠀⠀⠀⠀⠀⠬⠭⠭⠱⠿⠿⠿⠿⠟'''
-        em = discord.Embed(title='Sans', color=0xff0000)
+        em = discord.Embed(color=0xff0000)
         em.add_field(name='The man himself', value=string)
         await ctx.message.delete()
         await ctx.send('', embed=em)
