@@ -126,24 +126,24 @@ class Data(commands.Cog):
         for a in server.members:
             # if a.joined_at <= rows[0,0]:
             members.append(a)
+        join_dates = np.array(list(map(lambda mem: mem.joined_at, members)))
+        join_dates.sort()
 
-        members.sort(key=lambda mem: mem.joined_at)
         (x, y) = ([], [])
         cutoff = datetime(2019, 3, 5, 0, 0, 0, 0)
-        for m in range(len(members)):
-            joined_at = members[m].joined_at
-            if joined_at <= cutoff:
+        for i, d in enumerate(join_dates):
+            if d <= cutoff:
                 continue
-            if m > 0:
-                x.append(joined_at)
-                y.append(m)
-            x.append(joined_at)
-            y.append(m+1)
+            if i > 0:
+                x.append(d)
+                y.append(i)
+            x.append(d)
+            y.append(i+1)
         x.append(ctx.message.created_at)
-        y.append(len(members))
+        y.append(len(join_dates))
 
         plt.clf()
-        plt.plot(x, y, 'b', rows[:,0], rows[:,1], 'k')
+        plt.plot(x, y, 'b', rows[:, 0], rows[:, 1], 'k')
         plt.xticks(rotation=45)
         plt.xlabel("Date")
         plt.ylabel("Member count")
