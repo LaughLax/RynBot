@@ -3,6 +3,7 @@ from discord.ext import commands
 from util import misc
 
 from datetime import datetime
+import pytz
 from tzlocal import get_localzone
 
 import mysql.connector
@@ -125,11 +126,15 @@ class Data(commands.Cog):
 
         members.sort(key=lambda mem: mem.joined_at)
         (x, y) = ([], [])
+        cutoff = datetime(2019, 3, 5, 0, 0, 0, 0)
         for m in range(len(members)):
+            joined_at = members[m].joined_at
+            if joined_at <= cutoff:
+                continue
             if m > 0:
-                x.append(members[m].joined_at)
+                x.append(joined_at)
                 y.append(m)
-            x.append(members[m].joined_at)
+            x.append(joined_at)
             y.append(m+1)
         x.append(ctx.message.created_at)
         y.append(len(members))
