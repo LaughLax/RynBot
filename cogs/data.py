@@ -101,6 +101,52 @@ class Data(commands.Cog):
             await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
         plt.close()
 
+    @data.command()
+    async def population2(self, ctx, server=None):
+        if not server or ctx.message.author.id != misc.ryn_id:
+            server = ctx.guild
+        else:
+            server = self.bot.get_guild(int(server))
+            if server is None:
+                await ctx.send("I'm not in that server.")
+                return
+
+        self.open_db()
+        cur = self.db.cursor()
+        cur.execute('SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s ORDER BY Datetime', (server.id,))
+        rows = np.array(cur.fetchall())
+        cur.close()
+        self.close_db()
+
+        members = []
+        for a in server.members:
+            # if a.joined_at <= rows[0,0]:
+            members.append(a)
+
+        members.sort(key=lambda mem: mem.joined_at)
+        (x, y) = ([], [])
+        for m in range(len(members)):
+            if m > 0:
+                x.append(members[m].joined_at)
+                y.append(m)
+            x.append(members[m].joined_at)
+            y.append(m+1)
+        x.append(ctx.message.created_at)
+        y.append(len(members))
+
+        plt.clf()
+        plt.plot(x, y, 'b', rows[:,0], rows[:,1], 'k')
+        plt.xticks(rotation=45)
+        plt.xlabel("Date")
+        plt.ylabel("Member count")
+        plt.title("Membership growth for server: {0.name}".format(server))
+        plt.tight_layout()
+
+        with io.BytesIO() as f:
+            plt.savefig(f, format='png')
+            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
+        plt.close()
+
 
 def setup(bot):
     bot.add_cog(Data(bot))
