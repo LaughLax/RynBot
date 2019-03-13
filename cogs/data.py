@@ -119,6 +119,9 @@ class Data(commands.Cog):
         cur.close()
         self.close_db()
 
+        f = lambda x: x.replace(tzinfo=get_localzone())
+        rows[:, 0] = np.array(list(map(f, rows[:, 0])))
+
         members = []
         for a in server.members:
             # if a.joined_at <= rows[0,0]:
