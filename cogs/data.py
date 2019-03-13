@@ -143,7 +143,8 @@ class Data(commands.Cog):
         y.append(len(join_dates))
 
         plt.clf()
-        plt.plot(x, y, 'b', rows[:, 0], rows[:, 1], 'k')
+        plt.plot(x, y, ':k',
+                 rows[:, 0], rows[:, 1], '-k')
         plt.xticks(rotation=45)
         plt.xlabel("Date")
         plt.ylabel("Member count")
