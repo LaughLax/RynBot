@@ -124,26 +124,21 @@ class Data(commands.Cog):
 
         members = []
         for a in server.members:
-            # if a.joined_at <= rows[0,0]:
             members.append(a)
-        join_dates = np.array(list(map(lambda mem: mem.joined_at, members)))
-        join_dates.sort()
+        n = len(members)
 
-        (x, y) = ([], [])
-        cutoff = datetime(2019, 3, 5, 0, 0, 0, 0)
-        for i, d in enumerate(join_dates):
-            if d <= cutoff:
-                continue
-            if i > 0:
-                x.append(d)
-                y.append(i)
-            x.append(d)
-            y.append(i+1)
-        x.append(ctx.message.created_at)
-        y.append(len(join_dates))
+        xy = np.empty((n*2), dtype=[('join', 'datetime64[us]'), ('count', 'int64')])
+        xy['join'][::2] = list(map(lambda mem: mem.joined_at, members))
+        xy['count'][::2] = np.ones(n)
+        xy[::2].sort(order='join')
+        xy['count'][::2] = np.cumsum(xy['count'][::2])
+
+        xy[1:-1:2] = xy[2::2]
+        xy['count'][1:-1:2] -= 1
+        xy[-1] = (ctx.message.created_at, n)
 
         plt.clf()
-        plt.plot(x, y, ':k',
+        plt.plot(xy['join'], xy['count'], ':k',
                  rows[:, 0], rows[:, 1], '-k')
         plt.xticks(rotation=45)
         plt.xlabel("Date")

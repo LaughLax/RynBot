@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 import io
+
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -188,20 +190,20 @@ class Chart(commands.Cog):
         members = []
         for a in server.members:
             members.append(a)
+        n = len(members)
 
-        members.sort(key=lambda mem: mem.joined_at)
-        (x, y) = ([], [])
-        for m in range(members.__len__()):
-            if m > 0:
-                x.append(members[m].joined_at)
-                y.append(m)
-            x.append(members[m].joined_at)
-            y.append(m+1)
-        x.append(ctx.message.created_at)
-        y.append(len(members))
+        xy = np.empty((n*2), dtype=[('join', 'datetime64[us]'), ('count', 'int64')])
+        xy['join'][::2] = list(map(lambda mem: mem.joined_at, members))
+        xy['count'][::2] = np.ones(n)
+        xy[::2].sort(order='join')
+        xy['count'][::2] = np.cumsum(xy['count'][::2])
+
+        xy[1:-1:2] = xy[2::2]
+        xy['count'][1:-1:2] -= 1
+        xy[-1] = (ctx.message.created_at, n)
 
         plt.clf()
-        plt.plot(x, y)
+        plt.plot(xy['join'], xy['count'])
         plt.xticks(rotation=45)
         plt.xlabel("Date")
         plt.ylabel("Member count")
