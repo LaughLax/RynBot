@@ -4,12 +4,12 @@ from util import config, database
 bot = commands.Bot(command_prefix=config.prefix, owner_id=config.owner_id, help_attrs={'aliases': ['halp']})
 
 if __name__ == '__main__':
+    try:
+        bot.db = database.DBHandler()
+    except Exception as e:
+        print('Failed to initialize database.')
+        print(e)
     for extension in config.cogs_core:
-        try:
-            bot.db = database.DBHandler()
-        except Exception as e:
-            print('Failed to initialize database.')
-            print(e)
         try:
             bot.load_extension(extension)
         except Exception as e:
