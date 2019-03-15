@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from util import config
 from util import misc
 
 
@@ -13,18 +14,18 @@ class Stars(commands.Cog):
         self.bot = bot
 
     def get_starboard_channel(self, user_id):
-        if user_id == misc.ryn_id:
-            return self.bot.get_channel(misc.ryn_starboard_id)
+        if user_id == config.owner_id:
+            return self.bot.get_channel(config.ryn_starboard_id)
         else:
-            return self.bot.get_channel(misc.pub_starboard_id)
+            return self.bot.get_channel(config.pub_starboard_id)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, pl):
         [emoji, user_id, channel_id, message_id] = [pl.emoji, pl.user_id, pl.channel_id, pl.message_id]
         if self.bot.user.id == user_id:
-            if user_id == misc.ryn_id and channel_id != misc.ryn_starboard_id:
+            if user_id == config.owner_id and channel_id != config.ryn_starboard_id:
                 await self.reaction_action('_star', emoji, message_id, channel_id, user_id)
-        elif channel_id != misc.pub_starboard_id:
+        elif channel_id != config.pub_starboard_id:
             await self.reaction_action('_star', emoji, message_id, channel_id, user_id)
 
     async def reaction_action(self, fmt, emoji, message_id, channel_id, user_id):
@@ -32,7 +33,7 @@ class Stars(commands.Cog):
             return
 
         channel = self.bot.get_channel(channel_id)
-        if not isinstance(channel, discord.TextChannel) or (user_id != misc.ryn_id and channel.guild.id != misc.ryn_server_id):
+        if not isinstance(channel, discord.TextChannel) or (user_id != config.owner_id and channel.guild.id != config.ryn_server_id):
             return
 
         method = getattr(self, '{}_message'.format(fmt))

@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 import subprocess
-from util import misc
+
+from util import config
+
 import ast
 import cProfile
 import pstats
@@ -16,11 +18,11 @@ class Owner(commands.Cog):
         self.bot = bot
 
     def cog_check(self, ctx):
-        """Check to see if Ryn issued the command."""
-        is_ryn = ctx.message.author.id == misc.ryn_id
-        if not is_ryn and not ctx.invoked_with == "help":
+        """Check to see if the bot owner issued the command."""
+        is_owner = ctx.message.author.id == config.owner_id
+        if (not is_owner) and (not ctx.invoked_with == "help"):
             print('{} tried to run an owner-restricted command ({})'.format(ctx.message.author, ctx.invoked_with))
-        return is_ryn
+        return is_owner
 
     @commands.group()
     async def cog(self, ctx):

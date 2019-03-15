@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from util import misc
+from util import config
 
 
 class Logs(commands.Cog):
@@ -14,7 +14,7 @@ class Logs(commands.Cog):
     async def on_ready(self):
         await self.log("Ayy, I'm awake!")
 
-        for extension in misc.base_extensions:
+        for extension in config.cogs_core:
             if extension not in self.bot.extensions:
                 await self.log("Oh no! {} is not loaded! Trying to load...".format(extension))
                 try:
@@ -61,12 +61,12 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if member.guild.id == misc.ryn_server_id:
+        if member.guild.id == config.ryn_server_id:
             await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}`) joined.".format(member))
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        if member.guild.id == misc.ryn_server_id:
+        if member.guild.id == config.ryn_server_id:
             await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}`) left.".format(member))
 
 #    async def on_member_update(self, before, after):
@@ -95,7 +95,7 @@ class Logs(commands.Cog):
         print(text)
 
         if self.log_chan is None:
-            self.log_chan = self.bot.get_channel(misc.bot_log_id)
+            self.log_chan = self.bot.get_channel(config.bot_log_id)
         if self.log_chan is not None:
             await self.log_chan.send(text)
         else:
@@ -103,9 +103,9 @@ class Logs(commands.Cog):
 
     async def ping_ryn(self):
         if self.log_chan is None:
-            self.log_chan = self.bot.get_channel(misc.bot_log_id)
+            self.log_chan = self.bot.get_channel(config.bot_log_id)
         if self.log_chan is not None:
-            await self.log_chan.send("<@{}>".format(misc.ryn_id))
+            await self.log_chan.send("<@{}>".format(config.owner_id))
 
 
 def setup(bot):

@@ -1,5 +1,5 @@
 from discord.ext import commands
-from util import misc
+from util import config
 
 
 class MyServer(commands.Cog):
@@ -8,7 +8,7 @@ class MyServer(commands.Cog):
         self.bot = bot
 
     def cog_check(self, ctx):
-        return ctx.guild is not None and ctx.guild.id == misc.ryn_server_id
+        return ctx.guild is not None and ctx.guild.id == config.ryn_server_id
 
     def _get_role_id(self, name: str):
         return {

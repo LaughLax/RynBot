@@ -1,11 +1,11 @@
 from discord.ext import commands
-from util import misc
+from util import config
 
 
-bot = commands.Bot(command_prefix="_", owner_id=185095270986547200, help_attrs={'aliases': ['halp']})
+bot = commands.Bot(command_prefix="_", owner_id=config.owner_id, help_attrs={'aliases': ['halp']})
 
 if __name__ == '__main__':
-    for extension in misc.base_extensions:
+    for extension in config.cogs_core:
         try:
             bot.load_extension(extension)
         except Exception as e:
@@ -23,8 +23,8 @@ async def on_ready():
 
     if 'cogs.logs' not in bot.extensions:
         print('Logs cog failed to load!')
-        chan = bot.get_channel(misc.bot_log_id)
-        await chan.send("Help me <@​​​{}>! I failed to load my logging cog!".format(misc.ryn_id))
+        chan = bot.get_channel(config.bot_log_id)
+        await chan.send("Help me <@​​​{}>! I failed to load my logging cog!".format(config.owner_id))
 
 
 with open('token.txt', 'r') as token_file:

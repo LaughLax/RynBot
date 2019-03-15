@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from util import misc
+from util import config
 
 from datetime import datetime
 import pytz
@@ -77,7 +77,7 @@ class Data(commands.Cog):
 
     @data.command()
     async def population(self, ctx, server=None):
-        if not server or ctx.message.author.id != misc.ryn_id:
+        if not server or ctx.message.author.id != config.owner_id:
             server = ctx.guild
         else:
             server = self.bot.get_guild(int(server))
@@ -104,7 +104,7 @@ class Data(commands.Cog):
 
     @data.command()
     async def population2(self, ctx, server=None):
-        if not server or ctx.message.author.id != misc.ryn_id:
+        if not server or ctx.message.author.id != config.owner_id:
             server = ctx.guild
         else:
             server = self.bot.get_guild(int(server))

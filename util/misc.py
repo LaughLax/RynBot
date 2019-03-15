@@ -1,33 +1,11 @@
 import discord
 from discord.ext import commands
-
-# Users
-ryn_id = 185095270986547200
-
-# Servers
-ryn_server_id = 329681826618671104
-
-# Channels
-ryn_starboard_id = 355477159629946882
-pub_starboard_id = 382661096303230976
-bot_log_id = 414193178908819457
+from util import config
 
 
-base_extensions = ['cogs.base',
-                   'cogs.owner',
-                   'cogs.logs']
-
-other_extensions = ['cogs.chart',
-                    'cogs.data',
-                    'cogs.my_server',
-                    'cogs.server',
-                    'cogs.stars',
-                    'cogs.polls']
-
-
-def is_ryn():
+def is_owner():
     def predicate(ctx):
-        return ctx.message.author.id == ryn_id
+        return ctx.message.author.id == config.owner_id
     return commands.check(predicate)
 
 
