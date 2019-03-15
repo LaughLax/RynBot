@@ -1,5 +1,7 @@
 # To use, rename this file to 'config.py'.
 
+prefix = '!'
+
 # Users
 owner_id = 185095270986547200
 
@@ -22,3 +24,5 @@ cogs_other = ['cogs.chart',
               'cogs.stars',
               'cogs.polls']
 
+# URI for SQLAlchemy to connect to database server
+db_uri = 'dialect+driver://username:password@host:port/database'
