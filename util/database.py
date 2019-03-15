@@ -11,7 +11,7 @@ Base = declarative_base()
 
 class DBHandler:
     def __init__(self):
-        self.engine = sql.create_engine(config.db_uri)
+        self.engine = sql.create_engine(config.db_uri, pool_recycle=3600, pool_pre_ping=True)
         self.SessionFactory = sessionmaker(bind=self.engine)
 
         Base.metadata.create_all(self.engine)
