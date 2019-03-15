@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 import sys
-from util import misc
+from util import config
 
 
 class Base(commands.Cog):
@@ -14,7 +14,7 @@ class Base(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
 
-        for extension in misc.other_extensions:
+        for extension in config.cogs_other:
             try:
                 self.bot.load_extension(extension)
             except Exception as e:
@@ -123,7 +123,7 @@ class Base(commands.Cog):
         """Send a message to the bot owner. Images and Discord-based emoji will not be shown."""
         if message is not None:
             # TODO catch emojis (will require checking ctx.message instead of taking args)
-            recipient = await self.bot.get_user_info(misc.ryn_id)
+            recipient = await self.bot.get_user_info(config.owner_id)
             if message.count("`") % 2 == 1:
                 message = message + "`"
             await recipient.send("{0}\n\n`This message was sent to you by {1.name}#{1.discriminator} ({1.id}). To send him a message, use the `_message` command.`".format(message, ctx.author))
