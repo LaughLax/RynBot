@@ -164,7 +164,6 @@ class Owner(commands.Cog):
         await ctx.send('Going down, be back soon!')
         for ex in list(self.bot.extensions.keys()):
             self.bot.unload_extension(ex)
-        await self.bot.logout()
         subprocess.run(['reboot'], shell=True)
 
     @commands.command()
