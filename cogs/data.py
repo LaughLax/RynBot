@@ -37,9 +37,8 @@ class Data(commands.Cog):
                                                datetime=now,
                                                user_count=server.member_count))
                     db.add_all(pops)
-                    db.commit()
 
-                    last_hour = now.hour
+                last_hour = now.hour
             await asyncio.sleep(60 * 10)
 
     @commands.group()
