@@ -30,12 +30,12 @@ class DBHandler:
 
 
 class Population(Base):
-    __tablename__ = 'server_pop'
+    __tablename__ = 'server_pop_hourly'
 
     server = sql.Column(sql.BigInteger,
                         primary_key=True,
                         nullable=False)
-    timestamp = sql.Column(sql.DateTime,
+    datetime = sql.Column(sql.DateTime,
                            primary_key=True,
                            nullable=False)
     user_count = sql.Column(sql.Integer,

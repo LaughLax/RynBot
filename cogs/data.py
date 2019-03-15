@@ -3,10 +3,9 @@ from discord.ext import commands
 from util import config
 
 from datetime import datetime
-import pytz
 from tzlocal import get_localzone
 
-import mysql.connector
+from util.database import Population
 import asyncio
 
 import numpy as np
@@ -20,55 +19,27 @@ class Data(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.db = None
-        self.processes_using_db = 0
-
         self.hourly_check_task = self.bot.loop.create_task(self.hourly_pop_check())
 
     def cog_unload(self):
-        self.force_db_close()
         self.hourly_check_task.cancel()
-
-    def open_db(self):
-        if not self.db:
-            try:
-                self.db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysqld/mysqld.sock', host='localhost', database='rynbot')
-                self.processes_using_db += 1
-            except mysql.connector.Error as err:
-                self.db = None
-                print(err)
-                raise err
-        return self.db
-
-    def close_db(self):
-        if self.db:
-            self.processes_using_db -= 1
-            if self.processes_using_db == 0:
-                self.db.close()
-                self.db = None
-
-    def force_db_close(self):
-        if self.db:
-            self.db.close()
 
     async def hourly_pop_check(self):
         await self.bot.wait_until_ready()
         last_hour = -1
         while not self.bot.is_closed():
-            now = datetime.now(get_localzone())
+            now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
             if now.hour != last_hour:
-                rows = []
-                for server in self.bot.guilds:
-                    rows.append((server.id,
-                                 now.replace(minute=0, second=0, microsecond=0),
-                                 server.member_count))
-                self.open_db()
-                cur = self.db.cursor()
-                cur.executemany('INSERT IGNORE INTO server_pop_temp (Server, Datetime, UserCount) VALUES (%s, %s, %s)', rows)
-                self.db.commit()
-                cur.close()
-                self.close_db()
-                last_hour = now.hour
+                with self.bot.db.get_session() as db:
+                    pops = []
+                    for server in self.bot.guilds:
+                        pops.append(Population(server.id,
+                                               now,
+                                               server.member_count))
+                    db.add_all(pops)
+                    db.commit()
+
+                    last_hour = now.hour
             await asyncio.sleep(60 * 10)
 
     @commands.group()
@@ -82,12 +53,11 @@ class Data(commands.Cog):
         else:
             server = self.bot.get_guild(int(server))
 
-        self.open_db()
-        cur = self.db.cursor()
-        cur.execute('SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s', (server.id,))
-        rows = np.array(cur.fetchall())
-        cur.close()
-        self.close_db()
+        with self.bot.db.get_session() as db:
+            rows = np.array(db.query(Population.timestamp, Population.user_count).\
+                            filter(Population.server == server.id).\
+                            order_by(Population.timestamp).\
+                            all())
 
         plt.clf()
         plt.plot(rows[:, 0], rows[:, 1])
@@ -112,12 +82,11 @@ class Data(commands.Cog):
                 await ctx.send("I'm not in that server.")
                 return
 
-        self.open_db()
-        cur = self.db.cursor()
-        cur.execute('SELECT Datetime, UserCount FROM server_pop_temp WHERE Server = %s ORDER BY Datetime', (server.id,))
-        rows = np.array(cur.fetchall())
-        cur.close()
-        self.close_db()
+        with self.bot.db.get_session() as db:
+            rows = np.array(db.query(Population.timestamp, Population.user_count).\
+                            filter(Population.server == server.id).\
+                            order_by(Population.timestamp).\
+                            all())
 
         f = lambda x: x.replace(tzinfo=get_localzone())
         rows[:, 0] = np.array(list(map(f, rows[:, 0])))
