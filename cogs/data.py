@@ -33,9 +33,9 @@ class Data(commands.Cog):
                 with self.bot.db.get_session() as db:
                     pops = []
                     for server in self.bot.guilds:
-                        pops.append(Population(server.id,
-                                               now,
-                                               server.member_count))
+                        pops.append(Population(server=server.id,
+                                               datetime=now,
+                                               user_count=server.member_count))
                     db.add_all(pops)
                     db.commit()
 
@@ -54,9 +54,9 @@ class Data(commands.Cog):
             server = self.bot.get_guild(int(server))
 
         with self.bot.db.get_session() as db:
-            rows = np.array(db.query(Population.timestamp, Population.user_count).\
+            rows = np.array(db.query(Population.datetime, Population.user_count).\
                             filter(Population.server == server.id).\
-                            order_by(Population.timestamp).\
+                            order_by(Population.datetime).\
                             all())
 
         plt.clf()
@@ -83,9 +83,9 @@ class Data(commands.Cog):
                 return
 
         with self.bot.db.get_session() as db:
-            rows = np.array(db.query(Population.timestamp, Population.user_count).\
+            rows = np.array(db.query(Population.datetime, Population.user_count).\
                             filter(Population.server == server.id).\
-                            order_by(Population.timestamp).\
+                            order_by(Population.datetime).\
                             all())
 
         f = lambda x: x.replace(tzinfo=get_localzone())
