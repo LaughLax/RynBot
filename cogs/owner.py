@@ -162,12 +162,17 @@ class Owner(commands.Cog):
         """Reboot the server running RynBot"""
 
         await ctx.send('Going down, be back soon!')
+        for ex in self.bot.extensions:
+            self.bot.unload_extension(ex)
+        await self.bot.logout()
         subprocess.run(['reboot'], shell=True)
 
     @commands.command()
     async def quit(self, ctx):
         """Log out and terminate the bot process"""
         await ctx.send('No, please don\'t kill me!')
+        for ex in self.bot.extensions:
+            self.bot.unload_extension(ex)
         await self.bot.logout()
 
     @commands.group(hidden=True)
