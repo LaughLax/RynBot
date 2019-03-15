@@ -424,8 +424,8 @@ class Owner(commands.Cog):
             return
 
         if hasattr(users, '__iter__'):
-            if len(users) > 200:
-                await ctx.send("Over 200 matching users.")
+            if len(users) > 100:
+                await ctx.send("Over 100 matching users.")
             else:
                 try:
                     max_length = len(max(users, key=lambda u: len(u.name)).name)
@@ -462,7 +462,7 @@ class Owner(commands.Cog):
             mem = g.get_member(user_id)
             nick = mem.nick
             if not nick:
-                nick =  mem.name
+                nick = mem.name
             paginator.add_line("{0.name:<{n_len}} | ({n})".format(g, n_len=max_name_length, n=nick))
 
         for p in paginator.pages:

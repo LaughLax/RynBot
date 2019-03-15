@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
 import discord
 from discord.ext import commands
 from util import misc
-import io
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

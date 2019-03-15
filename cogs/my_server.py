@@ -29,9 +29,9 @@ class MyServer(commands.Cog):
                 await ctx.author.remove_roles(role)
             else:
                 await ctx.author.add_roles(role)
-            await ctx.message.add_reaction(u'\U0001F44D') # :thumbsup:
+            await ctx.message.add_reaction(u'\U0001F44D')   # :thumbsup:
         else:
-            await ctx.message.add_reaction(u'\U0001F44E') # :x:
+            await ctx.message.add_reaction(u'\U0001F44E')   # :x:
 
     @commands.command(aliases=['civil'])
     async def burnitdown(self, ctx):
@@ -41,7 +41,7 @@ Very civil
 *bans everyone*
 Lots of fun
 *burns server to the ground*''')
-        await msg.add_reaction('\U0001F525') # :fire:
+        await msg.add_reaction('\U0001F525')    # :fire:
 
 
 def setup(bot):
