@@ -1,6 +1,4 @@
 .idea/
-token.txt
-selftoken.txt
 *.pyc
 util/config.py
 alembic.ini

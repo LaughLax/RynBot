@@ -1,5 +1,6 @@
 # To use, rename this file to 'config.py'.
 
+token = 'token-goes-here'
 prefix = '!'
 activity = 'mind games'
 

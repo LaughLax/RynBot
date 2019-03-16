@@ -26,6 +26,4 @@ async def on_ready():
         await chan.send("Help me <@​​​{}>! I failed to load my logging cog!".format(config.owner_id))
 
 
-with open('token.txt', 'r') as token_file:
-    token = token_file.readline().strip()
-bot.run(token)
+bot.run(config.token)
