@@ -11,6 +11,7 @@ class Server(commands.Cog):
         self.bot = bot
 
     @commands.group(aliases=['cfg'])
+    @commands.has_permissions(manage_guild=True)
     async def config(self, ctx):
         pass
 
@@ -30,9 +31,13 @@ class Server(commands.Cog):
                 cfg = ServerConfig(server=ctx.guild.id)
 
             if channel:
-                cfg.starboard = channel.id
-                db.add(cfg)
-                await ctx.send('This server\'s starboard has been set to {}.'.format(channel.mention))
+                perms = channel.permissions_for(ctx.guild.me)
+                if perms.send_messages and perms.attach_files:
+                    cfg.starboard = channel.id
+                    db.add(cfg)
+                    await ctx.send('This server\'s starboard has been set to {}.'.format(channel.mention))
+                else:
+                    await ctx.send('I don\'t have enough permissions in that channel. I need "Send Messages" and "Attach Files."')
             else:
                 if cfg.starboard:
                     await ctx.send('This server\'s starboard is {}.'.format(self.bot.get_channel(cfg.starboard).mention))

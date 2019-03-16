@@ -16,7 +16,8 @@ bot_log_id = 382657596458270720
 
 cogs_core = ['cogs.base',
              'cogs.owner',
-             'cogs.logs']
+             'cogs.logs',
+             'util.database']
 
 cogs_other = ['cogs.chart',
               'cogs.data',
