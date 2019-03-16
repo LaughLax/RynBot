@@ -14,8 +14,6 @@ class DBHandler:
         self.engine = sql.create_engine(config.db_uri, pool_recycle=3600, pool_pre_ping=True)
         self.SessionFactory = sessionmaker(bind=self.engine)
 
-        Base.metadata.create_all(self.engine)
-
     @contextmanager
     def get_session(self):
         session = self.SessionFactory()
