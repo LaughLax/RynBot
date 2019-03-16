@@ -139,6 +139,24 @@ class Owner(commands.Cog):
         """
 
     @commands.command()
+    async def upgrade_db(self, ctx):
+        paginator = commands.Paginator()
+
+        stream = subprocess.run(['alembic','upgrade','head'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if stream.stdout is not None:
+            paginator.add_line("STDOUT:")
+            for line in str(stream.stdout.decode('utf-8')).split('\n'):
+                paginator.add_line(line)
+
+        if stream.stderr is not None:
+            paginator.add_line("\nSTDERR:")
+            for line in str(stream.stderr.decode('utf-8')).split('\n'):
+                paginator.add_line(line)
+
+        for p in paginator.pages:
+            await ctx.send(p)
+
+    @commands.command()
     async def update(self, ctx):
         """Calls an update script and exits.
 
