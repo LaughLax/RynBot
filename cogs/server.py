@@ -1,10 +1,44 @@
 import discord
 from discord.ext import commands
+import typing
+
+from util.database import ServerConfig
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 
 class Server(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.group(aliases=['cfg'])
+    async def config(self, ctx):
+        pass
+
+    @config.command()
+    async def starboard(self, ctx, channel: typing.Optional[discord.TextChannel] = None):
+        with self.bot.db.get_session() as db:
+            try:
+                cfg = db.query(ServerConfig).filter(ServerConfig.server == ctx.guild.id).one_or_none()
+            except MultipleResultsFound as e:
+                await ctx.send('An unexpected error occurred.')
+                log = self.bot.get_cog('cogs.logs')
+                if log is not None:
+                    log.log(e)
+                return
+
+            if not cfg:
+                cfg = ServerConfig(server=ctx.guild.id)
+
+            if channel:
+                cfg.starboard = channel.id
+                db.add(cfg)
+                await ctx.send('This server\'s starboard has been set to {}.'.format(channel))
+            else:
+                if cfg.starboard:
+                    await ctx.send('This server\'s starboard is {}.'.format(
+                        self.bot.get_channel(cfg.starboard).mention))
+                else:
+                    await ctx.send('This server has no assigned starboard.')
 
     @commands.command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
