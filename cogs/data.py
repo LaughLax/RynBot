@@ -46,6 +46,7 @@ class Data(commands.Cog):
         pass
 
     @data.command()
+    @commands.bot_has_permissions(attach_files=True)
     async def population(self, ctx, server=None):
         if not server or ctx.message.author.id != config.owner_id:
             server = ctx.guild
@@ -75,6 +76,7 @@ class Data(commands.Cog):
         plt.close()
 
     @data.command()
+    @commands.bot_has_permissions(attach_files=True)
     async def population2(self, ctx, server=None):
         if not server or ctx.message.author.id != config.owner_id:
             server = ctx.guild
