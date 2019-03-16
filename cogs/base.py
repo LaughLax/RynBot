@@ -25,7 +25,7 @@ class Base(commands.Cog):
                     print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
                 print(e)
 
-        game = discord.Activity(type=discord.ActivityType.watching, name="grass grow")
+        game = discord.Activity(type=discord.ActivityType.playing, name=config.activity)
         await self.bot.change_presence(activity=game)
 
     @commands.Cog.listener()

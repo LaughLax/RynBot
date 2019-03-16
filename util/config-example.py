@@ -1,6 +1,7 @@
 # To use, rename this file to 'config.py'.
 
 prefix = '!'
+activity = 'mind games'
 
 # Users
 owner_id = 185095270986547200
