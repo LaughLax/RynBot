@@ -32,11 +32,10 @@ class Server(commands.Cog):
             if channel:
                 cfg.starboard = channel.id
                 db.add(cfg)
-                await ctx.send('This server\'s starboard has been set to {}.'.format(channel))
+                await ctx.send('This server\'s starboard has been set to {}.'.format(channel.mention))
             else:
                 if cfg.starboard:
-                    await ctx.send('This server\'s starboard is {}.'.format(
-                        self.bot.get_channel(cfg.starboard).mention))
+                    await ctx.send('This server\'s starboard is {}.'.format(self.bot.get_channel(cfg.starboard).mention))
                 else:
                     await ctx.send('This server has no assigned starboard.')
 
