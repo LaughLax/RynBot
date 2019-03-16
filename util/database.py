@@ -34,8 +34,8 @@ class Population(Base):
                         primary_key=True,
                         nullable=False)
     datetime = sql.Column(sql.DateTime,
-                           primary_key=True,
-                           nullable=False)
+                          primary_key=True,
+                          nullable=False)
     user_count = sql.Column(sql.Integer,
                             nullable=False)
 
