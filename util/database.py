@@ -2,7 +2,7 @@ from util import config
 
 import sqlalchemy as sql
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 
 from contextlib import contextmanager
 
@@ -39,3 +39,37 @@ class Population(Base):
     user_count = sql.Column(sql.Integer,
                             nullable=False)
 
+
+class ServerConfig(Base):
+    __tablename__ = 'server_config'
+
+    server = sql.Column(sql.BigInteger,
+                        primary_key=True,
+                        unique=True,
+                        nullable=False)
+    starboard = sql.Column(sql.BigInteger,
+                           nullable=True)
+
+
+class Star(Base):
+    __tablename__ = 'stars'
+
+    card = sql.Column(sql.BigInteger,
+                      primary_key=True,
+                      autoincrement=False,
+                      unique=True,
+                      nullable=False)
+    server = sql.Column(sql.BigInteger,
+                        sql.ForeignKey('server_config.server'),
+                        nullable=False)
+    channel = sql.Column(sql.BigInteger,
+                         nullable=False)
+    message = sql.Column(sql.BigInteger,
+                         unique=True,
+                         nullable=False)
+    author = sql.Column(sql.BigInteger,
+                        nullable=False)
+    timestamp = sql.Column(sql.DateTime,
+                           nullable=False)
+
+    server_rel = relationship('ServerConfig', back_populates='stars')
