@@ -1,14 +1,9 @@
 from discord.ext import commands
-from util import config, database
+from util import config
 
 bot = commands.Bot(command_prefix=config.prefix, owner_id=config.owner_id, help_attrs={'aliases': ['halp']})
 
 if __name__ == '__main__':
-    try:
-        bot.db = database.DBHandler()
-    except Exception as e:
-        print('Failed to initialize database.')
-        print(e)
     for extension in config.cogs_core:
         try:
             bot.load_extension(extension)

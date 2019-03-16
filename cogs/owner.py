@@ -55,8 +55,8 @@ class Owner(commands.Cog):
             self.bot.unload_extension('cogs.{}'.format(name))
             await ctx.send('Cog \'{}\' successfully removed.'.format(name))
 
-    @cog.command()
-    async def reload(self, ctx, name: str = 'all'):
+    @cog.command(name='reload')
+    async def _cog_reload(self, ctx, name: str = 'all'):
         """Remove and then re-add a cog to the bot."""
 
         if name.lower() == 'all':
@@ -80,17 +80,6 @@ class Owner(commands.Cog):
         for page in paginator.pages:
             await ctx.send(page)
             # await ctx.message.author.send(page)
-
-#    @cog.error
-#    @load.error
-#    @unload.error
-#    @reload.error
-#    async def cog_error(self, ctx, error):
-#        # Does this need to be on its own? I'm leaving it as an example for myself.
-#        if isinstance(error, commands.MissingRequiredArgument):
-#            await ctx.send('Not enough arguments supplied.')
-#        else:
-#            raise error
 
     @commands.command()
     async def renamebot(self, ctx, name: str):
@@ -121,25 +110,19 @@ class Owner(commands.Cog):
         for p in paginator.pages:
             await ctx.send(p)
 
-        """
-        if len(args) < 2:
-            ctx.send('Not enough arguments.')
-            return
-        if args[1].lower() == 'pull':
-            if len(args) > 1 and args[2].lower() == 'harder':
-                return_code = subprocess.run(['git','checkout','-f','.'])
-                if return_code > 0:
-                    ctx.send('Checkout failed.')
-                    return
-            return_code = subprocess.run(['git','pull'])
-            if return_code == 0:
-                ctx.send('Git pull successful.')
-            else:
-                ctx.send('Git pull failed. You might try pulling harder next time.')
-        """
+    @commands.group()
+    async def db(self, ctx):
+        pass
 
-    @commands.command()
-    async def upgrade_db(self, ctx):
+    @db.command(name='reload')
+    async def _db_reload(self, ctx):
+        self.bot.unload_extension('util.database')
+        self.bot.load_extension('util.database')
+
+        await ctx.send('Reload operation successful.')
+
+    @db.command()
+    async def upgrade(self, ctx):
         paginator = commands.Paginator()
 
         stream = subprocess.run(['alembic','upgrade','head'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)

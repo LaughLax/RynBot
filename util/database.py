@@ -75,3 +75,11 @@ class Star(Base):
                            nullable=False)
 
     server_rel = relationship('ServerConfig', back_populates='stars')
+
+
+def setup(bot):
+    bot.db = DBHandler()
+
+
+def teardown(bot):
+    bot.db = None
