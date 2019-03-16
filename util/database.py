@@ -50,6 +50,8 @@ class ServerConfig(Base):
     starboard = sql.Column(sql.BigInteger,
                            nullable=True)
 
+    stars = relationship('Star', back_populates='server_rel')
+
 
 class Star(Base):
     __tablename__ = 'stars'
