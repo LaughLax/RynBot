@@ -51,6 +51,9 @@ class Data(commands.Cog):
             server = ctx.guild
         else:
             server = self.bot.get_guild(int(server))
+            if not server:
+                await ctx.send('I\'m not in that server.')
+                return
 
         with self.bot.db.get_session() as db:
             rows = np.array(db.query(Population.datetime, Population.user_count).\
@@ -77,8 +80,8 @@ class Data(commands.Cog):
             server = ctx.guild
         else:
             server = self.bot.get_guild(int(server))
-            if server is None:
-                await ctx.send("I'm not in that server.")
+            if not server:
+                await ctx.send('I\'m not in that server.')
                 return
 
         with self.bot.db.get_session() as db:
