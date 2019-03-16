@@ -142,7 +142,7 @@ class Owner(commands.Cog):
     async def upgrade_db(self, ctx):
         paginator = commands.Paginator()
 
-        stream = subprocess.run(['alembic','upgrade','head'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stream = subprocess.run(['alembic','upgrade','head'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
             paginator.add_line("STDOUT:")
             for line in str(stream.stdout.decode('utf-8')).split('\n'):
