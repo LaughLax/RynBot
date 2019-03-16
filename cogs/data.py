@@ -7,6 +7,7 @@ from tzlocal import get_localzone
 
 from util.database import Population
 import asyncio
+from sqlalchemy.exc import IntegrityError
 
 import numpy as np
 import io
@@ -36,7 +37,10 @@ class Data(commands.Cog):
                         pops.append(Population(server=server.id,
                                                datetime=now,
                                                user_count=server.member_count))
-                    db.add_all(pops)
+                    try:
+                        db.add_all(pops)
+                    except IntegrityError:
+                        db.rollback()
 
                 last_hour = now.hour
             await asyncio.sleep(60 * 10)
