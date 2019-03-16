@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
-from util import config
-from util import misc
+from util import misc, config
+from util.database import ServerConfig
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 
 class StarError(commands.CheckFailure):
@@ -13,11 +14,22 @@ class Stars(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_starboard_channel(self, user_id):
+    def get_starboard_channel(self, guild, user_id):
         if user_id == config.owner_id:
-            return self.bot.get_channel(config.ryn_starboard_id)
+            starboard = config.ryn_starboard_id
         else:
-            return self.bot.get_channel(config.pub_starboard_id)
+            with self.bot.db.get_session() as db:
+                try:
+                    starboard = db.query(ServerConfig.starboard).\
+                        filter(ServerConfig.server == guild.id).\
+                        one_or_none()[0]
+                except MultipleResultsFound as e:
+                    log = self.bot.get_cog('cogs.logs')
+                    if log is not None:
+                        log.log(e)
+                    return
+
+        return self.bot.get_channel(starboard)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, pl):
@@ -35,6 +47,7 @@ class Stars(commands.Cog):
         channel = self.bot.get_channel(channel_id)
         if not isinstance(channel, discord.TextChannel) or (user_id != config.owner_id and channel.guild.id != config.ryn_server_id):
             return
+        # TODO Verify permissions
 
         method = getattr(self, '{}_message'.format(fmt))
 
@@ -56,7 +69,9 @@ class Stars(commands.Cog):
         """
 
         # guild_name = channel.guild.name
-        starboard_channel = self.get_starboard_channel(user_id)
+        starboard_channel = self.get_starboard_channel(channel.guild, user_id)
+        if not starboard_channel:
+            return
 
         msg = await misc.get_message(channel, message_id)
 

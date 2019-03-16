@@ -17,6 +17,7 @@ class Server(commands.Cog):
 
     @config.command()
     async def starboard(self, ctx, channel: typing.Optional[discord.TextChannel] = None):
+        # TODO Add way to remove starboard from config
         with self.bot.db.get_session() as db:
             try:
                 cfg = db.query(ServerConfig).filter(ServerConfig.server == ctx.guild.id).one_or_none()
