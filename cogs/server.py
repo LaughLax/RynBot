@@ -25,7 +25,7 @@ class Server(commands.Cog):
             raise e
 
         if not cfg:
-                cfg = ServerConfig(server=ctx.guild.id)
+            cfg = ServerConfig(server=guild.id)
 
         return cfg
 
