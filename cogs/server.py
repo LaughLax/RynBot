@@ -15,7 +15,7 @@ class Server(commands.Cog):
     async def config(self, ctx):
         pass
 
-    async def get_cfg(self, db, guild):
+    def get_cfg(self, db, guild):
         try:
             cfg = db.query(ServerConfig).filter(ServerConfig.server == guild.id).one_or_none()
         except MultipleResultsFound as e:
