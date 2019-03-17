@@ -144,7 +144,7 @@ class Stars(commands.Cog):
     def get_emoji_message(message, star_count):
         emoji = '\N{WHITE MEDIUM STAR}'
 
-        content = '{} {} {}'.format(emoji, message.guild.name, message.channel.mention, message.id)
+        content = '{} {}'.format(message.guild.name, message.channel.mention)
 
         embed = misc.embedify_message(message)
         embed.set_footer(text='{} \N{WHITE MEDIUM STAR}'.format(star_count))
