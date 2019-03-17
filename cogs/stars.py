@@ -69,6 +69,11 @@ class Stars(commands.Cog):
         if str(p.emoji) == '\N{WHITE MEDIUM STAR}':
             await self.reaction_action('_star', p.emoji, p.channel_id, p.message_id, p.user_id)
 
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, p):
+        if str(p.emoji) == '\N{WHITE MEDIUM STAR}':
+            await self.reaction_action('_star', p.emoji, p.channel_id, p.message_id, p.user_id)
+
     async def reaction_action(self, fmt, emoji, channel_id, message_id, user_id):
         if str(emoji) != '\N{WHITE MEDIUM STAR}':
             return
@@ -122,7 +127,8 @@ class Stars(commands.Cog):
                 raise StarError('\N{NO ENTRY SIGN} This message cannot be starred.')
 
             min_stars = self.get_star_threshold(db, channel.guild)
-            star_count = next(r for r in msg.reactions if r.emoji == emoji).count
+            reacts = dict([(r.emoji, r.count) for r in msg.reactions])
+            star_count = reacts.get(emoji, 0)
 
             star = self.get_star_db_entry(db, msg)
             if not star:
@@ -134,11 +140,19 @@ class Stars(commands.Cog):
 
             if star.card:
                 card = await misc.get_message(starboard_channel, star.card)
-                await card.edit(content, embed=embed)
+                if not card:
+                    return
+                if star_count < min_stars:
+                    print('deleting...')
+                    await card.delete()
+                    star.delete()
+                else:
+                    await card.edit(content=content, embed=embed)
             else:
-                card = await starboard_channel.send(content, embed=embed)
-                star.card = card.id
-                db.add(star)
+                if star_count >= min_stars:
+                    card = await starboard_channel.send(content, embed=embed)
+                    star.card = card.id
+                    db.add(star)
 
     @staticmethod
     def get_emoji_message(message, star_count):
