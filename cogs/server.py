@@ -64,7 +64,7 @@ class Server(commands.Cog):
 
             cfg.star_threshold = min_stars
             db.add(cfg)
-            ctx.send('The number of stars needed to reach the starboard has been set to {}.'.format(min_stars))
+            await ctx.send('The number of stars needed to reach the starboard has been set to {}.'.format(min_stars))
 
     @commands.command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
