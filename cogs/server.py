@@ -53,6 +53,19 @@ class Server(commands.Cog):
                 else:
                     await ctx.send('This server has no assigned starboard.')
 
+    @config.command(aliases=['min_stars'])
+    async def star_threshold(self, ctx, min_stars: int = 1):
+        with self.bot.db.get_session() as db:
+            try:
+                cfg = self.get_cfg(db, ctx.guild)
+            except Exception as e:
+                await ctx.send('An unexpected error occurred.')
+                return
+
+            cfg.star_threshold = min_stars
+            db.add(cfg)
+            ctx.send('The number of stars needed to reach the starboard has been set to {}.'.format(min_stars))
+
     @commands.command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
         """List users playing a specific game."""

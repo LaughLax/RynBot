@@ -49,6 +49,9 @@ class ServerConfig(Base):
                         nullable=False)
     starboard = sql.Column(sql.BigInteger,
                            nullable=True)
+    star_threshold = sql.Column(sql.SmallInteger,
+                                default=1,
+                                nullable=False)
 
     stars = relationship('Star', back_populates='server_rel')
 
