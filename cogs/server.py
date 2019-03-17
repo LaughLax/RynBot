@@ -15,21 +15,29 @@ class Server(commands.Cog):
     async def config(self, ctx):
         pass
 
+    async def get_cfg(self, db, guild):
+        try:
+            cfg = db.query(ServerConfig).filter(ServerConfig.server == guild.id).one_or_none()
+        except MultipleResultsFound as e:
+            log = self.bot.get_cog('cogs.logs')
+            if log is not None:
+                log.log(e)
+            raise e
+
+        if not cfg:
+                cfg = ServerConfig(server=ctx.guild.id)
+
+        return cfg
+
     @config.command()
     async def starboard(self, ctx, channel: typing.Optional[discord.TextChannel] = None):
         # TODO Add way to remove starboard from config
         with self.bot.db.get_session() as db:
             try:
-                cfg = db.query(ServerConfig).filter(ServerConfig.server == ctx.guild.id).one_or_none()
-            except MultipleResultsFound as e:
+                cfg = self.get_cfg(db, ctx.guild)
+            except Exception as e:
                 await ctx.send('An unexpected error occurred.')
-                log = self.bot.get_cog('cogs.logs')
-                if log is not None:
-                    log.log(e)
                 return
-
-            if not cfg:
-                cfg = ServerConfig(server=ctx.guild.id)
 
             if channel:
                 perms = channel.permissions_for(ctx.guild.me)
