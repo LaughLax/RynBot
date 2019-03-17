@@ -145,7 +145,7 @@ class Stars(commands.Cog):
                 if star_count < min_stars:
                     print('deleting...')
                     await card.delete()
-                    star.delete()
+                    db.delete(star)
                 else:
                     await card.edit(content=content, embed=embed)
             else:
