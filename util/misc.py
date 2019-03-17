@@ -68,6 +68,7 @@ def embedify_message(message):
         else:
             embed.add_field(name='Attachment', value='[{}]({})'.format(file.filename, file.url), inline=False)
 
+    embed.add_field(name='Jump to post', value=message.jump_url, inline=False)
     embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url_as(format='png'))
     embed.timestamp = message.created_at
     embed.colour = 0xff0000
