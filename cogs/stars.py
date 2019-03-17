@@ -143,7 +143,6 @@ class Stars(commands.Cog):
                 if not card:
                     return
                 if star_count < min_stars:
-                    print('deleting...')
                     await card.delete()
                     db.delete(star)
                 else:
