@@ -31,6 +31,9 @@ class Data(commands.Cog):
         while not self.bot.is_closed():
             now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
             if now.hour != last_hour:
+                log = self.bot.get_cog('cogs.logs')
+                if log:
+                    log.log('Logging server populations for {}.'.format(now))
                 with self.bot.db.get_session() as db:
                     pops = []
                     for server in self.bot.guilds:
@@ -39,7 +42,9 @@ class Data(commands.Cog):
                                                user_count=server.member_count))
                     try:
                         db.add_all(pops)
-                    except IntegrityError:
+                    except IntegrityError as e:
+                        if log:
+                            log.log('Integrity error: {}'.format(e))
                         db.rollback()
 
                 last_hour = now.hour
