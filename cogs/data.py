@@ -31,7 +31,7 @@ class Data(commands.Cog):
         while not self.bot.is_closed():
             now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
             if now.hour != last_hour:
-                log = self.bot.get_cog('cogs.logs')
+                log = self.bot.get_cog('Logs')
                 if log:
                     log.log('Logging server populations for {}.'.format(now))
                 with self.bot.db.get_session() as db:

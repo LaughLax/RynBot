@@ -19,7 +19,7 @@ class Server(commands.Cog):
         try:
             cfg = db.query(ServerConfig).filter(ServerConfig.server == guild.id).one_or_none()
         except MultipleResultsFound as e:
-            log = self.bot.get_cog('cogs.logs')
+            log = self.bot.get_cog('Logs')
             if log is not None:
                 log.log(e)
             raise e

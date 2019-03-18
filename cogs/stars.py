@@ -22,7 +22,7 @@ class Stars(commands.Cog):
         except NoResultFound:
             starboard = None
         except MultipleResultsFound as e:
-            log = self.bot.get_cog('cogs.logs')
+            log = self.bot.get_cog('Logs')
             if log is not None:
                 log.log(e)
             return
@@ -37,7 +37,7 @@ class Stars(commands.Cog):
         except NoResultFound:
             star_threshold = 1
         except MultipleResultsFound as e:
-            log = self.bot.get_cog('cogs.logs')
+            log = self.bot.get_cog('Logs')
             if log is not None:
                 log.log(e)
             return 1
@@ -57,7 +57,7 @@ class Stars(commands.Cog):
                         author=message.author.id,
                         timestamp=message.created_at)
         except MultipleResultsFound as e:
-            log = self.bot.get_cog('cogs.logs')
+            log = self.bot.get_cog('Logs')
             if log is not None:
                 log.log(e)
             return
