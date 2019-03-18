@@ -24,7 +24,7 @@ class Stars(commands.Cog):
         except MultipleResultsFound as e:
             log = self.bot.get_cog('Logs')
             if log is not None:
-                log.log(e)
+                await log.log(e)
             return
 
         return self.bot.get_channel(starboard)
@@ -39,7 +39,7 @@ class Stars(commands.Cog):
         except MultipleResultsFound as e:
             log = self.bot.get_cog('Logs')
             if log is not None:
-                log.log(e)
+                await log.log(e)
             return 1
 
         return star_threshold
@@ -59,7 +59,7 @@ class Stars(commands.Cog):
         except MultipleResultsFound as e:
             log = self.bot.get_cog('Logs')
             if log is not None:
-                log.log(e)
+                await log.log(e)
             return
 
         return star

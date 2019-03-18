@@ -20,7 +20,7 @@ class Base(commands.Cog):
             except Exception as e:
                 log = self.bot.get_cog('Logs')
                 if log:
-                    log.log('Failed to load extension {}.'.format(extension))
+                    await log.log('Failed to load extension {}.'.format(extension))
                 else:
                     print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
                 print(e)

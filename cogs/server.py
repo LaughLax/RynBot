@@ -21,7 +21,7 @@ class Server(commands.Cog):
         except MultipleResultsFound as e:
             log = self.bot.get_cog('Logs')
             if log is not None:
-                log.log(e)
+                await log.log(e)
             raise e
 
         if not cfg:

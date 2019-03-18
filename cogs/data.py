@@ -33,7 +33,7 @@ class Data(commands.Cog):
             if now.hour != last_hour:
                 log = self.bot.get_cog('Logs')
                 if log:
-                    log.log('Logging server populations for {}.'.format(now))
+                    await log.log('Logging server populations for {}.'.format(now))
                 with self.bot.db.get_session() as db:
                     pops = []
                     for server in self.bot.guilds:
@@ -44,7 +44,7 @@ class Data(commands.Cog):
                         db.add_all(pops)
                     except IntegrityError as e:
                         if log:
-                            log.log('Integrity error: {}'.format(e))
+                            await log.log('Integrity error: {}'.format(e))
                         db.rollback()
 
                 last_hour = now.hour
