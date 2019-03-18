@@ -15,12 +15,12 @@ class Server(commands.Cog):
     async def config(self, ctx):
         pass
 
-    def get_cfg(self, db, guild):
+    async def get_cfg(self, db, guild):
         try:
             cfg = db.query(ServerConfig).filter(ServerConfig.server == guild.id).one_or_none()
         except MultipleResultsFound as e:
             log = self.bot.get_cog('Logs')
-            if log is not None:
+            if log:
                 await log.log(e)
             raise e
 

@@ -14,7 +14,7 @@ class Stars(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_starboard_channel(self, db, guild):
+    async def get_starboard_channel(self, db, guild):
         try:
             starboard = db.query(ServerConfig.starboard).\
                 filter(ServerConfig.server == guild.id).\
@@ -23,13 +23,13 @@ class Stars(commands.Cog):
             starboard = None
         except MultipleResultsFound as e:
             log = self.bot.get_cog('Logs')
-            if log is not None:
+            if log:
                 await log.log(e)
             return
 
         return self.bot.get_channel(starboard)
 
-    def get_star_threshold(self, db, guild):
+    async def get_star_threshold(self, db, guild):
         try:
             star_threshold = db.query(ServerConfig.star_threshold).\
                 filter(ServerConfig.server == guild.id).\
@@ -44,7 +44,7 @@ class Stars(commands.Cog):
 
         return star_threshold
 
-    def get_star_db_entry(self, db, message):
+    async def get_star_db_entry(self, db, message):
         try:
             star = db.query(Star).\
                 filter(Star.server == message.guild.id).\
