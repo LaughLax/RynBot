@@ -562,7 +562,7 @@ class Owner(commands.Cog):
         self.insert_returns(body)
 
         env = {
-            'bot': ctx.bot,
+            'bot': self.bot,
             'discord': discord,
             'commands': commands,
             'ctx': ctx,
