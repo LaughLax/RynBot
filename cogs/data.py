@@ -29,26 +29,32 @@ class Data(commands.Cog):
         await self.bot.wait_until_ready()
         last_hour = -1
         while not self.bot.is_closed():
-            now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
-            if now.hour != last_hour:
-                log = self.bot.get_cog('Logs')
-                if log:
-                    await log.log('Logging server populations for {}.'.format(now))
-                with self.bot.db.get_session() as db:
-                    pops = []
-                    for server in self.bot.guilds:
-                        pops.append(Population(server=server.id,
-                                               datetime=now,
-                                               user_count=server.member_count))
-                    try:
-                        db.add_all(pops)
-                    except IntegrityError as e:
-                        if log:
-                            await log.log('Integrity error: {}'.format(e))
-                        db.rollback()
+            try:
+                now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
+                if now.hour != last_hour:
+                    log = self.bot.get_cog('Logs')
+                    if log:
+                        await log.log('Logging server populations for {}.'.format(now))
+                    with self.bot.db.get_session() as db:
+                        pops = []
+                        for server in self.bot.guilds:
+                            pops.append(Population(server=server.id,
+                                                   datetime=now,
+                                                   user_count=server.member_count))
+                        try:
+                            db.add_all(pops)
+                        except IntegrityError as e:
+                            if log:
+                                await log.log('Integrity error: {}'.format(e))
+                            db.rollback()
 
-                last_hour = now.hour
-            await asyncio.sleep(60 * 10)
+                    last_hour = now.hour
+                await asyncio.sleep(60 * 10)
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                print(e)
+                pass
 
     @commands.group()
     async def data(self, ctx):
