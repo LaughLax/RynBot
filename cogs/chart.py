@@ -54,6 +54,10 @@ class Chart(commands.Cog):
                 else:
                     game_count[game_names.index(a.activity.name)] += 1
 
+        if not game_names:
+            await ctx.send("No games being played.")
+            return
+
         cutoff = 0
         while len(game_names) > 50:
             cutoff += 1
@@ -106,6 +110,10 @@ class Chart(commands.Cog):
                     game_count.append(1)
                 else:
                     game_count[game_names.index(a.activity.name)] += 1
+
+        if not game_names:
+            await ctx.send("No games being played.")
+            return
 
         cutoff = 0
         other_count = 0
