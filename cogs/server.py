@@ -66,6 +66,15 @@ class Server(commands.Cog):
             db.add(cfg)
             await ctx.send('The number of stars needed to reach the starboard has been set to {}.'.format(min_stars))
 
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
+    async def purge(self, ctx, num: int = 10):
+        await ctx.message.delete()
+        if num > 100:
+            num = 100
+        await ctx.channel.purge(limit=num)
+
     @commands.command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
         """List users playing a specific game."""
