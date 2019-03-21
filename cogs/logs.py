@@ -97,7 +97,7 @@ class Logs(commands.Cog):
         if self.log_chan is None:
             self.log_chan = self.bot.get_channel(config.bot_log_id)
         if self.log_chan is not None:
-            await self.log_chan.send(text)
+            await self.log_chan.send(text[:2000])
         else:
             print("While trying to log the above, could not reach the #logs channel.")
 
