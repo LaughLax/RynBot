@@ -32,19 +32,18 @@ class Data(commands.Cog):
             try:
                 now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
                 if now.hour != last_hour:
-                    with self.bot.db.get_session() as db:
-                        pops = []
-                        for server in self.bot.guilds:
-                            pops.append(Population(server=server.id,
-                                                   datetime=now,
-                                                   user_count=server.member_count))
-                        try:
-                            db.add_all(pops)
-                        except IntegrityError as e:
-                            log = self.bot.get_cog('Logs')
-                            if log:
-                                await log.log('Integrity error: {}'.format(e))
-                            db.rollback()
+                    try:
+                        with self.bot.db.get_session() as db:
+                            pops = []
+                            for server in self.bot.guilds:
+                                pops.append(Population(server=server.id,
+                                                       datetime=now,
+                                                       user_count=server.member_count))
+                                db.add_all(pops)
+                    except IntegrityError as e:
+                        log = self.bot.get_cog('Logs')
+                        if log:
+                            await log.log('Integrity error: {}'.format(e))
 
                     last_hour = now.hour
                 await asyncio.sleep(60 * 10)
