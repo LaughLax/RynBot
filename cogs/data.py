@@ -41,9 +41,10 @@ class Data(commands.Cog):
                                                        user_count=server.member_count))
                                 db.add_all(pops)
                     except IntegrityError as e:
-                        log = self.bot.get_cog('Logs')
-                        if log:
-                            await log.log('Integrity error: {}'.format(e))
+                        if 'Duplicate entry' not in str(e):
+                            log = self.bot.get_cog('Logs')
+                            if log:
+                                await log.log('Integrity error: {}'.format(e))
 
                     last_hour = now.hour
                 await asyncio.sleep(60 * 10)
