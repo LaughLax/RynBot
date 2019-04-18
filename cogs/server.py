@@ -70,6 +70,9 @@ class Server(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
     async def purge(self, ctx, num: int = 10):
+        """Purge up to 100 messages from a channel at once.
+
+        Clears 10 messages by default."""
         await ctx.message.delete()
         if num > 100:
             num = 100
