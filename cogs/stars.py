@@ -107,9 +107,9 @@ class Stars(commands.Cog):
             # Get the starboard channel for the server
             if user_id == config.owner_id:
                 starboard_channel = self.bot.get_channel(config.ryn_starboard_id)
-                starboard_channel = self.get_starboard_channel(db, channel.guild)
+                starboard_channel = await self.get_starboard_channel(db, channel.guild)
             else:
-                starboard_channel = self.get_starboard_channel(db, channel.guild)
+                starboard_channel = await self.get_starboard_channel(db, channel.guild)
             if (not starboard_channel) or (channel == starboard_channel):
                 # TODO respond to stars within the starboard
                 return
@@ -126,11 +126,11 @@ class Stars(commands.Cog):
             if (len(msg.content) == 0 and len(msg.attachments) == 0) or msg.type is not discord.MessageType.default:
                 raise StarError('\N{NO ENTRY SIGN} This message cannot be starred.')
 
-            min_stars = self.get_star_threshold(db, channel.guild)
+            min_stars = await self.get_star_threshold(db, channel.guild)
             reacts = dict([(r.emoji, r.count) for r in msg.reactions])
             star_count = reacts.get(emoji, 0)
 
-            star = self.get_star_db_entry(db, msg)
+            star = await self.get_star_db_entry(db, msg)
             if not star:
                 return
 
