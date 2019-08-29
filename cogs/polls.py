@@ -40,6 +40,8 @@ class ActivePoll:
 class Polls(commands.Cog):
     """Poll commands, for Ryn's server only"""
 
+    # FIXME: Count votes when poll is closed, instead of on every reaction
+
     vote_emojis = {'\U00000031\U000020e3': 0,
                    '\U00000032\U000020e3': 1,
                    '\U00000033\U000020e3': 2,
@@ -59,25 +61,25 @@ class Polls(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, pl):
-        [emoji, message_id, user_id] = [pl.emoji, pl.message_id, pl.user_id]
-        if message_id in self.active_polls:
-            this_poll = self.active_polls.get(message_id)
-            if str(emoji.name) in self.vote_emojis and self.vote_emojis[str(emoji.name)] + 1 <= len(this_poll.options):
-                this_poll.add_vote(user_id, self.vote_emojis[emoji.name])
-                # self.reaction_action(self, "_vote", emoji, message_id, channel_id, user_id)
-            elif str(emoji) in self.control_emojis and this_poll.creator_id == user_id:
-                await self.control_poll(emoji, message_id, pl.channel_id)
-        pass
+        if pl.message_id not in self.active_polls:
+            return
+        
+        this_poll = self.active_polls.get(pl.message_id)
+        if str(pl.emoji.name) in self.vote_emojis and self.vote_emojis[str(pl.emoji.name)] < len(this_poll.options):
+            this_poll.add_vote(pl.user_id, self.vote_emojis[pl.emoji.name])
+            # self.reaction_action(self, "_vote", emoji, message_id, channel_id, user_id)
+        elif str(pl.emoji) in self.control_emojis and this_poll.creator_id == pl.user_id:
+            await self.control_poll(pl.emoji, pl.message_id, pl.channel_id)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, pl):
-        [emoji, message_id, user_id] = [pl.emoji, pl.message_id, pl.user_id]
-        if message_id in self.active_polls:
-            this_poll = self.active_polls.get(message_id)
-            if str(emoji.name) in self.vote_emojis and self.vote_emojis[str(emoji.name)] + 1 <= len(this_poll.options) and user_id in this_poll.votes:
-                this_poll.remove_vote(user_id, self.vote_emojis[emoji.name])
-                # self.reaction_action(self, "_unvote", emoji, message_id, channel_id, user_id)
-        pass
+        if pl.message_id not in self.active_polls:
+            return
+        
+        this_poll = self.active_polls.get(pl.message_id)
+        if str(pl.emoji.name) in self.vote_emojis and self.vote_emojis[str(pl.emoji.name)] < len(this_poll.options) and pl.user_id in this_poll.votes:
+            this_poll.remove_vote(pl.user_id, self.vote_emojis[pl.emoji.name])
+            # self.reaction_action(self, "_unvote", emoji, message_id, channel_id, user_id)
 
     async def control_poll(self, emoji, message_id, channel_id):
         if str(emoji.name) in self.control_emojis and self.control_emojis[str(emoji.name)] == "stop":
@@ -122,7 +124,7 @@ class Polls(commands.Cog):
             # await channel.send(file=discord.File(fp=f.getbuffer(), filename="poll_results.png"))
             await message.edit(embed=embed)
         except ValueError:
-            await message.edit("Something went wrong with scaling.")
+            await message.edit("Something went wrong, probably with scaling.")
 
     @commands.command()
     async def poll(self, ctx,*, items : str = None):
