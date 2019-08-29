@@ -24,8 +24,8 @@ class Logs(commands.Cog):
                 except Exception as e:
                     await self.log('Failed to load extension {}.\n{}'.format(extension, e))
 
-        await asyncio.sleep(5)
-        await self.log("Extensions loaded: {}".format(self.bot.extensions.keys()))
+        # await asyncio.sleep(5)
+        # await self.log("Extensions loaded: {}".format(list(self.bot.extensions.keys())))
 
 #    @commands.Cog.listener()
 #    async def on_shard_ready(self, shard_id):
