@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from util import config
+import asyncio
 
 
 class Logs(commands.Cog):

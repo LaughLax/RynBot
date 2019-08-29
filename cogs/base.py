@@ -3,6 +3,7 @@ from discord.ext import commands
 from datetime import datetime
 import sys
 from util import config
+import asyncio
 
 
 class Base(commands.Cog):
