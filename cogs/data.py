@@ -39,7 +39,7 @@ class Data(commands.Cog):
                                 pops.append(Population(server=server.id,
                                                        datetime=now,
                                                        user_count=server.member_count))
-                                db.add_all(pops)
+                            db.add_all(pops)
                     except IntegrityError as e:
                         if 'Duplicate entry' not in str(e):
                             log = self.bot.get_cog('Logs')
