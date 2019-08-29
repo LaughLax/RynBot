@@ -24,6 +24,7 @@ class Base(commands.Cog):
                 else:
                     print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
                 print(e)
+            await asyncio.sleep(0)
 
         game = discord.Activity(type=discord.ActivityType.playing, name=config.activity)
         await self.bot.change_presence(activity=game)

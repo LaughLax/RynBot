@@ -19,6 +19,7 @@ class Logs(commands.Cog):
                 await self.log("Oh no! {} is not loaded! Trying to load...".format(extension))
                 try:
                     self.bot.load_extension(extension)
+                    await asyncio.sleep(0)
                 except Exception as e:
                     await self.log('Failed to load extension {}.\n{}'.format(extension, e))
 
