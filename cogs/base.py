@@ -125,7 +125,7 @@ class Base(commands.Cog):
         """Send a message to the bot owner. Images and Discord-based emoji will not be shown."""
         if message is not None:
             # TODO catch emojis (will require checking ctx.message instead of taking args)
-            recipient = await self.bot.get_user_info(config.owner_id)
+            recipient = await self.bot.fetch_user(config.owner_id)
             if message.count("`") % 2 == 1:
                 message = message + "`"
             await recipient.send("{0}\n\n`This message was sent to you by {1.name}#{1.discriminator} ({1.id}). To send him a message, use the `_message` command.`".format(message, ctx.author))

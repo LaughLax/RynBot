@@ -1,7 +1,9 @@
 from discord.ext import commands
 from util import config
 
-bot = commands.Bot(command_prefix=config.prefix, owner_id=config.owner_id, help_attrs={'aliases': ['halp']})
+bot = commands.Bot(command_prefix=config.prefix,
+                   owner_id=config.owner_id,
+                   help_command=commands.HelpCommand(command_attrs={'aliases': ['halp']}))
 
 if __name__ == '__main__':
     for extension in config.cogs_core:

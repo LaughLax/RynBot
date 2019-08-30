@@ -20,7 +20,8 @@ class Chart(commands.Cog):
         """Commands to generate charts."""
 
         if ctx.invoked_subcommand is None:
-            await ctx.invoke(self.bot.get_command('help'), 'chart')
+            await ctx.send_help(ctx.command)    # New version
+            # await ctx.invoke(self.bot.get_command('help'), 'chart')   # Old version
 
     @chart.error
     async def chart_error(self, ctx, error):

@@ -29,7 +29,8 @@ class Owner(commands.Cog):
         """Commands for managing cogs."""
 
         if ctx.invoked_subcommand is None:
-            await ctx.invoke(self.bot.get_command('help'), 'cog')
+            await ctx.send_help(ctx.command)    # New version
+            # await ctx.invoke(self.bot.get_command('help'), 'cog')   # Old version
 
     @cog.command()
     async def load(self, ctx, name: str):
@@ -61,11 +62,9 @@ class Owner(commands.Cog):
 
         if name.lower() == 'all':
             for ex in self.bot.extensions:
-                self.bot.unload_extension(ex)
-                self.bot.load_extension(ex)
+                self.bot.reload_extension(ex)
         else:
-            self.bot.unload_extension('cogs.{}'.format(name))
-            self.bot.load_extension('cogs.{}'.format(name))
+            self.bot.reload_extension('cogs.{}'.format(name))
 
         await ctx.send('Reload operation successful.')
 
