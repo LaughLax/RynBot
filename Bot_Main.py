@@ -1,5 +1,12 @@
 from discord.ext import commands
 from util import config
+import logging
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(filename='/var/www/html/RynBot/debug.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 bot = commands.Bot(command_prefix=config.prefix,
                    owner_id=config.owner_id,
@@ -25,7 +32,7 @@ async def on_ready():
     if 'cogs.logs' not in bot.extensions:
         print('Logs cog failed to load!')
         chan = bot.get_channel(config.bot_log_id)
-        await chan.send("Help me <@​​​{}>! I failed to load my logging cog!".format(config.owner_id))
+        await chan.send("Help me <@{}>! I failed to load my logging cog!".format(config.owner_id))
 
 
 bot.run(config.token)
