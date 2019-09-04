@@ -27,9 +27,6 @@ class Base(commands.Cog):
                 print(e)
             await asyncio.sleep(0)
 
-        game = discord.Activity(type=discord.ActivityType.playing, name=config.activity)
-        await self.bot.change_presence(activity=game)
-
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.errors.CommandNotFound):

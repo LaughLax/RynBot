@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from util import config
 import logging
@@ -8,8 +9,11 @@ handler = logging.FileHandler(filename='/var/www/html/RynBot/debug.log', encodin
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
+game = discord.Activity(type=discord.ActivityType.playing, name=config.activity)
+
 bot = commands.Bot(command_prefix=config.prefix,
                    owner_id=config.owner_id,
+                   activity=game,
                    help_command=commands.HelpCommand(command_attrs={'aliases': ['halp']}))
 
 if __name__ == '__main__':
