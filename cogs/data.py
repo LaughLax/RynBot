@@ -85,7 +85,8 @@ class Data(commands.Cog):
 
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
-            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
+            f.seek(0)
+            await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
         plt.close()
 
     @data.command()
@@ -134,7 +135,8 @@ class Data(commands.Cog):
 
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
-            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
+            f.seek(0)
+            await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
         plt.close()
 
 

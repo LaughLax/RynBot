@@ -82,7 +82,8 @@ class Chart(commands.Cog):
 
             with io.BytesIO() as f:
                 plt.savefig(f, format='png')
-                await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
+                f.seek(0)
+                await ctx.send(file=discord.File(fp=f, filename="gameschart.png"))
             plt.close()
         except ValueError:
             await ctx.send("Something went wrong with fitting the graph to scale.")
@@ -142,7 +143,8 @@ class Chart(commands.Cog):
 
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
-            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="gameschart.png"))
+            f.seek(0)
+            await ctx.send(file=discord.File(fp=f, filename="gameschart.png"))
         plt.close()
 
     @chart.command()
@@ -177,7 +179,8 @@ class Chart(commands.Cog):
 
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
-            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="rolechart.png"))
+            f.seek(0)
+            await ctx.send(file=discord.File(fp=f, filename="rolechart.png"))
         plt.close()
 
     @chart.command()
@@ -221,7 +224,8 @@ class Chart(commands.Cog):
 
         with io.BytesIO() as f:
             plt.savefig(f, format='png')
-            await ctx.send(file=discord.File(fp=f.getbuffer(), filename="userchart.png"))
+            f.seek(0)
+            await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
         plt.close()
 
     # @chart.command()
