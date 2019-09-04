@@ -14,7 +14,7 @@ game = discord.Activity(type=discord.ActivityType.playing, name=config.activity)
 bot = commands.Bot(command_prefix=config.prefix,
                    owner_id=config.owner_id,
                    activity=game,
-                   help_command=commands.HelpCommand(command_attrs={'aliases': ['halp']}))
+                   help_command=commands.DefaultHelpCommand(command_attrs={'aliases': ['halp']}))
 
 if __name__ == '__main__':
     for extension in config.cogs_core:
