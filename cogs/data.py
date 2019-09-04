@@ -75,6 +75,8 @@ class Data(commands.Cog):
                             order_by(Population.datetime).\
                             all())
 
+        await asyncio.sleep(0)
+
         plt.clf()
         plt.plot(rows[:, 0], rows[:, 1])
         plt.xticks(rotation=45)
@@ -106,6 +108,8 @@ class Data(commands.Cog):
                             order_by(Population.datetime).\
                             all())
 
+        await asyncio.sleep(0)
+
         f = lambda x: x.replace(tzinfo=get_localzone())
         rows[:, 0] = np.array(list(map(f, rows[:, 0])))
 
@@ -113,6 +117,8 @@ class Data(commands.Cog):
         for a in server.members:
             members.append(a)
         n = len(members)
+
+        await asyncio.sleep(0)
 
         xy = np.empty((n*2), dtype=[('join', 'datetime64[us]'), ('count', 'int64')])
         xy['join'][::2] = list(map(lambda mem: mem.joined_at, members))
@@ -123,6 +129,8 @@ class Data(commands.Cog):
         xy[1:-1:2] = xy[2::2]
         xy['count'][1:-1:2] -= 1
         xy[-1] = (ctx.message.created_at, n)
+
+        await asyncio.sleep(0)
 
         plt.clf()
         plt.plot(xy['join'], xy['count'], ':k',
