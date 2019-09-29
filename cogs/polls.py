@@ -131,7 +131,7 @@ class Polls(commands.Cog):
         if not isinstance(ctx.channel, discord.TextChannel) or items is None:
             return
 
-        split = items.split(" | ")
+        split = [a.strip() for a in items.split("|")]
         if len(split) <= 1:
             await ctx.send("A poll must have at least 2 options!")
         else:
