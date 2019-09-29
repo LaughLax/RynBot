@@ -520,7 +520,6 @@ class Owner(commands.Cog):
         if isinstance(body[-1], ast.With):
             insert_returns(body[-1].body)
 
-
     @commands.command()
     async def eval_fn(self, ctx, *, cmd):
         """Evaluates input.

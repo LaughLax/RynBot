@@ -4,6 +4,7 @@ from datetime import datetime
 import sys
 from util import config
 import asyncio
+from discord.ext.commands import ExtensionAlreadyLoaded
 
 
 class Base(commands.Cog):
@@ -19,13 +20,13 @@ class Base(commands.Cog):
             try:
                 self.bot.load_extension(extension)
             except Exception as e:
-                log = self.bot.get_cog('Logs')
-                if log:
-                    await log.log('Failed to load extension {}.'.format(extension))
-                else:
-                    print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
-                print(e)
-            await asyncio.sleep(0)
+                if type(e) is not ExtensionAlreadyLoaded:
+                    log = self.bot.get_cog('Logs')
+                    if log:
+                        await log.log('Failed to load extension {}.'.format(extension))
+                    else:
+                        print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
+                    print(e)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
