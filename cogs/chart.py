@@ -190,8 +190,13 @@ class Chart(commands.Cog):
         role_size = [len(a.members) for a in role_list]
         role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
 
+        top_margin = max(role_size) * 0.1
+
         plt.clf()
         plt.bar(range(len(role_list)), role_size, tick_label=role_list, color=role_colors, width=1., edgecolor='k')
+        for i, v in enumerate(role_size):
+            plt.gcf().gca().text(i, v + top_margin/2., str(v), fontsize='small', horizontalalignment='center', verticalalignment='center')
+        plt.ylim(0, max(role_size) + top_margin)
         plt.xticks(rotation=90, size='xx-small')
         plt.xlabel("Role")
         plt.ylabel("Member count")
