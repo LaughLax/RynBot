@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 import io
 
+from util.database import ServerConfig, CustomRoleChart
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -147,6 +150,17 @@ class Chart(commands.Cog):
             await ctx.send(file=discord.File(fp=f, filename="gameschart.png"))
         plt.close()
 
+    async def get_custom_roles_list(self, db, guild):
+        try:
+            custom_list = db.query(CustomRoleChart.role).\
+                filter(CustomRoleChart.server == guild.id).\
+                all()
+            custom_list = [a[0] for a in custom_list]
+        except NoResultFound:
+            return []
+
+        return custom_list
+
     @chart.command()
     async def roles(self, ctx, server_id: str = None):
         """Display bar chart of roles on a server.
@@ -164,7 +178,14 @@ class Chart(commands.Cog):
                 await ctx.send("I'm not in that server.")
                 return
 
-        role_list = [a for a in server.roles if not a.is_default()]
+        with self.bot.db.get_session() as db:
+            role_list_db = await self.get_custom_roles_list(db, server)
+
+        if role_list_db:
+            role_list = [a for a in server.roles if not a.is_default() and a.id in role_list_db]
+        else:
+            role_list = [a for a in server.roles if not a.is_default()]
+
         role_list.reverse()
         role_size = [len(a.members) for a in role_list]
         role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
