@@ -54,6 +54,7 @@ class ServerConfig(Base):
                                 nullable=False)
 
     stars = relationship('Star', back_populates='server_rel')
+    custom_role_chart = relationship('CustomRoleChart', back_populates='server_rel')
 
 
 class Star(Base):
@@ -78,6 +79,20 @@ class Star(Base):
                            nullable=False)
 
     server_rel = relationship('ServerConfig', back_populates='stars')
+
+
+class CustomRoleChart(Base):
+    __tablename__ = 'server_role_chart'
+
+    server = sql.Column(sql.BigInteger,
+                        sql.ForeignKey('server_config.server'),
+                        nullable=False)
+    role = sql.Column(sql.BigInteger,
+                      primary_key=True,
+                      unique=True,
+                      nullable=False)
+
+    server_rel = relationship('ServerConfig', back_populates='custom_role_chart')
 
 
 def setup(bot):
