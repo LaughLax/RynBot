@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import typing
 
-from util.database import ServerConfig
+from util.database import ServerConfig, CustomRoleChart
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 
@@ -65,6 +65,53 @@ class Server(commands.Cog):
             cfg.star_threshold = min_stars
             db.add(cfg)
             await ctx.send('The number of stars needed to reach the starboard has been set to {}.'.format(min_stars))
+
+    @config.command()
+    async def rolechart(self, ctx):
+        with self.bot.db.get_session() as db:
+            role_list_db = db.query(CustomRoleChart.role).\
+                    filter(CustomRoleChart.server == ctx.guild.id).\
+                    all()
+            role_list_db = [a[0] for a in role_list_db]
+
+        if role_list_db:
+            role_list = [a.name for a in ctx.guild.roles if not a.is_default() and a.id in role_list_db]
+
+        await ctx.send('Roles in this server\'s chart: {}'.format(', '.join(role_list)))
+
+    @config.command()
+    async def rolechart_add(self, ctx, role: discord.Role = None):
+        if not role:
+            ctx.send('You have to tell me a role to add!')
+            return
+
+        with self.bot.db.get_session() as db:
+            row = CustomRoleChart(server=ctx.guild.id, role=role.id)
+            try:
+                db.add(row)
+            except Exception as e:
+                self.bot.get_cog('Logs').log(e)
+                ctx.send('Something went wrong. I\'ve let my owner know.')
+
+        await ctx.send('The {} role has been added to the role chart.'.format(role))
+
+    @config.command()
+    async def rolechart_remove(self, ctx, role: discord.Role = None):
+        with self.bot.db.get_session() as db:
+            try:
+                row = db.query(CustomRoleChart).\
+                    filter(CustomRoleChart.server == ctx.guild.id,
+                           CustomRoleChart.role == role.id).\
+                    one_or_none()
+            except MultipleResultsFound as e:
+                log = self.bot.get_cog('Logs')
+                if log:
+                    await log.log(e)
+                raise e
+
+            db.delete(row)
+
+        await ctx.send('The {} role has been removed from the role chart.'.format(role))
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
