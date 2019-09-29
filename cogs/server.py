@@ -26,6 +26,7 @@ class Server(commands.Cog):
 
         if not cfg:
             cfg = ServerConfig(server=guild.id)
+            db.add(cfg)
 
         return cfg
 
@@ -69,6 +70,7 @@ class Server(commands.Cog):
     @config.command()
     async def rolechart(self, ctx):
         with self.bot.db.get_session() as db:
+            await self.get_cfg(db, ctx.guild)
             role_list_db = db.query(CustomRoleChart.role).\
                     filter(CustomRoleChart.server == ctx.guild.id).\
                     all()
@@ -86,6 +88,7 @@ class Server(commands.Cog):
             return
 
         with self.bot.db.get_session() as db:
+            await self.get_cfg(db, ctx.guild)
             row = CustomRoleChart(server=ctx.guild.id, role=role.id)
             try:
                 db.add(row)
@@ -99,6 +102,7 @@ class Server(commands.Cog):
     async def rolechart_remove(self, ctx, role: discord.Role = None):
         with self.bot.db.get_session() as db:
             try:
+                await self.get_cfg(db, ctx.guild)
                 row = db.query(CustomRoleChart).\
                     filter(CustomRoleChart.server == ctx.guild.id,
                            CustomRoleChart.role == role.id).\
