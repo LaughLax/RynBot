@@ -34,7 +34,7 @@ class Server(commands.Cog):
         # TODO Add way to remove starboard from config
         with self.bot.db.get_session() as db:
             try:
-                cfg = self.get_cfg(db, ctx.guild)
+                cfg = await self.get_cfg(db, ctx.guild)
             except Exception as e:
                 await ctx.send('An unexpected error occurred.')
                 return
