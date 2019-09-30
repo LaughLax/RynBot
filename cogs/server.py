@@ -32,7 +32,6 @@ class Server(commands.Cog):
 
     @config.command()
     async def starboard(self, ctx, channel: typing.Optional[discord.TextChannel] = None):
-        # TODO Add way to remove starboard from config
         with self.bot.db.get_session() as db:
             try:
                 cfg = await self.get_cfg(db, ctx.guild)
@@ -53,6 +52,22 @@ class Server(commands.Cog):
                     await ctx.send('This server\'s starboard is {}.'.format(self.bot.get_channel(cfg.starboard).mention))
                 else:
                     await ctx.send('This server has no assigned starboard.')
+
+    @config.command()
+    async def remove_starboard(self, ctx):
+        with self.bot.db.get_session() as db:
+            try:
+                cfg = await self.get_cfg(db, ctx.guild)
+            except Exception as e:
+                await ctx.send('An unexpected error occurred.')
+                return
+
+            if cfg.starboard:
+                cfg.starboard = None
+                db.add(cfg)
+                await ctx.send('This server\s starboard has been disabled.')
+            else:
+                await ctx.send('This server has no assigned starboard.')
 
     @config.command(aliases=['min_stars'])
     async def star_threshold(self, ctx, min_stars: int = 1):
