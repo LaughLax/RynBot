@@ -58,7 +58,7 @@ class Server(commands.Cog):
     async def star_threshold(self, ctx, min_stars: int = 1):
         with self.bot.db.get_session() as db:
             try:
-                cfg = self.get_cfg(db, ctx.guild)
+                cfg = await self.get_cfg(db, ctx.guild)
             except Exception as e:
                 await ctx.send('An unexpected error occurred.')
                 return
