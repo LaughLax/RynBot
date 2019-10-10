@@ -182,6 +182,33 @@ class Chart(commands.Cog):
         plt.close()
         return file_obj
 
+    @staticmethod
+    def make_user_chart(join_dates, now, server_name, file_obj):
+        n = len(join_dates)
+        xy = np.empty((n*2), dtype=[('join', 'datetime64[us]'), ('count', 'int64')])
+
+        xy['join'][::2] = join_dates
+        xy['count'][::2] = np.ones(n)
+        xy[::2].sort(order='join')
+        xy['count'][::2] = np.cumsum(xy['count'][::2])
+
+        xy[1:-1:2] = xy[2::2]
+        xy['count'][1:-1:2] -= 1
+        xy[-1] = (now, n)
+
+        plt.clf()
+        plt.plot(xy['join'], xy['count'])
+        plt.xticks(rotation=45)
+        plt.xlabel("Date")
+        plt.ylabel("Member count")
+        plt.title("Membership growth for server: {}\nNote: This data includes only current members.".format(server_name))
+        plt.tight_layout()
+
+        plt.savefig(file_obj, format='png')
+        file_obj.seek(0)
+        plt.close()
+        return file_obj
+
     @chart.command()
     async def roles(self, ctx, server_id: str = None):
         """Display bar chart of roles on a server.
@@ -232,32 +259,11 @@ class Chart(commands.Cog):
                 await ctx.send("I'm not in that server.")
                 return
 
-        members = server.members.copy()
-        n = len(members)
-
-        xy = np.empty((n*2), dtype=[('join', 'datetime64[us]'), ('count', 'int64')])
-        xy['join'][::2] = list(map(lambda mem: mem.joined_at, members))
-        xy['count'][::2] = np.ones(n)
-        xy[::2].sort(order='join')
-        xy['count'][::2] = np.cumsum(xy['count'][::2])
-
-        xy[1:-1:2] = xy[2::2]
-        xy['count'][1:-1:2] -= 1
-        xy[-1] = (ctx.message.created_at, n)
-
-        plt.clf()
-        plt.plot(xy['join'], xy['count'])
-        plt.xticks(rotation=45)
-        plt.xlabel("Date")
-        plt.ylabel("Member count")
-        plt.title("Membership growth for server: {0.name}\nNote: This data includes only current members.".format(server))
-        plt.tight_layout()
+        join_dates = [mem.joined_at for mem in server.members]
 
         with io.BytesIO() as f:
-            plt.savefig(f, format='png')
-            f.seek(0)
+            f = await self.bot.loop.run_in_executor(self.bot.process_pool, self.make_user_chart, join_dates, ctx.message.created_at, server.name, f)
             await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
-        plt.close()
 
 
 def setup(bot):
