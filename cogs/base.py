@@ -43,16 +43,15 @@ class Base(commands.Cog):
             await ctx.send("Insufficient arguments. Use `_help [command]` for more info.")
             return
 
-        # If it's an unhandled error, print to console
-        print(ctx.message.content, file=sys.stderr)
         if isinstance(error, discord.errors.Forbidden):
-            print('"Forbidden" error!\nResponse:\n{0.response}\nText:\n{0.text}\nStatus: {0.status}\nCode: {0.code}'.format(error), file=sys.stderr)
-            pass
+            return
 
         if isinstance(error, commands.CommandInvokeError):
             if isinstance(error.original, discord.errors.Forbidden):
-                print('"Forbidden" error!\nResponse:\n{0.response}\nText:\n{0.text}\nStatus: {0.status}\nCode: {0.code}'.format(error.original), file=sys.stderr)
-                pass
+                return
+
+        # If it's an unhandled error, print to console
+        print(ctx.message.content, file=sys.stderr)
 
         raise error
 
