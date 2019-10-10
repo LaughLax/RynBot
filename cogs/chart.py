@@ -225,9 +225,7 @@ class Chart(commands.Cog):
                 await ctx.send("I'm not in that server.")
                 return
 
-        members = []
-        for a in server.members:
-            members.append(a)
+        members = server.members.copy()
         n = len(members)
 
         xy = np.empty((n*2), dtype=[('join', 'datetime64[us]'), ('count', 'int64')])
@@ -253,10 +251,6 @@ class Chart(commands.Cog):
             f.seek(0)
             await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
         plt.close()
-
-    # @chart.command()
-    # async def nothing(self, ctx):
-        # await ctx.send('This command actually does nothing.')
 
 
 def setup(bot):
