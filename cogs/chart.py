@@ -240,7 +240,9 @@ class Chart(commands.Cog):
         role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
 
         with io.BytesIO() as f:
-            f = await self.bot.loop.run_in_executor(self.bot.process_pool, self.make_role_chart, role_names, role_size, role_colors, server.name, f)
+            f = await self.bot.loop.run_in_executor(self.bot.process_pool,
+                                                    self.make_role_chart,
+                                                    role_names, role_size, role_colors, server.name, f)
             await ctx.send(file=discord.File(fp=f, filename="rolechart.png"))
 
     @chart.command()
@@ -262,7 +264,9 @@ class Chart(commands.Cog):
         join_dates = [mem.joined_at for mem in server.members]
 
         with io.BytesIO() as f:
-            f = await self.bot.loop.run_in_executor(self.bot.process_pool, self.make_user_chart, join_dates, ctx.message.created_at, server.name, f)
+            f = await self.bot.loop.run_in_executor(self.bot.process_pool,
+                                                    self.make_user_chart,
+                                                    join_dates, ctx.message.created_at, server.name, f)
             await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
 
 
