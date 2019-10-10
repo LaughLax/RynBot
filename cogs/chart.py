@@ -161,6 +161,27 @@ class Chart(commands.Cog):
 
         return custom_list
 
+    @staticmethod
+    def make_role_chart(role_names, role_size, role_colors, server_name, file_obj):
+        top_margin = max(role_size) * 0.1
+
+        plt.clf()
+        plt.bar(range(len(role_names)), role_size, tick_label=role_names, color=role_colors, width=1., edgecolor='k')
+        for i, v in enumerate(role_size):
+            plt.gcf().gca().text(i, v + top_margin/2., str(v), fontsize='small', horizontalalignment='center', verticalalignment='center')
+        plt.ylim(0, max(role_size) + top_margin)
+        plt.xticks(rotation=90, size='xx-small')
+        plt.xlabel("Role")
+        plt.ylabel("Member count")
+        plt.title("Role distribution for server:\n{}".format(server_name))
+        plt.tight_layout()
+
+        plt.savefig(file_obj, format='png')
+        file_obj.seek(0)
+        # await ctx.send(file=discord.File(fp=f, filename="rolechart.png"))
+        plt.close()
+        return file_obj
+
     @chart.command()
     async def roles(self, ctx, server_id: str = None):
         """Display bar chart of roles on a server.
@@ -187,27 +208,13 @@ class Chart(commands.Cog):
             role_list = [a for a in server.roles if not a.is_default()]
 
         role_list.reverse()
+        role_names = [a.name for a in role_list]
         role_size = [len(a.members) for a in role_list]
         role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
 
-        top_margin = max(role_size) * 0.1
-
-        plt.clf()
-        plt.bar(range(len(role_list)), role_size, tick_label=role_list, color=role_colors, width=1., edgecolor='k')
-        for i, v in enumerate(role_size):
-            plt.gcf().gca().text(i, v + top_margin/2., str(v), fontsize='small', horizontalalignment='center', verticalalignment='center')
-        plt.ylim(0, max(role_size) + top_margin)
-        plt.xticks(rotation=90, size='xx-small')
-        plt.xlabel("Role")
-        plt.ylabel("Member count")
-        plt.title("Role distribution for server:\n{}".format(server.name))
-        plt.tight_layout()
-
         with io.BytesIO() as f:
-            plt.savefig(f, format='png')
-            f.seek(0)
+            f = await self.bot.loop.run_in_executor(self.bot.process_pool, self.make_role_chart, role_names, role_size, role_colors, server.name, f)
             await ctx.send(file=discord.File(fp=f, filename="rolechart.png"))
-        plt.close()
 
     @chart.command()
     async def users(self, ctx, server_id: str = None):
