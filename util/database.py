@@ -3,6 +3,7 @@ from util import config
 import sqlalchemy as sql
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm.exc import NoResultFound
 
 from contextlib import contextmanager
 
@@ -10,9 +11,11 @@ Base = declarative_base()
 
 
 class DBHandler:
-    def __init__(self):
+    def __init__(self, bot):
         self.engine = sql.create_engine(config.db_uri, pool_recycle=3600, pool_pre_ping=True)
         self.SessionFactory = sessionmaker(bind=self.engine)
+
+        self.execute = bot.loop.run_in_executor
 
     @contextmanager
     def get_session(self):
@@ -25,6 +28,21 @@ class DBHandler:
             raise
         finally:
             session.close()
+
+    def _get_custom_role_list(self, guild_id):
+        with self.get_session() as db:
+            try:
+                custom_list = db.query(CustomRoleChart.role).\
+                    filter(CustomRoleChart.server == guild_id).\
+                    all()
+                custom_list = [a[0] for a in custom_list]
+            except NoResultFound:
+                return []
+
+        return custom_list
+
+    async def get_custom_role_list(self, guild_id):
+        return await self.execute(None, self._get_custom_role_list, guild_id)
 
 
 class Population(Base):
@@ -96,7 +114,7 @@ class CustomRoleChart(Base):
 
 
 def setup(bot):
-    bot.db = DBHandler()
+    bot.db = DBHandler(bot)
 
 
 def teardown(bot):

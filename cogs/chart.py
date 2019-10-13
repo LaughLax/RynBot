@@ -153,9 +153,7 @@ class Chart(commands.Cog):
     async def role_chart_wrapper(self, server_id, file_obj):
         server = self.bot.get_guild(int(server_id))
 
-        role_list_db = await self.bot.loop.run_in_executor(None,
-                                                           self.get_custom_roles_list,
-                                                           self.bot.db, server)
+        role_list_db = await self.bot.db.get_custom_role_list(server_id)
 
         if role_list_db:
             role_list = [a for a in server.roles if not a.is_default() and a.id in role_list_db]
@@ -172,18 +170,6 @@ class Chart(commands.Cog):
                                                        role_names, role_size, role_colors, server.name, file_obj)
 
         return file_obj
-
-    def get_custom_roles_list(self, db, guild):
-        with db.get_session() as db:
-            try:
-                custom_list = db.query(CustomRoleChart.role).\
-                    filter(CustomRoleChart.server == guild.id).\
-                    all()
-                custom_list = [a[0] for a in custom_list]
-            except NoResultFound:
-                return []
-
-        return custom_list
 
     @staticmethod
     def make_role_chart(role_names, role_size, role_colors, server_name, file_obj):
