@@ -119,8 +119,7 @@ class Data(commands.Cog):
                                                    self._db_fetch_pop_history,
                                                    self.bot.db, server.id)
 
-        f = lambda x: x.replace(tzinfo=get_localzone())
-        rows[:, 0] = np.array(list(map(f, rows[:, 0])))
+        rows[:, 0] = [x.replace(tzinfo=get_localzone()) for x in rows[:, 0]]
 
         members = []
         for a in server.members:
