@@ -150,14 +150,38 @@ class Chart(commands.Cog):
             await ctx.send(file=discord.File(fp=f, filename="gameschart.png"))
         plt.close()
 
-    async def get_custom_roles_list(self, db, guild):
-        try:
-            custom_list = db.query(CustomRoleChart.role).\
-                filter(CustomRoleChart.server == guild.id).\
-                all()
-            custom_list = [a[0] for a in custom_list]
-        except NoResultFound:
-            return []
+    async def role_chart_wrapper(self, server_id, file_obj):
+        server = self.bot.get_guild(int(server_id))
+
+        role_list_db = await self.bot.loop.run_in_executor(None,
+                                                           self.get_custom_roles_list,
+                                                           self.bot.db, server)
+
+        if role_list_db:
+            role_list = [a for a in server.roles if not a.is_default() and a.id in role_list_db]
+        else:
+            role_list = [a for a in server.roles if not a.is_default()]
+
+        role_list.reverse()
+        role_names = [a.name for a in role_list]
+        role_size = [len(a.members) for a in role_list]
+        role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
+
+        file_obj = await self.bot.loop.run_in_executor(self.bot.process_pool,
+                                                       self.make_role_chart,
+                                                       role_names, role_size, role_colors, server.name, file_obj)
+
+        return file_obj
+
+    def get_custom_roles_list(self, db, guild):
+        with db.get_session() as db:
+            try:
+                custom_list = db.query(CustomRoleChart.role).\
+                    filter(CustomRoleChart.server == guild.id).\
+                    all()
+                custom_list = [a[0] for a in custom_list]
+            except NoResultFound:
+                return []
 
         return custom_list
 
@@ -219,30 +243,10 @@ class Chart(commands.Cog):
         If a role's name is too long, the image may fail to generate."""
 
         if server_id is None or server_id.lower() == "here":
-            server = ctx.guild
-        else:
-            server = self.bot.get_guild(int(server_id))
-            if server is None:
-                await ctx.send("I'm not in that server.")
-                return
-
-        with self.bot.db.get_session() as db:
-            role_list_db = await self.get_custom_roles_list(db, server)
-
-        if role_list_db:
-            role_list = [a for a in server.roles if not a.is_default() and a.id in role_list_db]
-        else:
-            role_list = [a for a in server.roles if not a.is_default()]
-
-        role_list.reverse()
-        role_names = [a.name for a in role_list]
-        role_size = [len(a.members) for a in role_list]
-        role_colors = [[b / 256. for b in a.color.to_rgb()] + [1.] for a in role_list]
+            server_id = ctx.guild.id
 
         with io.BytesIO() as f:
-            f = await self.bot.loop.run_in_executor(self.bot.process_pool,
-                                                    self.make_role_chart,
-                                                    role_names, role_size, role_colors, server.name, f)
+            f = await self.role_chart_wrapper(server_id, f)
             await ctx.send(file=discord.File(fp=f, filename="rolechart.png"))
 
     @chart.command()
