@@ -45,7 +45,7 @@ class Tasks(Cog):
         except Exception as e:
             await ctx.send('Something went wrong...')
 
-    @loop(minutes=1)
+    @loop(hours=1)
     async def hourly_task_run(self):
         tasks = await self.bot.db.fetch_task_list()
         for task in tasks:
