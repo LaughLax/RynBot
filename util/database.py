@@ -96,6 +96,7 @@ class DBHandler:
         with self.get_session() as db:
             try:
                 rows = db.query(ScheduledTasks).all()
+                rows = [a[0] for a in rows]
             except NoResultFound as e:
                 raise e
 
@@ -105,7 +106,7 @@ class DBHandler:
         return await self.execute(None, self._get_custom_role_list, guild_id)
 
     async def create_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
-        return await self.execute(None, self._schedule_task, guild_id, channel_id, task_name, command, first_run_msg_id)
+        return await self.execute(None, self._create_task, guild_id, channel_id, task_name, command, first_run_msg_id)
 
     async def update_task(self, guild_id, task_name, last_run_msg_id):
         return await self.execute(None, self._update_task, guild_id, task_name, last_run_msg_id)
