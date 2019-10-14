@@ -95,8 +95,12 @@ class DBHandler:
     def _fetch_task_list(self):
         with self.get_session() as db:
             try:
-                rows = db.query(ScheduledTasks).all()
-                rows = [a[0] for a in rows]
+                rows = db.query(ScheduledTasks.server,
+                                ScheduledTasks.channel,
+                                ScheduledTasks.task_name,
+                                ScheduledTasks.command,
+                                ScheduledTasks.last_run_msg_id).all()
+                # rows = [a[0] for a in rows]
             except NoResultFound as e:
                 raise e
 
