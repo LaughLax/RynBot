@@ -31,12 +31,12 @@ class Tasks(Cog):
 
     @command()
     @has_permissions(manage_guild=True)
-    async def create_task(self, ctx, task_name, *, job):
-        if job not in self.task_options:
+    async def create_task(self, ctx, task_name, *, task_type):
+        if task_type not in self.task_options:
             await ctx.send('That\'s not a scheduleable task! Options are: {}'.format(list(self.task_options.keys())))
         else:
-            msg_id = await self.task_options[job](ctx.guild.id, ctx.channel.id)
-            await self.bot.db.create_task(ctx.guild.id, ctx.channel.id, task_name, job, msg_id)
+            msg_id = await self.task_options[task_type](ctx.guild.id, ctx.channel.id)
+            await self.bot.db.create_task(ctx.guild.id, ctx.channel.id, task_name, task_type, msg_id)
 
     @command()
     @has_permissions(manage_guild=True)
