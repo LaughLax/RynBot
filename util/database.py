@@ -3,7 +3,7 @@ from util import config
 import sqlalchemy as sql
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from contextlib import contextmanager
 
@@ -29,6 +29,18 @@ class DBHandler:
         finally:
             session.close()
 
+    def get_server_cfg(self, db, guild_id):
+        try:
+            cfg = db.query(ServerConfig).filter(ServerConfig.server == guild_id).one_or_none()
+        except MultipleResultsFound as e:
+            raise e
+
+        if not cfg:
+            cfg = ServerConfig(server=guild_id)
+            db.add(cfg)
+
+        return cfg
+
     def _get_custom_role_list(self, guild_id):
         with self.get_session() as db:
             try:
@@ -41,8 +53,56 @@ class DBHandler:
 
         return custom_list
 
+    def _schedule_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
+        with self.get_session() as db:
+            self.get_server_cfg(db, guild_id)
+
+            row = ScheduledTasks(server=guild_id,
+                                 channel=channel_id,
+                                 task_name=task_name,
+                                 command=command,
+                                 last_run_msg_id=first_run_msg_id)
+            try:
+                db.add(row)
+            except Exception as e:
+                raise e
+
+    def _update_task(self, guild_id, task_name, last_run_msg_id):
+        with self.get_session() as db:
+            try:
+                row = db.query(ScheduledTasks).\
+                    filter(ScheduledTasks.server == guild_id).\
+                    filter(ScheduledTasks.task_name == task_name).\
+                    one_or_none()
+            except MultipleResultsFound as e:
+                raise e
+
+            row.last_run_msg_id = last_run_msg_id
+            db.add(row)
+
+    def _delete_task(self, guild_id, task_name):
+        with self.get_session() as db:
+            try:
+                row = db.query(ScheduledTasks).\
+                    filter(ScheduledTasks.server == guild_id).\
+                    filter(ScheduledTasks.task_name == task_name).\
+                    one_or_none()
+            except MultipleResultsFound as e:
+                raise e
+
+            db.delete(row)
+
     async def get_custom_role_list(self, guild_id):
         return await self.execute(None, self._get_custom_role_list, guild_id)
+
+    async def schedule_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
+        return await self.execute(None, self._schedule_task, guild_id, channel_id, task_name, command, first_run_msg_id)
+
+    async def update_task(self, guild_id, task_name, last_run_msg_id):
+        return await self.execute(None, self._schedule_task, guild_id, task_name, last_run_msg_id)
+
+    async def delete_task(self, guild_id, task_name):
+        return await self.execute(None, self._schedule_task, guild_id, task_name)
 
 
 class Population(Base):
