@@ -53,7 +53,7 @@ class DBHandler:
 
         return custom_list
 
-    def _schedule_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
+    def _create_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
         with self.get_session() as db:
             self.get_server_cfg(db, guild_id)
 
@@ -95,14 +95,14 @@ class DBHandler:
     async def get_custom_role_list(self, guild_id):
         return await self.execute(None, self._get_custom_role_list, guild_id)
 
-    async def schedule_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
+    async def create_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
         return await self.execute(None, self._schedule_task, guild_id, channel_id, task_name, command, first_run_msg_id)
 
     async def update_task(self, guild_id, task_name, last_run_msg_id):
-        return await self.execute(None, self._schedule_task, guild_id, task_name, last_run_msg_id)
+        return await self.execute(None, self._update_task, guild_id, task_name, last_run_msg_id)
 
     async def delete_task(self, guild_id, task_name):
-        return await self.execute(None, self._schedule_task, guild_id, task_name)
+        return await self.execute(None, self._delete_task, guild_id, task_name)
 
 
 class Population(Base):
