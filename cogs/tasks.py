@@ -1,5 +1,5 @@
 from discord import File
-from discord.ext.commands import Cog, command
+from discord.ext.commands import Cog, command, has_permissions
 from discord.ext.tasks import loop
 
 from io import BytesIO
@@ -30,6 +30,7 @@ class Tasks(Cog):
         return msg.id
 
     @command()
+    @has_permissions(manage_guild=True)
     async def create_task(self, ctx, task_name, *, job):
         if job not in self.task_options:
             await ctx.send('That\'s not a scheduleable task! Options are: {}'.format(list(self.task_options.keys())))
@@ -38,6 +39,7 @@ class Tasks(Cog):
             await self.bot.db.create_task(ctx.guild.id, ctx.channel.id, task_name, job, msg_id)
 
     @command()
+    @has_permissions(manage_guild=True)
     async def delete_task(self, ctx, task_name):
         try:
             await self.bot.db.delete_task(ctx.guild.id, task_name)
