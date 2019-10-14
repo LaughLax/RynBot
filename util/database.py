@@ -92,6 +92,15 @@ class DBHandler:
 
             db.delete(row)
 
+    def _fetch_task_list(self):
+        with self.get_session() as db:
+            try:
+                rows = db.query(ScheduledTasks).all()
+            except NoResultFound as e:
+                raise e
+
+        return rows
+
     async def get_custom_role_list(self, guild_id):
         return await self.execute(None, self._get_custom_role_list, guild_id)
 
@@ -103,6 +112,9 @@ class DBHandler:
 
     async def delete_task(self, guild_id, task_name):
         return await self.execute(None, self._delete_task, guild_id, task_name)
+
+    async def fetch_task_list(self):
+        return await self.execute(None, self._fetch_task_list)
 
 
 class Population(Base):
