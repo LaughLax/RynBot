@@ -128,6 +128,34 @@ class DBHandler:
                 all()
         return rows
 
+    @async_via_threadpool
+    def fetch_starboard_channel(self, server_id):
+        with self.get_session() as db:
+            try:
+                starboard = db.query(ServerConfig.starboard).\
+                    filter(ServerConfig.server == server_id).\
+                    one()[0]
+            except NoResultFound:
+                starboard = None
+            except MultipleResultsFound as e:
+                raise e
+
+        return starboard
+
+    @async_via_threadpool
+    def fetch_star_threshold(self, server_id):
+        with self.get_session() as db:
+            try:
+                star_threshold = db.query(ServerConfig.star_threshold).\
+                    filter(ServerConfig.server == server_id).\
+                    one()[0]
+            except NoResultFound:
+                star_threshold = 1
+            except MultipleResultsFound as e:
+                raise e
+
+        return star_threshold
+
 
 
 class Population(Base):

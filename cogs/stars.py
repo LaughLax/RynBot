@@ -14,36 +14,6 @@ class Stars(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def get_starboard_channel(self, db, guild):
-        try:
-            starboard = db.query(ServerConfig.starboard).\
-                filter(ServerConfig.server == guild.id).\
-                one()[0]
-        except NoResultFound:
-            starboard = None
-        except MultipleResultsFound as e:
-            log = self.bot.get_cog('Logs')
-            if log:
-                await log.log(e)
-            return
-
-        return self.bot.get_channel(starboard)
-
-    async def get_star_threshold(self, db, guild):
-        try:
-            star_threshold = db.query(ServerConfig.star_threshold).\
-                filter(ServerConfig.server == guild.id).\
-                one()[0]
-        except NoResultFound:
-            star_threshold = 1
-        except MultipleResultsFound as e:
-            log = self.bot.get_cog('Logs')
-            if log is not None:
-                await log.log(e)
-            return 1
-
-        return star_threshold
-
     async def get_star_db_entry(self, db, message):
         try:
             star = db.query(Star).\
@@ -101,33 +71,32 @@ class Stars(commands.Cog):
             The user ID of the user starring the message.
         """
 
+        # Get the starboard channel for the server
+        starboard_channel = await self.bot.db.fetch_starboard_channel(channel.guild.id)
+        starboard_channel = self.bot.get_channel(starboard_channel)
+
+        # if (not starboard_channel) or (channel == starboard_channel):
+        # TODO respond to stars within the starboard
+        # return
+        # FIXME Uncomment this when done testing
+
+        # If insufficient perms, ignore the star
+        perms = channel.permissions_for(channel.guild.me)
+        if not (perms.send_messages and perms.attach_files):
+            return
+
+        # Get the message being starred
+        msg = await misc.get_message(channel, message_id)
+        if msg is None:
+            raise StarError('\N{BLACK QUESTION MARK ORNAMENT} This message could not be found.')
+        if (len(msg.content) == 0 and len(msg.attachments) == 0) or msg.type is not discord.MessageType.default:
+            raise StarError('\N{NO ENTRY SIGN} This message cannot be starred.')
+
+        min_stars = await self.bot.db.fetch_star_threshold(channel.guild.id)
+        reacts = dict([(r.emoji, r.count) for r in msg.reactions])
+        star_count = reacts.get(emoji, 0)
+
         with self.bot.db.get_session() as db:
-
-            # Get the starboard channel for the server
-            if user_id == config.owner_id:
-                starboard_channel = self.bot.get_channel(config.ryn_starboard_id)
-                starboard_channel = await self.get_starboard_channel(db, channel.guild)
-            else:
-                starboard_channel = await self.get_starboard_channel(db, channel.guild)
-            if (not starboard_channel) or (channel == starboard_channel):
-                # TODO respond to stars within the starboard
-                return
-
-            # If insufficient perms, ignore the star
-            perms = channel.permissions_for(channel.guild.me)
-            if not (perms.send_messages and perms.attach_files):
-                return
-
-            # Get the message being starred
-            msg = await misc.get_message(channel, message_id)
-            if msg is None:
-                raise StarError('\N{BLACK QUESTION MARK ORNAMENT} This message could not be found.')
-            if (len(msg.content) == 0 and len(msg.attachments) == 0) or msg.type is not discord.MessageType.default:
-                raise StarError('\N{NO ENTRY SIGN} This message cannot be starred.')
-
-            min_stars = await self.get_star_threshold(db, channel.guild)
-            reacts = dict([(r.emoji, r.count) for r in msg.reactions])
-            star_count = reacts.get(emoji, 0)
 
             star = await self.get_star_db_entry(db, msg)
             if not star:
