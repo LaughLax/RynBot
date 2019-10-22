@@ -108,7 +108,8 @@ class Data(commands.Cog):
         rows = await self.bot.db.fetch_population_history(server.id)
         rows = np.array(rows)
 
-        rows[:, 0] = [x.replace(tzinfo=get_localzone()) for x in rows[:, 0]]
+        tz_local = get_localzone()
+        rows[:, 0] = [x.replace(tzinfo=tz_local) for x in rows[:, 0]]
 
         members = []
         for a in server.members:
