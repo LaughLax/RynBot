@@ -156,6 +156,47 @@ class DBHandler:
 
         return star_threshold
 
+    @async_via_threadpool
+    def fetch_star_entry(self, server_id, message_id):
+        with self.get_session() as db:
+            try:
+                star = db.query(Star.card).\
+                    filter(Star.server == server_id).\
+                    filter(Star.message == message_id).\
+                    one()
+            except NoResultFound:
+                return None
+            except MultipleResultsFound as e:
+                raise e
+
+        return star
+
+    @async_via_threadpool
+    def delete_star_entry(self, server_id, message_id):
+        with self.get_session() as db:
+            try:
+                star = db.query(Star).\
+                    filter(Star.server == server_id).\
+                    filter(Star.message == message_id).\
+                    one()
+            except MultipleResultsFound as e:
+                raise e
+
+            db.delete(star)
+
+    @async_via_threadpool
+    def create_star_entry(self, server_id, channel_id, message_id, author_id, msg_timestamp, card_id):
+        with self.get_session() as db:
+            try:
+                star = Star(server=server_id,
+                            channel=channel_id,
+                            message=message_id,
+                            author=author_id,
+                            timestamp=msg_timestamp,
+                            card=card_id)
+                db.add(star)
+            except Exception as e:
+                raise e
 
 
 class Population(Base):

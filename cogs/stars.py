@@ -75,10 +75,9 @@ class Stars(commands.Cog):
         starboard_channel = await self.bot.db.fetch_starboard_channel(channel.guild.id)
         starboard_channel = self.bot.get_channel(starboard_channel)
 
-        # if (not starboard_channel) or (channel == starboard_channel):
-        # TODO respond to stars within the starboard
-        # return
-        # FIXME Uncomment this when done testing
+        if (not starboard_channel) or (channel == starboard_channel):
+            # TODO respond to stars within the starboard
+            return
 
         # If insufficient perms, ignore the star
         perms = channel.permissions_for(channel.guild.me)
@@ -96,30 +95,31 @@ class Stars(commands.Cog):
         reacts = dict([(r.emoji, r.count) for r in msg.reactions])
         star_count = reacts.get(emoji, 0)
 
-        with self.bot.db.get_session() as db:
+        # star = await self.get_star_db_entry(db, msg)
+        star = await self.bot.db.fetch_star_entry(channel.guild.id, msg.id)
 
-            star = await self.get_star_db_entry(db, msg)
-            if not star:
+        # at this point, we either edit the message or we create a message
+        # with our star info
+        content, embed = self.get_emoji_message(msg, star_count)
+
+        if star:
+            board_card = await misc.get_message(starboard_channel, star.card)
+            if not board_card:
                 return
-
-            # at this point, we either edit the message or we create a message
-            # with our star info
-            content, embed = self.get_emoji_message(msg, star_count)
-
-            if star.card:
-                card = await misc.get_message(starboard_channel, star.card)
-                if not card:
-                    return
-                if star_count < min_stars:
-                    await card.delete()
-                    db.delete(star)
-                else:
-                    await card.edit(content=content, embed=embed)
+            if star_count < min_stars:
+                await board_card.delete()
+                await self.bot.db.delete_star_entry(channel.guild.id, msg.id)
             else:
-                if star_count >= min_stars:
-                    card = await starboard_channel.send(content, embed=embed)
-                    star.card = card.id
-                    db.add(star)
+                await board_card.edit(content=content, embed=embed)
+        else:
+            if star_count >= min_stars:
+                board_card = await starboard_channel.send(content, embed=embed)
+                await self.bot.db.create_star_entry(channel.guild.id,
+                                                    channel.id,
+                                                    msg.id,
+                                                    msg.author.id,
+                                                    msg.created_at,
+                                                    board_card.id)
 
     @staticmethod
     def get_emoji_message(message, star_count):
