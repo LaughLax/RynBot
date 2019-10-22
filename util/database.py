@@ -7,6 +7,8 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from contextlib import contextmanager
 
+from functools import wraps
+
 Base = declarative_base()
 
 
@@ -29,7 +31,14 @@ class DBHandler:
         finally:
             session.close()
 
-    def get_server_cfg(self, db, guild_id):
+    def async_via_threadpool(func):
+        @wraps(func)
+        async def wrapper_make_async(self, *args, **kwargs):
+            return await self.execute(None, func, self, *args, **kwargs)
+        return wrapper_make_async
+
+    @staticmethod
+    def get_server_cfg(db, guild_id):
         try:
             cfg = db.query(ServerConfig).filter(ServerConfig.server == guild_id).one_or_none()
         except MultipleResultsFound as e:
@@ -41,7 +50,8 @@ class DBHandler:
 
         return cfg
 
-    def _get_custom_role_list(self, guild_id):
+    @async_via_threadpool
+    def get_custom_role_list(self, guild_id):
         with self.get_session() as db:
             try:
                 custom_list = db.query(CustomRoleChart.role).\
@@ -53,7 +63,8 @@ class DBHandler:
 
         return custom_list
 
-    def _create_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
+    @async_via_threadpool
+    def create_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
         with self.get_session() as db:
             self.get_server_cfg(db, guild_id)
 
@@ -67,7 +78,8 @@ class DBHandler:
             except Exception as e:
                 raise e
 
-    def _update_task(self, guild_id, task_name, last_run_msg_id):
+    @async_via_threadpool
+    def update_task(self, guild_id, task_name, last_run_msg_id):
         with self.get_session() as db:
             try:
                 row = db.query(ScheduledTasks).\
@@ -80,7 +92,8 @@ class DBHandler:
             row.last_run_msg_id = last_run_msg_id
             db.add(row)
 
-    def _delete_task(self, guild_id, task_name):
+    @async_via_threadpool
+    def delete_task(self, guild_id, task_name):
         with self.get_session() as db:
             try:
                 row = db.query(ScheduledTasks).\
@@ -92,7 +105,8 @@ class DBHandler:
 
             db.delete(row)
 
-    def _fetch_task_list(self):
+    @async_via_threadpool
+    def fetch_task_list(self):
         with self.get_session() as db:
             try:
                 rows = db.query(ScheduledTasks.server,
@@ -105,21 +119,6 @@ class DBHandler:
                 raise e
 
         return rows
-
-    async def get_custom_role_list(self, guild_id):
-        return await self.execute(None, self._get_custom_role_list, guild_id)
-
-    async def create_task(self, guild_id, channel_id, task_name, command, first_run_msg_id):
-        return await self.execute(None, self._create_task, guild_id, channel_id, task_name, command, first_run_msg_id)
-
-    async def update_task(self, guild_id, task_name, last_run_msg_id):
-        return await self.execute(None, self._update_task, guild_id, task_name, last_run_msg_id)
-
-    async def delete_task(self, guild_id, task_name):
-        return await self.execute(None, self._delete_task, guild_id, task_name)
-
-    async def fetch_task_list(self):
-        return await self.execute(None, self._fetch_task_list)
 
 
 class Population(Base):
