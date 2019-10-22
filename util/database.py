@@ -6,7 +6,6 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from contextlib import contextmanager
-
 from functools import wraps
 
 Base = declarative_base()
@@ -119,6 +118,16 @@ class DBHandler:
                 raise e
 
         return rows
+
+    @async_via_threadpool
+    def fetch_population_history(self, server_id):
+        with self.get_session() as db:
+            rows = db.query(Population.datetime, Population.user_count).\
+                filter(Population.server == server_id).\
+                order_by(Population.datetime).\
+                all()
+        return rows
+
 
 
 class Population(Base):

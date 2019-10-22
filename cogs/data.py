@@ -59,15 +59,6 @@ class Data(commands.Cog):
         pass
 
     @staticmethod
-    def _db_fetch_pop_history(db, server_id):
-        with db.get_session() as db:
-            rows = np.array(db.query(Population.datetime, Population.user_count).\
-                            filter(Population.server == server_id).\
-                            order_by(Population.datetime).\
-                            all())
-        return rows
-
-    @staticmethod
     def make_pop_plot(pop_rows, server_name, file_obj):
         plt.clf()
         plt.plot(pop_rows[:, 0], pop_rows[:, 1])
@@ -94,9 +85,8 @@ class Data(commands.Cog):
                 await ctx.send('I\'m not in that server.')
                 return
 
-        rows = await self.bot.loop.run_in_executor(None,
-                                                   self._db_fetch_pop_history,
-                                                   self.bot.db, server.id)
+        rows = await self.bot.db.fetch_population_history(server.id)
+        rows = np.array(rows)
 
         with io.BytesIO() as f:
             f = await self.bot.loop.run_in_executor(self.bot.process_pool,
@@ -115,9 +105,8 @@ class Data(commands.Cog):
                 await ctx.send('I\'m not in that server.')
                 return
 
-        rows = await self.bot.loop.run_in_executor(None,
-                                                   self._db_fetch_pop_history,
-                                                   self.bot.db, server.id)
+        rows = await self.bot.db.fetch_population_history(server.id)
+        rows = np.array(rows)
 
         rows[:, 0] = [x.replace(tzinfo=get_localzone()) for x in rows[:, 0]]
 
