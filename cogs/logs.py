@@ -3,6 +3,8 @@ from discord.ext import commands
 from util import config
 import asyncio
 
+# TODO Clean up imports
+
 
 class Logs(commands.Cog):
     """Functions and event listeners for logging"""

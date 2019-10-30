@@ -6,6 +6,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+# TODO Clean up imports
+
 
 class ActivePoll:
     """Object to hold information on one active poll."""
@@ -40,7 +42,9 @@ class ActivePoll:
 class Polls(commands.Cog):
     """Poll commands, for Ryn's server only"""
 
-    # FIXME: Count votes when poll is closed, instead of on every reaction
+    # TODO Count votes when poll is closed, instead of on every reaction
+    # TODO Make polls persistent on restart
+    # TODO Create option for single-choice poll
 
     vote_emojis = {'\U00000031\U000020e3': 0,
                    '\U00000032\U000020e3': 1,
@@ -127,7 +131,7 @@ class Polls(commands.Cog):
             await message.edit("Something went wrong, probably with scaling.")
 
     @commands.command()
-    async def poll(self, ctx,*, items : str = None):
+    async def poll(self, ctx, *, items : str = None):
         if not isinstance(ctx.channel, discord.TextChannel) or items is None:
             return
 

@@ -6,6 +6,8 @@ from util import config
 import asyncio
 from discord.ext.commands import ExtensionAlreadyLoaded
 
+# TODO Clean up imports
+
 
 class Base(commands.Cog):
     """Basic-level commands"""
@@ -120,6 +122,9 @@ class Base(commands.Cog):
     @commands.command()
     async def owner(self, ctx, *, message: str = None):
         """Send a message to the bot owner. Images and Discord-based emoji will not be shown."""
+
+        # TODO Replace 'owner' command with an info command that links to the support server
+        
         if message is not None:
             # TODO catch emojis (will require checking ctx.message instead of taking args)
             recipient = await self.bot.fetch_user(config.owner_id)

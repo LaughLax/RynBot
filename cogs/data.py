@@ -15,6 +15,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+# TODO Clean up imports
+
 
 class Data(commands.Cog):
     def __init__(self, bot):
@@ -26,6 +28,7 @@ class Data(commands.Cog):
         self.hourly_check_task.cancel()
 
     async def hourly_pop_check(self):
+        # TODO Convert population check to use discord.ext.tasks framework
         await self.bot.wait_until_ready()
         last_hour = -1
         while not self.bot.is_closed():
@@ -33,6 +36,7 @@ class Data(commands.Cog):
                 now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
                 if now.hour != last_hour:
                     try:
+                        # TODO Move population DB write into util.database
                         with self.bot.db.get_session() as db:
                             pops = []
                             for server in self.bot.guilds:
@@ -77,6 +81,8 @@ class Data(commands.Cog):
     @data.command()
     @commands.bot_has_permissions(attach_files=True)
     async def population(self, ctx, server=None):
+        # TODO Complete wrapper for population chart
+        
         if not server or ctx.message.author.id != config.owner_id:
             server = ctx.guild
         else:
@@ -97,6 +103,8 @@ class Data(commands.Cog):
     @data.command()
     @commands.bot_has_permissions(attach_files=True)
     async def population2(self, ctx, server=None):
+        # TODO Create wrapper for population2 chart
+        
         if not server or ctx.message.author.id != config.owner_id:
             server = ctx.guild
         else:

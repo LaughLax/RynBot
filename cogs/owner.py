@@ -11,6 +11,8 @@ import io
 import math
 import mysql.connector
 
+# TODO Clean up imports
+
 
 class Owner(commands.Cog):
     """Commands for Ryn's use. Attempts by others will be logged."""

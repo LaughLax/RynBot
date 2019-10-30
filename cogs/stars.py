@@ -4,6 +4,8 @@ from util import misc, config
 from util.database import ServerConfig, Star
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
+# TODO Clean up imports
+
 
 class StarError(commands.CheckFailure):
     pass

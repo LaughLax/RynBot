@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from util import config
 
+# TODO Clean up imports
+
 
 def is_owner():
     def predicate(ctx):

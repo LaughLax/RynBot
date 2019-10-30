@@ -5,6 +5,8 @@ import typing
 from util.database import ServerConfig, CustomRoleChart
 from sqlalchemy.orm.exc import MultipleResultsFound
 
+# TODO Clean up imports
+
 
 class Server(commands.Cog):
     def __init__(self, bot):

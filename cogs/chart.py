@@ -10,6 +10,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+# TODO Clean up imports
+
 
 class Chart(commands.Cog):
     """Commands to make charts"""
@@ -39,6 +41,8 @@ class Chart(commands.Cog):
 
         The chart will display up to 50 games, excluding streamers and bot accounts.
         If there are more than 50 unique games being played, then a minimum number of players per game is set so that 50 or fewer games will be included on the chart."""
+
+        # TODO Create wrapper function for games chart
 
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
@@ -97,6 +101,8 @@ class Chart(commands.Cog):
 
         The chart will display up to 10 games, excluding streamers and bot accounts.
         If there are more than 10 unique games being played, a minimum number of players per game is set so that 10 or fewer games will be included on the chart."""
+
+        # TODO Create wrapper function for games pie chart
 
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild
@@ -242,6 +248,8 @@ class Chart(commands.Cog):
         This chart does not use any historical data.
         All data is obtained via the 'join date' of each member,
         meaning this chart will not reflect members who have left or been kicked from the server."""
+
+        # TODO Complete wrapper function for users chart
 
         if server_id is None or server_id.lower() == "here":
             server = ctx.guild

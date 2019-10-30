@@ -12,6 +12,7 @@ class Tasks(Cog):
         self.bot = bot
 
         self.task_options = {'rolechart': self.role_chart}
+        # TODO Expand list of tasks that can be automated
 
         self.hourly_task_run.start()
 
@@ -35,6 +36,7 @@ class Tasks(Cog):
         if task_type not in self.task_options:
             await ctx.send('That\'s not a scheduleable task! Options are: {}'.format(list(self.task_options.keys())))
         else:
+            # TODO Handle case where task with same name already exists
             msg_id = await self.task_options[task_type](ctx.guild.id, ctx.channel.id)
             await self.bot.db.create_task(ctx.guild.id, ctx.channel.id, task_name, task_type, msg_id)
 
@@ -47,8 +49,15 @@ class Tasks(Cog):
         except Exception as e:
             await ctx.send('Something went wrong...')
 
+    # @command()
+    # @has_permissions(manage_guild=True)
+    async def list_tasks(self, ctx):
+        # TODO Make list_tasks command
+        pass
+
     @loop(hours=1)
     async def hourly_task_run(self):
+        # TODO Add logging to hourly_task_run
         tasks = await self.bot.db.fetch_task_list()
         for task in tasks:
             channel = self.bot.get_channel(task.channel)
