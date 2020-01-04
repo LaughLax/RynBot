@@ -27,11 +27,11 @@ async def on_ready():
 
 
 if __name__ == '__main__':
-    logger = logging.getLogger('discord')
-    logger.setLevel(logging.INFO)
-    handler = logging.FileHandler(filename=config.logfile, encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-    logger.addHandler(handler)
+    # logger = logging.getLogger('discord')
+    # logger.setLevel(logging.WARNING)
+    # handler = logging.FileHandler(filename=config.logfile, encoding='utf-8', mode='w')
+    # handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    # logger.addHandler(handler)
 
     for extension in config.cogs_core:
         try:
