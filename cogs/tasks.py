@@ -78,6 +78,7 @@ class Tasks(Cog):
                 await old_msg.delete()
             except Exception as e:
                 print('Hourly run failed for task: {}'.format(task))
+                print(e)
 
     @hourly_task_run.before_loop
     async def before_hourly_task(self):
