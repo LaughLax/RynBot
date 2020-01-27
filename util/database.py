@@ -110,13 +110,16 @@ class DBHandler:
 
     @async_via_threadpool
     @provide_db
-    def fetch_task_list(self, db):
+    def fetch_task_list(self, db, guild_id = None):
         try:
             rows = db.query(ScheduledTasks.server,
                             ScheduledTasks.channel,
                             ScheduledTasks.task_name,
                             ScheduledTasks.command,
-                            ScheduledTasks.last_run_msg_id).all()
+                            ScheduledTasks.last_run_msg_id)
+            if guild_id is not None:
+                rows = rows.filter(ScheduledTasks.server == guild_id)
+            rows = rows.all()
             # rows = [a[0] for a in rows]
         except NoResultFound as e:
             raise e
