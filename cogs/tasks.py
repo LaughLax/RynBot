@@ -87,7 +87,7 @@ class Tasks(Cog):
     async def after_hourly_task(self):
         if self.hourly_task_run.failed:
             print('Hourly task run failed!')
-            print(self.hourly_task_run.exception())
+            # print(self.hourly_task_run.exception())
             self.hourly_task_run.restart()
 
 
