@@ -60,17 +60,27 @@ class Tasks(Cog):
         # TODO Add logging to hourly_task_run
         tasks = await self.bot.db.fetch_task_list()
         for task in tasks:
-            channel = self.bot.get_channel(task.channel)
-            old_msg = await misc.get_message(channel, task.last_run_msg_id)
+            try:
+                channel = self.bot.get_channel(task.channel)
+                old_msg = await misc.get_message(channel, task.last_run_msg_id)
 
-            msg_id = await self.task_options[task.command](task.server, task.channel)
-            # await self.task_options['chart roles'](329681826618671104, 382657596458270720)
-            await self.bot.db.update_task(task.server, task.task_name, msg_id)
-            await old_msg.delete()
+                msg_id = await self.task_options[task.command](task.server, task.channel)
+                # await self.task_options['chart roles'](329681826618671104, 382657596458270720)
+                await self.bot.db.update_task(task.server, task.task_name, msg_id)
+                await old_msg.delete()
+            except Exception as e:
+                print('Hourly run failed for task: {}'.format(task))
 
     @hourly_task_run.before_loop
     async def before_hourly_task(self):
         await self.bot.wait_until_ready()
+
+    @hourly_task_run.after_loop
+    async def after_hourly_task(self):
+        if self.hourly_task_run.failed:
+            print('Hourly task run failed!')
+            print(self.hourly_task_run.exception())
+            self.hourly_task_run.restart()
 
 
 def setup(bot):
