@@ -49,11 +49,19 @@ class Tasks(Cog):
         except Exception as e:
             await ctx.send('Something went wrong...')
 
-    # @command()
-    # @has_permissions(manage_guild=True)
+    @command()
+    @has_permissions(manage_guild=True)
     async def list_tasks(self, ctx):
-        # TODO Make list_tasks command
-        pass
+        tasks = await self.bot.db.fetch_task_list(ctx.guild.id)
+        desc = []
+        for task in tasks:
+            channel = self.bot.get_channel(task.channel)
+            if channel is None:
+                channel = 'deleted channel'
+            else:
+                channel = channel.mention
+            desc.append('Task \'{}\' in {}: `{}`'.format(task.task_name, channel, task.command))
+        await ctx.send('\n'.join(desc))
 
     @loop(hours=1)
     async def hourly_task_run(self):
