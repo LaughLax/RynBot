@@ -2,6 +2,8 @@ from discord import File
 from discord.ext.commands import Cog, command, has_permissions
 from discord.ext.tasks import loop
 
+from sqlalchemy.orm.exc import NoResultFound
+
 from io import BytesIO
 
 from util import misc
@@ -52,7 +54,10 @@ class Tasks(Cog):
     @command()
     @has_permissions(manage_guild=True)
     async def list_tasks(self, ctx):
-        tasks = await self.bot.db.fetch_task_list(ctx.guild.id)
+        try:
+            tasks = await self.bot.db.fetch_task_list(ctx.guild.id)
+        except NoResultsFound as e:
+            tasks = []
         desc = []
         for task in tasks:
             channel = self.bot.get_channel(task.channel)
@@ -61,7 +66,10 @@ class Tasks(Cog):
             else:
                 channel = channel.mention
             desc.append('Task \'{}\' in {}: `{}`'.format(task.task_name, channel, task.command))
-        await ctx.send('\n'.join(desc))
+        if len(desc) > 0:
+            await ctx.send('\n'.join(desc))
+        else:
+            await ctx.send('No tasks exist for this server.')
 
     @loop(hours=1)
     async def hourly_task_run(self):
