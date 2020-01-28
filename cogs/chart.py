@@ -158,6 +158,9 @@ class Chart(commands.Cog):
 
     async def role_chart_wrapper(self, server_id, file_obj):
         server = self.bot.get_guild(int(server_id))
+        if server is None:
+            # self.bot.get_cog('Logs').log('Could not get guild with ID {}.'.format(server_id))
+            raise Exception('Could not get guild with ID {}.'.format(server_id))
 
         role_list_db = await self.bot.db.get_custom_role_list(server_id)
 
