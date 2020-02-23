@@ -38,6 +38,6 @@ if __name__ == '__main__':
             print('Failed to load extension {}.'.format(extension))
             print(e)
 
-    bot.process_pool = ProcessPoolExecutor()
+    bot.process_pool = ProcessPoolExecutor(max_workers=config.max_process_workers)
 
     bot.run(config.token)
