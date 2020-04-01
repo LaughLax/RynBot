@@ -132,6 +132,7 @@ class Polls(commands.Cog):
 
     @commands.command()
     async def poll(self, ctx, *, items : str = None):
+        # TODO What even *is* the first half of this if statement?
         if not isinstance(ctx.channel, discord.TextChannel) or items is None:
             return
 

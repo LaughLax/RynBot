@@ -39,6 +39,7 @@ class Tasks(Cog):
             await ctx.send('That\'s not a scheduleable task! Options are: {}'.format(list(self.task_options.keys())))
         else:
             # TODO Handle case where task with same name already exists
+            # TODO Handle case where task requires perms that bot doesn't have (e.g. attach_files)
             msg_id = await self.task_options[task_type](ctx.guild.id, ctx.channel.id)
             await self.bot.db.create_task(ctx.guild.id, ctx.channel.id, task_name, task_type, msg_id)
 
