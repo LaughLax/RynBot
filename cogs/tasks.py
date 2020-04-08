@@ -99,6 +99,7 @@ class Tasks(Cog):
             print('Hourly task run failed!')
             # print(self.hourly_task_run.exception())
             self.hourly_task_run.restart()
+            # TODO Fix this terrible, dumb way of restarting a failed task
 
 
 def setup(bot):
