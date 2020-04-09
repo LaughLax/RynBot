@@ -502,6 +502,7 @@ class Owner(commands.Cog):
         max_num_length = int(math.log(max(g.member_count for g in guilds), 10) // 1 + 1)
 
         for g in guilds:
+            # TODO Reorder output to put guild name last
             paginator.add_line("{0.name:<{n_len}} | {0.member_count:{m_len}d} members | {0.id}".format(g, n_len=max_name_length, m_len=max_num_length))
 
         for p in paginator.pages:
