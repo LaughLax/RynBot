@@ -52,6 +52,7 @@ async def get_message(channel, message_id):
 
         return msg
     except Exception:
+        # TODO Slim down try/catch
         return None
 
 
