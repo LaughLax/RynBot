@@ -1,19 +1,18 @@
-import discord
-from discord.ext import commands
 import typing
 
-from util.database import ServerConfig, CustomRoleChart
+from discord import ActivityType, Embed, Role, TextChannel
+from discord.ext.commands import bot_has_permissions, Cog, command, group, has_permissions
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-# TODO Clean up imports
+from util.database import ServerConfig, CustomRoleChart
 
 
-class Server(commands.Cog):
+class Server(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(aliases=['cfg'])
-    @commands.has_permissions(manage_guild=True)
+    @group(aliases=['cfg'])
+    @has_permissions(manage_guild=True)
     async def config(self, ctx):
         pass
 
@@ -33,7 +32,7 @@ class Server(commands.Cog):
         return cfg
 
     @config.command()
-    async def starboard(self, ctx, channel: typing.Optional[discord.TextChannel] = None):
+    async def starboard(self, ctx, channel: typing.Optional[TextChannel] = None):
         with self.bot.db.get_session() as db:
             try:
                 cfg = await self.get_cfg(db, ctx.guild)
@@ -99,7 +98,7 @@ class Server(commands.Cog):
         await ctx.send('Roles in this server\'s chart: {}'.format(', '.join(role_list)))
 
     @config.command()
-    async def rolechart_add(self, ctx, role: discord.Role = None):
+    async def rolechart_add(self, ctx, role: Role = None):
         if not role:
             ctx.send('You have to tell me a role to add!')
             return
@@ -116,7 +115,7 @@ class Server(commands.Cog):
         await ctx.send('The {} role has been added to the role chart.'.format(role))
 
     @config.command()
-    async def rolechart_remove(self, ctx, role: discord.Role = None):
+    async def rolechart_remove(self, ctx, role: Role = None):
         with self.bot.db.get_session() as db:
             try:
                 await self.get_cfg(db, ctx.guild)
@@ -134,9 +133,9 @@ class Server(commands.Cog):
 
         await ctx.send('The {} role has been removed from the role chart.'.format(role))
 
-    @commands.command()
-    @commands.has_permissions(manage_messages=True)
-    @commands.bot_has_permissions(manage_messages=True)
+    @command()
+    @has_permissions(manage_messages=True)
+    @bot_has_permissions(manage_messages=True)
     async def purge(self, ctx, num: int = 10):
         """Purge up to 100 messages from a channel at once.
 
@@ -146,13 +145,13 @@ class Server(commands.Cog):
             num = 100
         await ctx.channel.purge(limit=num)
 
-    @commands.command(aliases=['whoisplaying'])
+    @command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
         """List users playing a specific game."""
         if game_title is not None:
             users = []
             for a in ctx.guild.members:
-                if a.activity is not None and a.activity.type == discord.ActivityType.playing and a.activity.name is not None:
+                if a.activity is not None and a.activity.type == ActivityType.playing and a.activity.name is not None:
                     if a.activity.name.lower() == game_title.lower():
                         users.append(a.name)
             if len(users) == 0:
@@ -164,7 +163,7 @@ class Server(commands.Cog):
                 users.sort()
                 body = "\n".join(users)
 
-                em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+                em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
                 em.add_field(name=header, value=body)
 
                 await ctx.send(embed=em)
@@ -173,8 +172,8 @@ class Server(commands.Cog):
         else:
             await ctx.send("No game specified.")
 
-    @commands.command()
-    @commands.has_permissions(manage_channels=True)
+    @command()
+    @has_permissions(manage_channels=True)
     async def channels(self, ctx):
         """Display a list of all channels on the server to use.
 
@@ -189,7 +188,7 @@ class Server(commands.Cog):
         text_avail = []
         text_hidden = []
         for a in chans:
-            if type(a) is discord.TextChannel:
+            if type(a) is TextChannel:
                 if a.permissions_for(server.me).read_messages:
                     text_avail.append(a.name)
                 else:
@@ -204,7 +203,7 @@ class Server(commands.Cog):
         for b in range(num_segments):
             start = b*display_size
             end = (b+1)*display_size - 1
-            em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
 
             if text_avail[start:end]:
                 text_avail_body = "\n".join(text_avail[start:end])
@@ -225,8 +224,8 @@ class Server(commands.Cog):
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             await ctx.message.delete()
 
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @command()
+    @has_permissions(manage_roles=True)
     async def roles(self, ctx):
         """Display a list of all roles on the server.
 
@@ -246,7 +245,7 @@ class Server(commands.Cog):
         display_size = 60
         num_segments = int(len(role_list)/display_size) + 1
         for b in range(num_segments):
-            embed = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            embed = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_thumbnail(url=server.icon_url)
 
             embed.add_field(name='Roles', value=', '.join(role_list[b*display_size:(b+1)*display_size-1]))
@@ -259,7 +258,7 @@ class Server(commands.Cog):
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             await ctx.message.delete()
 
-    @commands.command()
+    @command()
     async def nowstreaming(self, ctx, server_id: str = None):
         """Display a list of all users streaming on the server."""
         if server_id is None or server_id.lower() == "here":
@@ -272,7 +271,7 @@ class Server(commands.Cog):
 
         streamers = []
         for a in server.members:
-            if a.activity is not None and a.activity.type == discord.ActivityType.streaming:
+            if a.activity is not None and a.activity.type == ActivityType.streaming:
                 streamers.append(a)
 
         streamers.sort(key=lambda mem: mem.display_name)
@@ -282,7 +281,7 @@ class Server(commands.Cog):
             num_segments = int(len(streamers)/display_size) + 1
             if num_segments <= 5:
                 for b in range(num_segments):
-                    em = discord.Embed(title="Members Streaming (Server: {})".format(server.name), color=0xff0000, timestamp=ctx.message.created_at)
+                    em = Embed(title="Members Streaming (Server: {})".format(server.name), color=0xff0000, timestamp=ctx.message.created_at)
                     em.set_thumbnail(url=server.icon_url)
                     for a in streamers[b*display_size:(b+1)*display_size-1]:
                         if a.url is not None:
@@ -296,7 +295,7 @@ class Server(commands.Cog):
         else:
             await ctx.send("No members streaming on server: {}.".format(server.name))
 
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def commonmembers(self, ctx, server1_id: int, server2_id: int = None):
         """Display a list of users that two servers have in common."""
         if server1_id is not None:
@@ -323,7 +322,7 @@ class Server(commands.Cog):
                     both_members.append(str(a))
             both_members.sort()
 
-            em = discord.Embed(title="Common Members", color=0xff0000)
+            em = Embed(title="Common Members", color=0xff0000)
             em.add_field(name="Server 1: \"{}\"".format(server1.name), value="{} members".format(server1.member_count))
             em.add_field(name="Server 2: \"{}\"".format(server2.name), value="{} members".format(server2.member_count))
             em.add_field(name="{} users are in both servers:".format(len(both_members)), value="\n".join(both_members), inline=False)

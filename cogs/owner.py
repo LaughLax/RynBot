@@ -1,20 +1,24 @@
-import discord
-from discord.ext import commands
+import ast
+import cProfile
+import io
+import math
+import pstats
 import subprocess
+
+import discord
+import mysql.connector
+from discord import Activity, ActivityType, Embed, TextChannel
+from discord.errors import NotFound
+from discord.ext import commands
+from discord.ext.commands import Cog, command, group, Group, Paginator
 
 from util import config
 
-import ast
-import cProfile
-import pstats
-import io
-import math
-import mysql.connector
 
 # TODO Clean up imports
 
 
-class Owner(commands.Cog):
+class Owner(Cog):
     """Commands for Ryn's use. Attempts by others will be logged."""
     def __init__(self, bot):
         self.bot = bot
@@ -26,7 +30,7 @@ class Owner(commands.Cog):
             print('{} tried to run an owner-restricted command ({})'.format(ctx.message.author, ctx.invoked_with))
         return is_owner
 
-    @commands.group()
+    @group()
     async def cog(self, ctx):
         """Commands for managing cogs."""
 
@@ -73,7 +77,7 @@ class Owner(commands.Cog):
     @cog.command(aliases=['show'])
     async def list(self, ctx):
         """Lists all cogs currently loaded."""
-        paginator = commands.Paginator()
+        paginator = Paginator()
 
         for ex in self.bot.extensions:
             paginator.add_line(ex)
@@ -82,20 +86,20 @@ class Owner(commands.Cog):
             await ctx.send(page)
             # await ctx.message.author.send(page)
 
-    @commands.command()
+    @command()
     async def renamebot(self, ctx, name: str):
         """Change RynBot's name"""
 
         await self.bot.user.edit(username=name)
         await ctx.send("Bot username changed.")
 
-    @commands.command()
+    @command()
     async def git(self, ctx, *, args: str = ''):
         """Git, plain and 'simple.'
 
         Run the specified git command on the server and display the result."""
 
-        paginator = commands.Paginator()
+        paginator = Paginator()
 
         stream = subprocess.run(['git {}'.format(args)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
@@ -111,7 +115,7 @@ class Owner(commands.Cog):
         for p in paginator.pages:
             await ctx.send(p)
 
-    @commands.group()
+    @group()
     async def db(self, ctx):
         pass
 
@@ -124,7 +128,7 @@ class Owner(commands.Cog):
 
     @db.command()
     async def upgrade(self, ctx):
-        paginator = commands.Paginator()
+        paginator = Paginator()
 
         stream = subprocess.run(['alembic','upgrade','head'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
@@ -140,7 +144,7 @@ class Owner(commands.Cog):
         for p in paginator.pages:
             await ctx.send(p)
 
-    @commands.command()
+    @command()
     async def update(self, ctx):
         """Calls an update script and exits.
 
@@ -159,7 +163,7 @@ class Owner(commands.Cog):
         # print("Quitting")
         # await self.bot.logout()
 
-    @commands.command()
+    @command()
     async def reboot(self, ctx):
         """Reboot the server running RynBot"""
 
@@ -168,7 +172,7 @@ class Owner(commands.Cog):
             self.bot.unload_extension(ex)
         subprocess.run(['reboot'], shell=True)
 
-    @commands.command()
+    @command()
     async def quit(self, ctx):
         """Log out and terminate the bot process"""
         await ctx.send('No, please don\'t kill me!')
@@ -176,7 +180,7 @@ class Owner(commands.Cog):
             self.bot.unload_extension(ex)
         await self.bot.logout()
 
-    @commands.group(hidden=True)
+    @group(hidden=True)
     async def sneak(self, ctx):
         """This group contains some sneaky-sneaky stuff."""
 
@@ -198,14 +202,14 @@ class Owner(commands.Cog):
         chans = server.channels
         hidden_channels = []
         for a in chans:
-            if type(a) == discord.TextChannel and not a.permissions_for(server.me).read_messages:
+            if type(a) == TextChannel and not a.permissions_for(server.me).read_messages:
                 hidden_channels.append(a)
 
         hidden_channels.sort(key=lambda chan: chan.name)
 
         num_segments = int(len(hidden_channels)/25) + 1
         for b in range(num_segments):
-            em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
             em.set_thumbnail(url=server.icon_url)
 
             footer = "Page {}/{}".format(b+1, num_segments)
@@ -240,7 +244,7 @@ class Owner(commands.Cog):
         text_avail = []
         text_hidden = []
         for a in chans:
-            if type(a) is discord.TextChannel:
+            if type(a) is TextChannel:
                 if a.permissions_for(server.me).read_messages:
                     text_avail.append(a.name)
                 else:
@@ -255,7 +259,7 @@ class Owner(commands.Cog):
         for b in range(num_segments):
             start = b*display_size
             end = (b+1)*display_size - 1
-            em = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
 
             if text_avail[start:end]:
                 text_avail_body = "\n".join(text_avail[start:end])
@@ -301,7 +305,7 @@ class Owner(commands.Cog):
         display_size = 60
         num_segments = int(len(role_list)/display_size) + 1
         for b in range(num_segments):
-            embed = discord.Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            embed = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_thumbnail(url=server.icon_url)
 
             embed.add_field(name='Roles', value='\n'.join(role_list[b*display_size:(b+1)*display_size-1]))
@@ -317,7 +321,7 @@ class Owner(commands.Cog):
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             await ctx.message.delete()
 
-    @commands.command(name='cooldog')
+    @command(name='cooldog')
     async def cool_dog(self, ctx):
         string = """╭━━━━━╮               This is cooldog. Help
     ╰┃ ┣▇━▇                cooldog take over 
@@ -330,12 +334,12 @@ class Owner(commands.Cog):
     ╲╱▔╲▂▂▂▂╱▔╲▂▂▂╱
      ▏╳▕▇▇▕ ▏╳▕▇▇▕
      ╲▂╱╲▂╱ ╲▂╱╲▂╱"""
-        em = discord.Embed(color=0xff0000)
+        em = Embed(color=0xff0000)
         em.add_field(name="The dog himself", value=string)
         await ctx.message.delete()
         await ctx.send("", embed=em)
 
-    @commands.command(name='sans')
+    @command(name='sans')
     async def ascii_sans(self, ctx):
         string = '''.                        ⠠⠤⠶⠶⠶⠶⠶⠶⠤⠄
 ⠀⠀⠀⠀⠀⠀⠀⠠⠾⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠷⠄
@@ -361,24 +365,24 @@ class Owner(commands.Cog):
 ⠀⠀⠀⠀⠀⠈⠉⠉⠒⠒⠒⠒⠊⠀⠈⠒⠒⠒⠛⠓⠊⠉⠁
 ⠀⠀⠀⠀⠠⠶⠶⠤⠲⠶⠀⠀⠀⠀⠀⠀⠠⠷⠶⠶⠂⠤⠶⠦⠄
 ⠀⠀⠀⠀⠿⠿⠿⠿⠧⠩⠄⠀⠀⠀⠀⠀⠬⠭⠭⠱⠿⠿⠿⠿⠟'''
-        em = discord.Embed(color=0xff0000)
+        em = Embed(color=0xff0000)
         em.add_field(name='The man himself', value=string)
         await ctx.message.delete()
         await ctx.send('', embed=em)
 
-    @commands.command()
+    @command()
     async def status(self, ctx, status_type: int, *, text):
         """Set the bot's presence"""
         tp = {
-            0: discord.ActivityType.playing,
-            1: discord.ActivityType.streaming,
-            2: discord.ActivityType.watching,
-            3: discord.ActivityType.listening,
+            0: ActivityType.playing,
+            1: ActivityType.streaming,
+            2: ActivityType.watching,
+            3: ActivityType.listening,
         }.get(status_type)
-        game = discord.Activity(type=tp, name=text)
+        game = Activity(type=tp, name=text)
         await self.bot.change_presence(activity=game)
 
-    @commands.command()
+    @command()
     async def profile(self, ctx, *, cmd):
         # TODO this next line causes an error if it's profiling a zero-arg command (ie `profile channels`)
         try:
@@ -386,7 +390,7 @@ class Owner(commands.Cog):
         except ValueError:
             cmd_string = cmd
             args = ''
-        while isinstance(self.bot.get_command(cmd_string), commands.Group):
+        while isinstance(self.bot.get_command(cmd_string), Group):
             splat = args.split(maxsplit=1)
             cmd_string += ' ' + splat[0]
             args = splat[1] if len(splat) > 1 else ''
@@ -403,7 +407,7 @@ class Owner(commands.Cog):
 
         # s = io.StringIO()
 
-        paginator = commands.Paginator()
+        paginator = Paginator()
 
         with io.StringIO() as s:
             ps = pstats.Stats(pr, stream=s).strip_dirs().sort_stats('tottime')
@@ -415,7 +419,7 @@ class Owner(commands.Cog):
         # for p in paginator.pages:
         await ctx.send(paginator.pages[0])
 
-    @commands.command()
+    @command()
     async def usersearch(self, ctx, *, name: str = None):
         """Look up the ID of a user"""
         if name is None:
@@ -439,7 +443,7 @@ class Owner(commands.Cog):
                     await ctx.send('Could not find user `{}`.'.format(name))
                     return
 
-                paginator = commands.Paginator(prefix="```{head:>{n_len}}#xxxx | ID".format(head="User", n_len=max_length))
+                paginator = Paginator(prefix="```{head:>{n_len}}#xxxx | ID".format(head="User", n_len=max_length))
 
                 for u in users:
                     paginator.add_line("{username:>{n_len}}#{discrim} | {user_id}".format(username=u.name, n_len=max_length, discrim=u.discriminator, user_id=u.id))
@@ -448,7 +452,7 @@ class Owner(commands.Cog):
         else:
             await ctx.send("The ID of user `{}` is `{}`.".format(name, users.id))
 
-    @commands.command()
+    @command()
     async def user_servers(self, ctx, user_id: int):
         user_guilds = []
         for g in self.bot.guilds:
@@ -459,7 +463,7 @@ class Owner(commands.Cog):
             await ctx.send('I have no servers in common with that user.')
             return
 
-        paginator = commands.Paginator()
+        paginator = Paginator()
         paginator.add_line("User with ID {} is in {} servers with me.\n".format(user_id, len(user_guilds)))
 
         max_name_length = len(max(user_guilds, key=lambda g: len(g.name)).name)
@@ -474,13 +478,13 @@ class Owner(commands.Cog):
         for p in paginator.pages:
             await ctx.send(p)
 
-    @commands.command(aliases=['msg'])
+    @command(aliases=['msg'])
     async def message(self, ctx, user_id: int = None, *, message: str = None):
         """Send a message to a user"""
         if user_id is not None and message is not None:
             try:
                 user = self.bot.get_user(user_id)
-            except discord.errors.NotFound:
+            except NotFound:
                 await ctx.send("Invalid user ID.")
                 return
 
@@ -490,12 +494,12 @@ class Owner(commands.Cog):
         else:
             await ctx.send("Not enough arguments.")
 
-    @commands.command()
+    @command()
     async def servers(self, ctx):
         guilds = self.bot.guilds
         num_guilds = len(guilds)
 
-        paginator = commands.Paginator()
+        paginator = Paginator()
         paginator.add_line("I am in {} servers, totalling {} unique members.\n".format(num_guilds, len(self.bot.users)))
 
         max_name_length = len(max(guilds, key=lambda g: len(g.name)).name)
@@ -523,7 +527,7 @@ class Owner(commands.Cog):
         if isinstance(body[-1], ast.With):
             insert_returns(body[-1].body)
 
-    @commands.command()
+    @command()
     async def eval_fn(self, ctx, *, cmd):
         """Evaluates input.
         Input is interpreted as newline seperated statements.
@@ -573,7 +577,7 @@ class Owner(commands.Cog):
 
         result = str(await eval("{}()".format(fn_name), env))
 
-        embed = discord.Embed()
+        embed = Embed()
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url_as(format='png'))
         embed.timestamp = ctx.message.created_at
         embed.colour = 0xff0000
@@ -583,7 +587,7 @@ class Owner(commands.Cog):
         
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @command()
     async def sql(self, ctx, *, cmd):
         try:
             db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysqld/mysqld.sock', host='localhost', database='rynbot')

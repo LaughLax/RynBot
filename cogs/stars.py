@@ -1,17 +1,16 @@
 import discord
-from discord.ext import commands
-from util import misc, config
-from util.database import ServerConfig, Star
+from discord.ext.commands import CheckFailure, Cog
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
-# TODO Clean up imports
+from util import misc
+from util.database import Star
 
 
-class StarError(commands.CheckFailure):
+class StarError(CheckFailure):
     pass
 
 
-class Stars(commands.Cog):
+class Stars(Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -36,12 +35,12 @@ class Stars(commands.Cog):
 
         return star
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_raw_reaction_add(self, p):
         if str(p.emoji) == '\N{WHITE MEDIUM STAR}':
             await self.reaction_action('_star', p.emoji, p.channel_id, p.message_id, p.user_id)
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_raw_reaction_remove(self, p):
         if str(p.emoji) == '\N{WHITE MEDIUM STAR}':
             await self.reaction_action('_star', p.emoji, p.channel_id, p.message_id, p.user_id)

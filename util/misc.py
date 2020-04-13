@@ -1,8 +1,7 @@
-import discord
+from discord import Embed, Object
 from discord.ext import commands
-from util import config
 
-# TODO Clean up imports
+from util import config
 
 
 def is_owner():
@@ -44,7 +43,7 @@ def get_alpha_emoji(char):
 
 async def get_message(channel, message_id):
     try:
-        o = discord.Object(id=message_id + 1)
+        o = Object(id=message_id + 1)
         # don't wanna use get_message due to poor rate limit (1/1s) vs (50/1s)
         msg = await channel.history(limit=1, before=o).next()
 
@@ -57,7 +56,7 @@ async def get_message(channel, message_id):
 
 
 def embedify_message(message):
-    embed = discord.Embed(description=message.content)
+    embed = Embed(description=message.content)
     if message.embeds:
         data = message.embeds[0]
         if data.type == 'image':

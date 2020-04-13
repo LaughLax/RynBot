@@ -1,10 +1,9 @@
-from discord.ext import commands
+from discord.ext.commands import Cog, command, RoleConverter
+
 from util import config
 
-# TODO Clean up imports
 
-
-class MyServer(commands.Cog):
+class MyServer(Cog):
     """Commands exclusively for Ryn's server"""
     def __init__(self, bot):
         self.bot = bot
@@ -17,7 +16,7 @@ class MyServer(commands.Cog):
             'ldsg': '357912587498946560'
         }.get(name.lower())
 
-    @commands.command(aliases=['iam', 'gibme', 'gimme'])
+    @command(aliases=['iam', 'gibme', 'gimme'])
     async def giveme(self, ctx, *, i_want: str):
         """Self-assign user roles.
 
@@ -25,7 +24,7 @@ class MyServer(commands.Cog):
         LDSG"""
         id = self._get_role_id(i_want)
         if id is not None:
-            conv = commands.RoleConverter()
+            conv = RoleConverter()
             role = await conv.convert(ctx, id)
             if role in ctx.author.roles:
                 await ctx.author.remove_roles(role)
@@ -35,7 +34,7 @@ class MyServer(commands.Cog):
         else:
             await ctx.message.add_reaction(u'\U0001F44E')   # :x:
 
-    @commands.command(aliases=['civil'])
+    @command(aliases=['civil'])
     async def burnitdown(self, ctx):
         msg = await ctx.send('''Wow great discussion
 *locks channel*

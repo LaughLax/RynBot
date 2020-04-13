@@ -1,24 +1,22 @@
-import discord
-from discord.ext import commands
-from util import config
-
+import asyncio
 from datetime import datetime
+from io import BytesIO
+
+import matplotlib
+import numpy as np
+from discord import File
+from discord.ext.commands import bot_has_permissions, Cog, group
+from sqlalchemy.exc import IntegrityError
 from tzlocal import get_localzone
 
+from util import config
 from util.database import Population
-import asyncio
-from sqlalchemy.exc import IntegrityError
 
-import numpy as np
-import io
-import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# TODO Clean up imports
 
-
-class Data(commands.Cog):
+class Data(Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -58,7 +56,7 @@ class Data(commands.Cog):
                 print(e)
                 pass
 
-    @commands.group()
+    @group()
     async def data(self, ctx):
         pass
 
@@ -79,7 +77,7 @@ class Data(commands.Cog):
         return file_obj
 
     @data.command()
-    @commands.bot_has_permissions(attach_files=True)
+    @bot_has_permissions(attach_files=True)
     async def population(self, ctx, server=None):
         # TODO Complete wrapper for population chart
         
@@ -94,14 +92,14 @@ class Data(commands.Cog):
         rows = await self.bot.db.fetch_population_history(server.id)
         rows = np.array(rows)
 
-        with io.BytesIO() as f:
+        with BytesIO() as f:
             f = await self.bot.loop.run_in_executor(self.bot.process_pool,
                                                     self.make_pop_plot,
                                                     rows, server.name, f)
-            await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
+            await ctx.send(file=File(fp=f, filename="userchart.png"))
 
     @data.command()
-    @commands.bot_has_permissions(attach_files=True)
+    @bot_has_permissions(attach_files=True)
     async def population2(self, ctx, server=None):
         # TODO Create wrapper for population2 chart
         
@@ -147,10 +145,10 @@ class Data(commands.Cog):
         plt.title("Membership growth for server: {0.name}".format(server))
         plt.tight_layout()
 
-        with io.BytesIO() as f:
+        with BytesIO() as f:
             plt.savefig(f, format='png')
             f.seek(0)
-            await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
+            await ctx.send(file=File(fp=f, filename="userchart.png"))
         plt.close()
 
 

@@ -1,21 +1,21 @@
-import discord
-from discord.ext import commands
-from datetime import datetime
 import sys
+from datetime import datetime
+
+from discord import Embed, Member
+from discord.errors import Forbidden
+from discord.ext.commands import Cog, command, ExtensionAlreadyLoaded
+from discord.ext.commands.errors import CommandInvokeError, CommandNotFound, MissingRequiredArgument
+
 from util import config
-import asyncio
-from discord.ext.commands import ExtensionAlreadyLoaded
-
-# TODO Clean up imports
 
 
-class Base(commands.Cog):
+class Base(Cog):
     """Basic-level commands"""
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_ready(self):
 
         for extension in config.cogs_other:
@@ -30,26 +30,26 @@ class Base(commands.Cog):
                         print('Failed to load extension {}. Additionally, could not fetch logger.'.format(extension))
                     print(e)
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.errors.CommandNotFound):
+        if isinstance(error, CommandNotFound):
             return
 
         # Add a reaction to show it failed, if allowed
         try:
             await ctx.message.add_reaction(u'\u274C')
-        except discord.errors.Forbidden:
+        except Forbidden:
             pass
 
-        if isinstance(error, commands.errors.MissingRequiredArgument):
+        if isinstance(error, MissingRequiredArgument):
             await ctx.send("Insufficient arguments. Use `_help [command]` for more info.")
             return
 
-        if isinstance(error, discord.errors.Forbidden):
+        if isinstance(error, Forbidden):
             return
 
-        if isinstance(error, commands.CommandInvokeError):
-            if isinstance(error.original, discord.errors.Forbidden):
+        if isinstance(error, CommandInvokeError):
+            if isinstance(error.original, Forbidden):
                 return
 
         # If it's an unhandled error, print to console
@@ -57,16 +57,16 @@ class Base(commands.Cog):
 
         raise error
 
-    @commands.command(hidden=True)
+    @command(hidden=True)
     async def test(self, ctx):
         await ctx.message.add_reaction('\U0001F44D')
 
-    @commands.command()
+    @command()
     async def now(self, ctx):
         """Display the current time in UTC."""
         await ctx.send(datetime.utcnow().strftime("%Y-%m-%d %H:%M (UTC)"))
 
-    @commands.command()
+    @command()
     async def ping(self, ctx):
         """Check the bot's ping time."""
         start = datetime.now()
@@ -74,7 +74,7 @@ class Base(commands.Cog):
         td = datetime.now() - start
         await ctx.send("Pong. Response time: {} ms".format(td.total_seconds() * 1000))
 
-    @commands.command()
+    @command()
     async def userinfo(self, ctx, name: str = None):
         """Get user info. Ex: _info @user
 
@@ -102,9 +102,9 @@ class Base(commands.Cog):
         if role == "@everyone":
             role = "N/A"
         voice_state = None if not user.voice else user.voice.channel
-        em = discord.Embed(timestamp=ctx.message.created_at, colour=0xff0000)
+        em = Embed(timestamp=ctx.message.created_at, colour=0xff0000)
         em.add_field(name='User ID', value=user.id, inline=True)
-        if isinstance(user, discord.Member):
+        if isinstance(user, Member):
             em.add_field(name='Nick', value=user.nick, inline=True)
             em.add_field(name='Status', value=user.status, inline=True)
             em.add_field(name='In Voice', value=voice_state, inline=True)
@@ -119,7 +119,7 @@ class Base(commands.Cog):
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             await ctx.message.delete()
 
-    @commands.command()
+    @command()
     async def owner(self, ctx, *, message: str = None):
         """Send a message to the bot owner. Images and Discord-based emoji will not be shown."""
 

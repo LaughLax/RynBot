@@ -1,12 +1,11 @@
-import discord
-from discord.ext import commands
+import matplotlib
+from discord import Embed, TextChannel
+from discord.ext.commands import Cog, command
+
 from util import misc
 
-import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
-# TODO Clean up imports
 
 
 class ActivePoll:
@@ -39,7 +38,7 @@ class ActivePoll:
         return totals
 
 
-class Polls(commands.Cog):
+class Polls(Cog):
     """Poll commands, for Ryn's server only"""
 
     # TODO Count votes when poll is closed, instead of on every reaction
@@ -63,7 +62,7 @@ class Polls(commands.Cog):
         self.bot = bot
         self.active_polls = dict()
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_raw_reaction_add(self, pl):
         if pl.message_id not in self.active_polls:
             return
@@ -75,7 +74,7 @@ class Polls(commands.Cog):
         elif str(pl.emoji) in self.control_emojis and this_poll.creator_id == pl.user_id:
             await self.control_poll(pl.emoji, pl.message_id, pl.channel_id)
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_raw_reaction_remove(self, pl):
         if pl.message_id not in self.active_polls:
             return
@@ -107,7 +106,7 @@ class Polls(commands.Cog):
             plt.savefig('/var/www/html/RynBot/poll_results_{}.png'.format(message_id), format='png')
             plt.close()
 
-            embed = discord.Embed(description="Poll closed.")
+            embed = Embed(description="Poll closed.")
             # if message.embeds:
                 # data = message.embeds[0]
                 # if data.type == 'image':
@@ -130,17 +129,17 @@ class Polls(commands.Cog):
         except ValueError:
             await message.edit("Something went wrong, probably with scaling.")
 
-    @commands.command()
+    @command()
     async def poll(self, ctx, *, items : str = None):
         # TODO What even *is* the first half of this if statement?
-        if not isinstance(ctx.channel, discord.TextChannel) or items is None:
+        if not isinstance(ctx.channel, TextChannel) or items is None:
             return
 
         split = [a.strip() for a in items.split("|")]
         if len(split) <= 1:
             await ctx.send("A poll must have at least 2 options!")
         else:
-            embed = discord.Embed()
+            embed = Embed()
 
             flat_emojis = sorted(list(self.vote_emojis.keys()))[0:len(split)]
             flat_emojis.extend(list(self.control_emojis.keys()))

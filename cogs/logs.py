@@ -1,19 +1,18 @@
-import discord
-from discord.ext import commands
-from util import config
 import asyncio
 
-# TODO Clean up imports
+from discord.ext.commands import Cog
+
+from util import config
 
 
-class Logs(commands.Cog):
+class Logs(Cog):
     """Functions and event listeners for logging"""
     def __init__(self, bot):
         self.bot = bot
         self.log_chan = None
         # self.log_file = TODO maybe make a log file on the RPi
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_ready(self):
         await self.log("Ayy, I'm awake!")
 
@@ -66,12 +65,12 @@ class Logs(commands.Cog):
         pass
     '''
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_member_join(self, member):
         if member.guild.id == config.ryn_server_id:
             await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}`) joined.".format(member))
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_member_remove(self, member):
         if member.guild.id == config.ryn_server_id:
             await self.log("{0.name}#{0.discriminator} (<@{0.id}>, nick `{0.nick}`) left.".format(member))
@@ -79,11 +78,11 @@ class Logs(commands.Cog):
 #    async def on_member_update(self, before, after):
 #        pass
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_guild_join(self, guild):
         await self.log("I'm in a new guild! \"{0.name}\" ({0.member_count} members), {0.id}".format(guild))
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_guild_remove(self, guild):
         await self.log("I've left a guild. \"{0.name}\" ({0.member_count} members), {0.id}".format(guild))
 

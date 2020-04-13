@@ -1,8 +1,10 @@
-import discord
-from discord.ext import commands
+from discord import Embed
+from discord.errors import HTTPException
+from discord.ext.commands import Bot
+
 from util import misc
 
-bot = commands.Bot(command_prefix="self_", self_bot=True)
+bot = Bot(command_prefix="self_", self_bot=True)
 
 
 @bot.event
@@ -29,7 +31,7 @@ async def on_ready():
 async def on_message(message):
     try:
         await bot.process_commands(message)
-    except discord.errors.HTTPException as err:
+    except HTTPException as err:
         await message.channel.send(err)
         raise
 
@@ -71,11 +73,11 @@ async def embed(ctx):
     if len(split) > 1:
         parts = split[1].split(" | ")
         if len(parts) == 3:
-            em = discord.Embed(title=parts[0], color=0xff0000)
+            em = Embed(title=parts[0], color=0xff0000)
             em.add_field(name=parts[1], value=parts[2])
             await ctx.send(embed=em)
         if len(parts) == 4:
-            em = discord.Embed(title=parts[0], color=int(parts[3]))
+            em = Embed(title=parts[0], color=int(parts[3]))
             em.add_field(name=parts[1], value=parts[2])
             await ctx.send(embed=em)
     await ctx.message.delete()

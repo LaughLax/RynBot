@@ -1,26 +1,22 @@
-import discord
-from discord.ext import commands
-import io
+from io import BytesIO
 
-from util.database import ServerConfig, CustomRoleChart
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-
-import numpy as np
 import matplotlib
+import numpy as np
+from discord import ActivityType, File
+from discord.ext.commands import bot_has_permissions, BotMissingPermissions, Cog, group
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# TODO Clean up imports
 
-
-class Chart(commands.Cog):
+class Chart(Cog):
     """Commands to make charts"""
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group()
-    @commands.bot_has_permissions(attach_files=True)
+    @group()
+    @bot_has_permissions(attach_files=True)
     async def chart(self, ctx):
         """Commands to generate charts."""
 
@@ -30,7 +26,7 @@ class Chart(commands.Cog):
 
     @chart.error
     async def chart_error(self, ctx, error):
-        if isinstance(error, commands.BotMissingPermissions):
+        if isinstance(error, BotMissingPermissions):
             await ctx.send('I don\'t have permissions to post files here. I need "Attach Files" permission to post charts.')
         else:
             await ctx.send('Error: {}'.format(error))
@@ -55,7 +51,7 @@ class Chart(commands.Cog):
         game_names = []
         game_count = []
         for a in server.members:
-            if not a.bot and a.activity is not None and a.activity.type == discord.ActivityType.playing:
+            if not a.bot and a.activity is not None and a.activity.type == ActivityType.playing:
                 if a.activity.name not in game_names:
                     game_names.append(a.activity.name)
                     game_count.append(1)
@@ -87,10 +83,10 @@ class Chart(commands.Cog):
         try:
             plt.tight_layout()
 
-            with io.BytesIO() as f:
+            with BytesIO() as f:
                 plt.savefig(f, format='png')
                 f.seek(0)
-                await ctx.send(file=discord.File(fp=f, filename="gameschart.png"))
+                await ctx.send(file=File(fp=f, filename="gameschart.png"))
             plt.close()
         except ValueError:
             await ctx.send("Something went wrong with fitting the graph to scale.")
@@ -115,7 +111,7 @@ class Chart(commands.Cog):
         game_names = []
         game_count = []
         for a in server.members:
-            if not a.bot and a.activity is not None and a.activity.type == discord.ActivityType.playing:
+            if not a.bot and a.activity is not None and a.activity.type == ActivityType.playing:
                 if a.activity.name not in game_names:
                     game_names.append(a.activity.name)
                     game_count.append(1)
@@ -150,10 +146,10 @@ class Chart(commands.Cog):
         plt.title("Games being played on server:\n{}".format(server.name))
         plt.axis('scaled')
 
-        with io.BytesIO() as f:
+        with BytesIO() as f:
             plt.savefig(f, format='png')
             f.seek(0)
-            await ctx.send(file=discord.File(fp=f, filename="gameschart.png"))
+            await ctx.send(file=File(fp=f, filename="gameschart.png"))
         plt.close()
 
     async def role_chart_wrapper(self, server_id, file_obj):
@@ -240,9 +236,9 @@ class Chart(commands.Cog):
         if server_id is None or server_id.lower() == "here":
             server_id = ctx.guild.id
 
-        with io.BytesIO() as f:
+        with BytesIO() as f:
             f = await self.role_chart_wrapper(server_id, f)
-            await ctx.send(file=discord.File(fp=f, filename="rolechart.png"))
+            await ctx.send(file=File(fp=f, filename="rolechart.png"))
 
     @chart.command()
     async def users(self, ctx, server_id: str = None):
@@ -264,11 +260,11 @@ class Chart(commands.Cog):
 
         join_dates = [mem.joined_at for mem in server.members]
 
-        with io.BytesIO() as f:
+        with BytesIO() as f:
             f = await self.bot.loop.run_in_executor(self.bot.process_pool,
                                                     self.make_user_chart,
                                                     join_dates, ctx.message.created_at, server.name, f)
-            await ctx.send(file=discord.File(fp=f, filename="userchart.png"))
+            await ctx.send(file=File(fp=f, filename="userchart.png"))
 
 
 def setup(bot):
