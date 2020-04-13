@@ -336,8 +336,8 @@ class Owner(Cog):
      ╲▂╱╲▂╱ ╲▂╱╲▂╱"""
         em = Embed(color=0xff0000)
         em.add_field(name="The dog himself", value=string)
-        await ctx.message.delete()
         await ctx.send("", embed=em)
+        await ctx.message.delete()
 
     @command(name='sans')
     async def ascii_sans(self, ctx):
@@ -367,8 +367,8 @@ class Owner(Cog):
 ⠀⠀⠀⠀⠿⠿⠿⠿⠧⠩⠄⠀⠀⠀⠀⠀⠬⠭⠭⠱⠿⠿⠿⠿⠟'''
         em = Embed(color=0xff0000)
         em.add_field(name='The man himself', value=string)
-        await ctx.message.delete()
         await ctx.send('', embed=em)
+        await ctx.message.delete()
 
     @command()
     async def status(self, ctx, status_type: int, *, text):
