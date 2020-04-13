@@ -1,6 +1,6 @@
 import typing
 
-from discord import ActivityType, Embed, Role, TextChannel
+from discord import ActivityType, Embed, Member, Role, TextChannel
 from discord.ext.commands import bot_has_permissions, Cog, command, group, has_permissions
 from sqlalchemy.orm.exc import MultipleResultsFound
 
@@ -144,6 +144,28 @@ class Server(Cog):
         if num > 100:
             num = 100
         await ctx.channel.purge(limit=num)
+
+    @command()
+    @has_permissions(kick_members=True)
+    @bot_has_permissions(kick_members=True)
+    async def kick(self, ctx, member: Member, reason: str = None)
+        '''Kick a member from the server.
+        
+        A reason can be provided.'''
+
+        await member.kick(reason=reason)
+        await ctx.message.delete()
+
+    @command()
+    @has_permissions(ban_members=True)
+    @bot_has_permissions(ban_members=True)
+    async def ban(self, ctx, member: Member, reason: str = None)
+        '''Ban a member from the server.
+
+        A reason can be provided.'''
+
+        await member.ban(reason=reason)
+        await ctx.message.delete()
 
     @command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
