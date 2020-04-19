@@ -1,12 +1,12 @@
-from util import config
+from contextlib import contextmanager
+from functools import wraps
 
 import sqlalchemy as sql
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
-from contextlib import contextmanager
-from functools import wraps
+from util import config
 
 Base = declarative_base()
 
