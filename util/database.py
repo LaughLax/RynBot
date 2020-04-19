@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from functools import wraps
 
+from dogpile.cache import make_region
 import sqlalchemy as sql
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -12,6 +13,8 @@ Base = declarative_base()
 
 
 class DBHandler:
+    region = make_region().configure('dogpile.cache.redis')
+
     def __init__(self, bot):
         self.engine = sql.create_engine(config.db_uri, pool_recycle=3600, pool_pre_ping=True)
         self.SessionFactory = sessionmaker(bind=self.engine)
@@ -149,6 +152,7 @@ class DBHandler:
         return rows
 
     @async_via_threadpool
+    @region.cache_on_arguments()
     @provide_db
     def fetch_starboard_channel(self, db, server_id):
         try:
@@ -163,6 +167,7 @@ class DBHandler:
         return starboard
 
     @async_via_threadpool
+    @region.cache_on_arguments()
     @provide_db
     def fetch_star_threshold(self, db, server_id):
         try:
