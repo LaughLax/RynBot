@@ -148,7 +148,7 @@ class Server(Cog):
     @command()
     @has_permissions(kick_members=True)
     @bot_has_permissions(kick_members=True)
-    async def kick(self, ctx, member: Member, reason: str = None)
+    async def kick(self, ctx, member: Member, reason: str = None):
         '''Kick a member from the server.
         
         A reason can be provided.'''
@@ -159,7 +159,7 @@ class Server(Cog):
     @command()
     @has_permissions(ban_members=True)
     @bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, member: Member, reason: str = None)
+    async def ban(self, ctx, member: Member, reason: str = None):
         '''Ban a member from the server.
 
         A reason can be provided.'''
