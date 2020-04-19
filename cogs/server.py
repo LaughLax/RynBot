@@ -4,7 +4,7 @@ from discord import ActivityType, Embed, Member, Role, TextChannel
 from discord.ext.commands import bot_has_permissions, Cog, command, group, has_permissions
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-from util.database import ServerConfig, CustomRoleChart
+from database.models import ServerConfig, CustomRoleChart
 
 
 class Server(Cog):

@@ -3,7 +3,7 @@ from discord.ext.commands import CheckFailure, Cog
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from util import misc
-from util.database import Star
+from database.models import Star
 
 
 class StarError(CheckFailure):

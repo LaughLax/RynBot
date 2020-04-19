@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from tzlocal import get_localzone
 
 from util import config
-from util.database import Population
+from database.models import Population
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
