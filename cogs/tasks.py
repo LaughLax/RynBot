@@ -57,7 +57,7 @@ class Tasks(Cog):
     async def list_tasks(self, ctx):
         try:
             tasks = await self.bot.db.fetch_task_list(ctx.guild.id)
-        except NoResultsFound as e:
+        except NoResultFound as e:
             tasks = []
         desc = []
         for task in tasks:
