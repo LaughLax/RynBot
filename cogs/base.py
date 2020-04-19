@@ -126,7 +126,6 @@ class Base(Cog):
         # TODO Replace 'owner' command with an info command that links to the support server
         
         if message is not None:
-            # TODO catch emojis (will require checking ctx.message instead of taking args)
             recipient = await self.bot.fetch_user(config.owner_id)
             if message.count("`") % 2 == 1:
                 message = message + "`"
