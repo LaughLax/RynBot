@@ -58,6 +58,18 @@ class DBHandler:
 
     @async_via_threadpool
     @provide_db
+    def get_db_size(self,  db):
+        res = db.execute(
+            "SELECT sum((data_length + index_length) / 1024 / 1024) "
+            "AS Size "
+            "FROM information_schema.tables "
+            "WHERE table_schema = 'rynbot' "
+            "GROUP BY table_schema;"
+        ).first().values()[0]
+        return float(res)
+
+    @async_via_threadpool
+    @provide_db
     def get_custom_role_list(self, db, guild_id):
         try:
             custom_list = db.query(CustomRoleChart.role).\

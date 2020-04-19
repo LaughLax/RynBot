@@ -4,6 +4,7 @@ import io
 import math
 import pstats
 import subprocess
+import psutil
 
 import discord
 import mysql.connector
@@ -607,6 +608,31 @@ class Owner(Cog):
         cur.close()
         db.commit()
         db.close()
+
+    @command()
+    async def stat(self, ctx):
+        main_proc = psutil.Process()
+        main_proc_mem = main_proc.memory_full_info().uss / 1024 / 1024
+
+        children = main_proc.children(recursive=True)
+        children_mem = sum([c.memory_full_info().uss for c in children]) / 1024 / 1024
+
+        # TODO Get memory usage of Redis cache
+        # [print(p) for p in psutil.process_iter()]
+
+        db_size = await self.bot.db.get_db_size()
+
+        em = Embed()
+        em.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url_as(format='png'))
+        em.timestamp = ctx.message.created_at
+        em.colour = 0xff0000
+
+        em.add_field(name='Main Process Memory Usage', value=f'{main_proc_mem:3.1f} MB', inline=True)
+        em.add_field(name='Children Memory Usage', value=f'{children_mem:3.1f} MB ({len(children)} children)', inline=True)
+        # em.add_field(name='Redis Memory Usage', value='Unknown', inline=True)
+        em.add_field(name='Database Disk Usage', value=f'{db_size:3.1f} MB', inline=True)
+        
+        await ctx.send(embed=em)
 
 
 def setup(bot):
