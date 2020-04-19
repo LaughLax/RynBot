@@ -610,7 +610,7 @@ class Owner(Cog):
         db.close()
 
     @command()
-    async def stat(self, ctx):
+    async def status(self, ctx):
         main_proc = psutil.Process()
         main_proc_mem = main_proc.memory_full_info().uss / 1024 / 1024
 
