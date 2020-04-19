@@ -4,6 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from util import misc
 from database.models import Star
+# TODO Make DB Model imports unnecessary here
 
 
 class StarError(CheckFailure):

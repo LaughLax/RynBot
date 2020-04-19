@@ -5,6 +5,7 @@ from discord.ext.commands import bot_has_permissions, Cog, command, group, has_p
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from database.models import ServerConfig, CustomRoleChart
+# TODO Make DB Model imports unnecessary here
 
 
 class Server(Cog):

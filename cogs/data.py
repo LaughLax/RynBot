@@ -11,6 +11,7 @@ from tzlocal import get_localzone
 
 from util import config
 from database.models import Population
+# TODO Make DB Model imports unnecessary here
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
