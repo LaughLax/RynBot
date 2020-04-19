@@ -1,10 +1,10 @@
+from io import BytesIO
+
 from discord import File
 from discord.ext.commands import Cog, command, has_permissions
 from discord.ext.tasks import loop
-
 from sqlalchemy.orm.exc import NoResultFound
-
-from io import BytesIO
+# TODO Make this import unnecessary
 
 from util import misc
 

@@ -4,10 +4,10 @@ import io
 import math
 import pstats
 import subprocess
-import psutil
 
 import discord
 import mysql.connector
+import psutil
 from discord import Activity, ActivityType, Embed, TextChannel
 from discord.errors import NotFound
 from discord.ext import commands
