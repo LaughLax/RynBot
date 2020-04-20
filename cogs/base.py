@@ -120,18 +120,25 @@ class Base(Cog):
             await ctx.message.delete()
 
     @command()
-    async def owner(self, ctx, *, message: str = None):
-        """Send a message to the bot owner. Images and Discord-based emoji will not be shown."""
+    async def info(self, ctx, *, message: str = None):
+        """Info about RynBot."""
 
-        # TODO Replace 'owner' command with an info command that links to the support server
-        
-        if message is not None:
-            recipient = await self.bot.fetch_user(config.owner_id)
-            if message.count("`") % 2 == 1:
-                message = message + "`"
-            await recipient.send("{0}\n\n`This message was sent to you by {1.name}#{1.discriminator} ({1.id}). To send him a message, use the `_message` command.`".format(message, ctx.author))
-        else:
-            ctx.send("You didn't give me a message to send!")
+        em = Embed()
+        em.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url_as(format='png'))
+        em.set_thumbnail(url=ctx.me.avatar_url_as(format='png'))
+        em.timestamp = ctx.message.created_at
+        em.colour = 0xff0000
+
+        em.add_field(name='Owner/Creator', value='<@185095270986547200>')
+        em.add_field(name='Short Description', value='A bot to provide some server info and analytics.')
+        em.add_field(name='Library', value='discord.py')
+        em.add_field(name='Prefix', value=self.bot.command_prefix)
+        em.add_field(name='Server Count', value=str(len(self.bot.guilds)))
+        em.add_field(name='Links', value='[Invite](https://discordapp.com/oauth2/authorize?client_id=357695787792334848&scope=bot&permissions=32768)\n'
+                                         '[Support Server](https://discord.gg/wSntGKR)\n'
+                                         '[Top.GG Page](https://top.gg/bot/357695787792334848)')
+
+        await ctx.send(embed=em)
 
 
 def setup(bot):
