@@ -622,7 +622,8 @@ class Owner(Cog):
         for p in psutil.process_iter(['name']):
             if p.info['name'] == 'redis-server':
                 redis = p
-        redis_mem = redis.memory_info().rss / 1024 / 1024
+        if redis is not None:
+            redis_mem = redis.memory_info().rss / 1024 / 1024
 
         db_size = await self.bot.db.get_db_size()
 
@@ -631,10 +632,13 @@ class Owner(Cog):
         em.timestamp = ctx.message.created_at
         em.colour = 0xff0000
 
-        em.add_field(name='Main Process Memory Usage', value=f'{main_proc_mem:3.1f} MB', inline=True)
-        em.add_field(name='Children Memory Usage', value=f'{children_mem:3.1f} MB ({len(children)} children)', inline=True)
-        em.add_field(name='Redis Memory Usage', value=f'{redis_mem:3.1f} MB', inline=True)
-        em.add_field(name='Database Disk Usage', value=f'{db_size:3.1f} MB', inline=True)
+        em.add_field(name='Main Process Memory Usage', value=f'{main_proc_mem:3.1f} MB')
+        em.add_field(name='Children Memory Usage', value=f'{children_mem:3.1f} MB ({len(children)} children)')
+        if redis is not None:
+            em.add_field(name='Redis Memory Usage', value=f'{redis_mem:3.1f} MB')
+        else:
+            em.add_field(name='Redis Memory Usage', value='Unknown')
+        em.add_field(name='Database Disk Usage', value=f'{db_size:3.1f} MB')
         
         await ctx.send(embed=em)
 
