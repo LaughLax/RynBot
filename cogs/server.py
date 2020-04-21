@@ -5,6 +5,7 @@ from discord.ext.commands import bot_has_permissions, Cog, command, group, has_p
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from database.models import ServerConfig, CustomRoleChart
+from util import config
 # TODO Make DB Model imports unnecessary here
 
 
@@ -31,6 +32,14 @@ class Server(Cog):
             db.add(cfg)
 
         return cfg
+
+    @config.command()
+    async def set_prefix(self, ctx, *, prefix=None):
+        await self.bot.db.set_prefix(ctx.guild.id, prefix)
+        if prefix is not None:
+            await ctx.send(f'Prefix has been set to "{prefix}". Mentioning me also works as a prefix.')
+        else:
+            await ctx.send(f'Prefix has been reset to default (Mention or "{config.prefix}")')
 
     @config.command()
     async def starboard(self, ctx, channel: typing.Optional[TextChannel] = None):

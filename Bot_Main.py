@@ -4,10 +4,20 @@ from util import config
 from concurrent.futures import ProcessPoolExecutor
 # import logging
 
+async def prefix_func(_bot, msg):
+    prefs = [f'<@{_bot.user.id}> ', f'<@!{_bot.user.id}> ']
+    if msg.guild and hasattr(_bot, 'db'):
+        pref = await _bot.db.get_prefix(msg.guild.id)
+        prefs.append(config.prefix if pref is None else pref)
+    else:
+        prefs.append(config.prefix)
+
+    return prefs
+
 if __name__ == '__main__':
     game = Activity(type=ActivityType.playing, name=config.activity)
 
-    bot = Bot(command_prefix=config.prefix,
+    bot = Bot(command_prefix=prefix_func,
               owner_id=config.owner_id,
               activity=game,
               help_command=DefaultHelpCommand(command_attrs={'aliases': ['halp']}))

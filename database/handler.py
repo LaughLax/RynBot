@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from functools import wraps
 
+import sqlalchemy as sa
 from dogpile.cache import make_region
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -60,6 +61,21 @@ class DBHandler:
                 "GROUP BY table_schema;"
             ).first().values()[0]
             return float(res)
+
+    @async_via_threadpool
+    @region.cache_on_arguments()
+    def get_prefix(self, guild_id):
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, guild_id)
+            return cfg.prefix
+
+    @async_via_threadpool
+    def set_prefix(self, guild_id, prefix):
+        self.get_prefix.invalidate(self, guild_id)
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, guild_id)
+            cfg.prefix = prefix if prefix is not None else sa.null()
+            db.add(cfg)
 
     @async_via_threadpool
     def get_custom_role_list(self, guild_id):

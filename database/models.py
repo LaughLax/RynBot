@@ -60,6 +60,8 @@ class ServerConfig(Base):
                         primary_key=True,
                         unique=True,
                         nullable=False)
+    prefix = sql.Column(sql.String,
+                        nullable=True)
     starboard = sql.Column(sql.BigInteger,
                            nullable=True)
     star_threshold = sql.Column(sql.SmallInteger,
