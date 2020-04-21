@@ -372,7 +372,7 @@ class Owner(Cog):
         await ctx.message.delete()
 
     @command()
-    async def status(self, ctx, status_type: int, *, text):
+    async def set_status(self, ctx, status_type: int, *, text):
         """Set the bot's presence"""
         tp = {
             0: ActivityType.playing,
