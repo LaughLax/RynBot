@@ -122,8 +122,8 @@ class Owner(Cog):
 
     @db.command(name='reload')
     async def _db_reload(self, ctx):
-        self.bot.unload_extension('util.database')
-        self.bot.load_extension('util.database')
+        self.bot.unload_extension('database.handler')
+        self.bot.load_extension('database.handler')
 
         await ctx.send('Reload operation successful.')
 
