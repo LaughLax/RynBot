@@ -612,13 +612,17 @@ class Owner(Cog):
     @command()
     async def status(self, ctx):
         main_proc = psutil.Process()
-        main_proc_mem = main_proc.memory_full_info().uss / 1024 / 1024
+        main_proc_mem = main_proc.memory_info().rss / 1024 / 1024
 
         children = main_proc.children(recursive=True)
-        children_mem = sum([c.memory_full_info().uss for c in children]) / 1024 / 1024
+        children_mem = sum([c.memory_info().rss for c in children]) / 1024 / 1024
 
         # TODO Get memory usage of Redis cache
-        # [print(p) for p in psutil.process_iter()]
+        redis = None
+        for p in psutil.process_iter(['name']):
+            if p.info['name'] == 'redis-server':
+                redis = p
+        redis_mem = redis.memory_info().rss / 1024 / 1024
 
         db_size = await self.bot.db.get_db_size()
 
@@ -629,7 +633,7 @@ class Owner(Cog):
 
         em.add_field(name='Main Process Memory Usage', value=f'{main_proc_mem:3.1f} MB', inline=True)
         em.add_field(name='Children Memory Usage', value=f'{children_mem:3.1f} MB ({len(children)} children)', inline=True)
-        # em.add_field(name='Redis Memory Usage', value='Unknown', inline=True)
+        em.add_field(name='Redis Memory Usage', value=f'{redis_mem:3.1f} MB', inline=True)
         em.add_field(name='Database Disk Usage', value=f'{db_size:3.1f} MB', inline=True)
         
         await ctx.send(embed=em)
