@@ -36,8 +36,7 @@ class Owner(Cog):
         """Commands for managing cogs."""
 
         if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)    # New version
-            # await ctx.invoke(self.bot.get_command('help'), 'cog')   # Old version
+            await ctx.send_help(ctx.command)
 
     @cog.command()
     async def load(self, ctx, name: str):
@@ -48,7 +47,6 @@ class Owner(Cog):
 
         self.bot.load_extension('cogs.{}'.format(name))
         await ctx.send('Cog \'{}\' successfully added.'.format(name))
-        # await ctx.invoke(self.bot.get_command('help'), name.lower())
 
     @cog.command()
     async def unload(self, ctx, name: str):
@@ -85,7 +83,6 @@ class Owner(Cog):
 
         for page in paginator.pages:
             await ctx.send(page)
-            # await ctx.message.author.send(page)
 
     @command()
     async def renamebot(self, ctx, name: str):
@@ -617,7 +614,6 @@ class Owner(Cog):
         children = main_proc.children(recursive=True)
         children_mem = sum([c.memory_info().rss for c in children]) / 1024 / 1024
 
-        # TODO Get memory usage of Redis cache
         redis = None
         for p in psutil.process_iter(['name']):
             if p.info['name'] == 'redis-server':
