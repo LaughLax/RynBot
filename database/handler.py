@@ -158,7 +158,6 @@ class DBHandler:
             return rows
 
     @async_via_threadpool
-    @region.cache_on_arguments()
     def fetch_starboard_channel(self, server_id):
         with self.get_session() as db:
             try:
@@ -173,7 +172,6 @@ class DBHandler:
             return starboard
 
     @async_via_threadpool
-    @region.cache_on_arguments()
     def fetch_star_threshold(self, server_id):
         with self.get_session() as db:
             try:
