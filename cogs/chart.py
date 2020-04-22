@@ -91,67 +91,6 @@ class Chart(Cog):
         except ValueError:
             await ctx.send("Something went wrong with fitting the graph to scale.")
 
-    @chart.command()
-    async def games_pie(self, ctx, server_id: str = None):
-        """Display a pie chart of games being played on a server.
-
-        The chart will display up to 10 games, excluding streamers and bot accounts.
-        If there are more than 10 unique games being played, a minimum number of players per game is set so that 10 or fewer games will be included on the chart."""
-
-        # TODO Create wrapper function for games pie chart
-
-        if server_id is None or server_id.lower() == "here":
-            server = ctx.guild
-        else:
-            server = self.bot.get_guild(int(server_id))
-            if server is None:
-                await ctx.send("I'm not in that server.")
-                return
-
-        game_names = []
-        game_count = []
-        for a in server.members:
-            if not a.bot and a.activity is not None and a.activity.type == ActivityType.playing:
-                if a.activity.name not in game_names:
-                    game_names.append(a.activity.name)
-                    game_count.append(1)
-                else:
-                    game_count[game_names.index(a.activity.name)] += 1
-
-        if not game_names:
-            await ctx.send("No games being played.")
-            return
-
-        cutoff = 0
-        other_count = 0
-        while len(game_names) >= 10:
-            cutoff += 1
-            copy = game_names.copy()
-            for g in copy:
-                ind = game_names.index(g)
-                if game_count[ind] == cutoff:
-                    game_names.pop(ind)
-                    game_count.pop(ind)
-                    other_count += cutoff
-
-        if other_count > 0:
-            game_names.append("Other")
-            game_count.append(other_count)
-        # game_names, game_count = zip(*sorted(zip(game_names, game_count)))
-
-        plt.clf()
-        patches, texts = plt.pie(game_count, labels=game_names, labeldistance=0.9, shadow=True)
-        # for t in texts:
-        #     t.set_size('x-small')
-        plt.title("Games being played on server:\n{}".format(server.name))
-        plt.axis('scaled')
-
-        with BytesIO() as f:
-            plt.savefig(f, format='png')
-            f.seek(0)
-            await ctx.send(file=File(fp=f, filename="gameschart.png"))
-        plt.close()
-
     async def role_chart_wrapper(self, server_id, file_obj):
         server = self.bot.get_guild(int(server_id))
         if server is None:

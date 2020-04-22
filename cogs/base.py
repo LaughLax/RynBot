@@ -120,7 +120,7 @@ class Base(Cog):
             await ctx.message.delete()
 
     @command()
-    async def info(self, ctx, *, message: str = None):
+    async def info(self, ctx):
         """Info about RynBot."""
 
         em = Embed()

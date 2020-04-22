@@ -6,7 +6,6 @@ import pstats
 import subprocess
 
 import discord
-import mysql.connector
 import psutil
 from discord import Activity, ActivityType, Embed, TextChannel
 from discord.errors import NotFound
@@ -319,55 +318,6 @@ class Owner(Cog):
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             await ctx.message.delete()
 
-    @command(name='cooldog')
-    async def cool_dog(self, ctx):
-        string = """╭━━━━━╮               This is cooldog. Help
-    ╰┃ ┣▇━▇                cooldog take over 
-     ┃ ┃  ╰━▅╮ Discord by pasting
-     ╰┳╯ ╰━━┳╯        him in 10 other
-      ╰╮ ┳━━╯            servers or he
-     ▕▔▋ ╰╮╭━╮   will never be a cool dog
-    ╱▔╲▋╰━┻┻╮╲╱▔▔▔╲
-    ▏  ▔▔▔▔▔▔▔  O O┃ 
-    ╲╱▔╲▂▂▂▂╱▔╲▂▂▂╱
-     ▏╳▕▇▇▕ ▏╳▕▇▇▕
-     ╲▂╱╲▂╱ ╲▂╱╲▂╱"""
-        em = Embed(color=0xff0000)
-        em.add_field(name="The dog himself", value=string)
-        await ctx.send("", embed=em)
-        await ctx.message.delete()
-
-    @command(name='sans')
-    async def ascii_sans(self, ctx):
-        string = '''.                        ⠠⠤⠶⠶⠶⠶⠶⠶⠤⠄
-⠀⠀⠀⠀⠀⠀⠀⠠⠾⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠷⠄
-⠀⠀⠀⠀⠀⠀⠠⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠿⠄
-⠀⠀⠀⠀⠀⠀⠸⠿⠛⠉⠉⠉⠻⠿⠿⠟⠉⠉⠉⠛⠿⠇
-⠀⠀⠀⠀⠀⠀⠸⠇⠀⠀⠶⠀⠸⠿⠿⠇     \U0001f535  ⠸⠇
-⠀⠀⠀⠀⠀⠀⠀⠻⠶⠤⠤⠠⠿⠃⠘⠿⠄⠤⠤⠶⠟
-⠀⠀⠀⠀⠀⠀⠀⠾⠿⠙⠶⠿⠿⠤⠤⠿⠿⠶⠏⠻⠷
-⠀⠀⠀⠀⠀⠀⠀⠻⠶⠜⠰⠭⠩⠍⠭⠍⠭⠱⠠⠶⠟
-⠀⠀⠀⠀⠠⠶⠦⠈⠻⠿⠶⠭⠘⠃⠛⠃⠫⠴⠿⠟⠡⠾⠟⠂
-⠀⠀⠀⠀⠊⠉⠛⠳⠦⠈⠉⠛⠛⠛⠛⠛⠛⠉⠁⠠⠿⠋⠀⠱⠄
-⠀⠀⠀⠔⠀⠀⠄⠀⠉⠳⠦⠄⠳⠶⠶⠃⠠⠤⠞⠛⠁⠠⠂⠀⠙⠄
-⠀⠀⠎⠀⠀⠀⠇⠀⠀⠸⠀⠏⠠⠭⠍⠈⠏⠇⠀⠀⠀⠼⠀⠀⠀⠙⠆
-⠀⠼⠀⠀⠀⠀⠷⠔⠒⠚⠍⠣⠸⠿⠿⠸⠋⠇⠠⠴⠚⠹⠀⠀⠀⠀⠻
-⠀⠻⠄⠀⠀⠰⠁⠀⠀⠀⠗⠹⠸⠿⠿⠸⠉⠇⠇⠀⠀⠈⠇⠀⠀⠀⠸
-⠀⠀⠙⠦⠄⠸⠀⠀⠀⠀⠱⠹⠸⠿⠿⠸⠹⠜⠀⠀⠀⠀⠇⠀⠀⠴⠋
-⠀⠀⠀⠈⠃⠼⠶⠄⠀⠀⠸⠾⠶⠒⠒⠚⠾⠤⠤⠤⠤⠾⠃⠶⠊⠁
-⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉
-⠀⠀⠀⠀⠀⠀⠔⠀⠶⠀⠀⠀⠀⠀⠀⠀⠀⠸⠇⠀⠀⠣
-⠀⠀⠀⠀⠀⠀⠇⠸⠇⠀⠀⠀⠀⠎⠆⠀⠀⠸⠧⠀⠀⠸
-⠀⠀⠀⠀⠀⠰⠁⠾⠁⠀⠀⠀⠠⠇⠱⠀⠀⠸⠿⠀⠀⠀⠇
-⠀⠀⠀⠀⠀⠸⠀⠿⠀⠀⠀⠀⠸⠀⠸⠀⠀⠀⠿⠀⠀⠀⠇
-⠀⠀⠀⠀⠀⠈⠉⠉⠒⠒⠒⠒⠊⠀⠈⠒⠒⠒⠛⠓⠊⠉⠁
-⠀⠀⠀⠀⠠⠶⠶⠤⠲⠶⠀⠀⠀⠀⠀⠀⠠⠷⠶⠶⠂⠤⠶⠦⠄
-⠀⠀⠀⠀⠿⠿⠿⠿⠧⠩⠄⠀⠀⠀⠀⠀⠬⠭⠭⠱⠿⠿⠿⠿⠟'''
-        em = Embed(color=0xff0000)
-        em.add_field(name='The man himself', value=string)
-        await ctx.send('', embed=em)
-        await ctx.message.delete()
-
     @command()
     async def set_status(self, ctx, status_type: int, *, text):
         """Set the bot's presence"""
@@ -584,27 +534,6 @@ class Owner(Cog):
         embed.add_field(name='Result', value=('```\n' + result + '```'), inline=False)
         
         await ctx.send(embed=embed)
-
-    @command()
-    async def sql(self, ctx, *, cmd):
-        try:
-            db = mysql.connector.connect(user='pi', unix_socket='/var/run/mysqld/mysqld.sock', host='localhost', database='rynbot')
-        except mysql.connector.Error as err:
-            print(err)
-            raise err
-        
-        cur = db.cursor()
-        try:
-            cur.execute(cmd, multi=';' in cmd)
-            res = cur.fetchall()
-            await ctx.send(res)
-        except mysql.connector.Error as err:
-            await ctx.send(err)
-            print(err)
-
-        cur.close()
-        db.commit()
-        db.close()
 
     @command()
     async def status(self, ctx):
