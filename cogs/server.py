@@ -1,6 +1,6 @@
 import typing
 
-from discord import ActivityType, Embed, Member, Role, TextChannel
+from discord import ActivityType, Embed, Member, TextChannel
 from discord.ext.commands import bot_has_permissions, Cog, command, group, has_permissions
 from sqlalchemy.orm.exc import MultipleResultsFound
 
@@ -76,7 +76,7 @@ class Server(Cog):
             if cfg.starboard:
                 cfg.starboard = None
                 db.add(cfg)
-                await ctx.send('This server\s starboard has been disabled.')
+                await ctx.send('This server\'s starboard has been disabled.')
             else:
                 await ctx.send('This server has no assigned starboard.')
 
@@ -109,9 +109,9 @@ class Server(Cog):
     @has_permissions(kick_members=True)
     @bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: Member, reason: str = None):
-        '''Kick a member from the server.
+        """Kick a member from the server.
         
-        A reason can be provided.'''
+        A reason can be provided."""
 
         await member.kick(reason=reason)
         await ctx.message.delete()
@@ -120,9 +120,9 @@ class Server(Cog):
     @has_permissions(ban_members=True)
     @bot_has_permissions(ban_members=True)
     async def ban(self, ctx, member: Member, reason: str = None):
-        '''Ban a member from the server.
+        """Ban a member from the server.
 
-        A reason can be provided.'''
+        A reason can be provided."""
 
         await member.ban(reason=reason)
         await ctx.message.delete()

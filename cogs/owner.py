@@ -127,7 +127,7 @@ class Owner(Cog):
     async def upgrade(self, ctx):
         paginator = Paginator()
 
-        stream = subprocess.run(['alembic','upgrade','head'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stream = subprocess.run(['alembic', 'upgrade', 'head'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if stream.stdout is not None:
             paginator.add_line("STDOUT:")
             for line in str(stream.stdout.decode('utf-8')).split('\n'):
@@ -393,19 +393,19 @@ class Owner(Cog):
 
                 paginator = Paginator(prefix="```{head:>{n_len}}#xxxx | ID".format(head="User", n_len=max_length))
 
-                for u in users:
-                    paginator.add_line("{username:>{n_len}}#{discrim} | {user_id}".format(username=u.name, n_len=max_length, discrim=u.discriminator, user_id=u.id))
+                for user in users:
+                    paginator.add_line("{username:>{n_len}}#{discrim} | {user_id}".format(username=user.name, n_len=max_length, discrim=user.discriminator, user_id=user.id))
                 for p in paginator.pages:
                     await ctx.send(p)
         else:
-            await ctx.send("The ID of user `{}` is `{}`.".format(name, users.id))
+            await ctx.send("The ID of user `{}` is `{}`.".format(name, users[0].id))
 
     @command()
     async def user_servers(self, ctx, user_id: int):
         user_guilds = []
-        for g in self.bot.guilds:
-            if g.get_member(user_id):
-                user_guilds.append(g)
+        for guild in self.bot.guilds:
+            if guild.get_member(user_id):
+                user_guilds.append(guild)
 
         if not user_guilds:
             await ctx.send('I have no servers in common with that user.')
@@ -416,12 +416,12 @@ class Owner(Cog):
 
         max_name_length = len(max(user_guilds, key=lambda g: len(g.name)).name)
 
-        for g in user_guilds:
-            mem = g.get_member(user_id)
+        for guild in user_guilds:
+            mem = guild.get_member(user_id)
             nick = mem.nick
             if not nick:
                 nick = mem.name
-            paginator.add_line("{0.name:<{n_len}} | ({n})".format(g, n_len=max_name_length, n=nick))
+            paginator.add_line("{0.name:<{n_len}} | ({n})".format(guild, n_len=max_name_length, n=nick))
 
         for p in paginator.pages:
             await ctx.send(p)
@@ -460,21 +460,6 @@ class Owner(Cog):
         for p in paginator.pages:
             await ctx.send(p)
 
-    def insert_returns(self, body):
-        # insert return stmt if the last expression is a expression statement
-        if isinstance(body[-1], ast.Expr):
-            body[-1] = ast.Return(body[-1].value)
-            ast.fix_missing_locations(body[-1])
-
-        # for if statements, we insert returns into the body and the orelse
-        if isinstance(body[-1], ast.If):
-            insert_returns(body[-1].body)
-            insert_returns(body[-1].orelse)
-
-        # for with blocks, again we insert returns into the body
-        if isinstance(body[-1], ast.With):
-            insert_returns(body[-1].body)
-
     @command()
     async def eval_fn(self, ctx, *, cmd):
         """Evaluates input.
@@ -512,7 +497,22 @@ class Owner(Cog):
         parsed = ast.parse(body)
         body = parsed.body[0].body
 
-        self.insert_returns(body)
+        def insert_returns(_body):
+            # insert return stmt if the last expression is a expression statement
+            if isinstance(_body[-1], ast.Expr):
+                _body[-1] = ast.Return(_body[-1].value)
+                ast.fix_missing_locations(_body[-1])
+
+            # for if statements, we insert returns into the body and the orelse
+            if isinstance(_body[-1], ast.If):
+                insert_returns(_body[-1].body)
+                insert_returns(_body[-1].orelse)
+
+            # for with blocks, again we insert returns into the body
+            if isinstance(_body[-1], ast.With):
+                insert_returns(_body[-1].body)
+
+        insert_returns(body)
 
         env = {
             'bot': self.bot,

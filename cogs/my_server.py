@@ -11,7 +11,8 @@ class MyServer(Cog):
     def cog_check(self, ctx):
         return ctx.guild is not None and ctx.guild.id == config.ryn_server_id
 
-    def _get_role_id(self, name: str):
+    @staticmethod
+    def _get_role_id(name: str):
         return {
             'ldsg': '357912587498946560'
         }.get(name.lower())
@@ -22,10 +23,10 @@ class MyServer(Cog):
 
         Available roles are:
         LDSG"""
-        id = self._get_role_id(i_want)
-        if id is not None:
+        r_id = self._get_role_id(i_want)
+        if r_id is not None:
             conv = RoleConverter()
-            role = await conv.convert(ctx, id)
+            role = await conv.convert(ctx, r_id)
             if role in ctx.author.roles:
                 await ctx.author.remove_roles(role)
             else:

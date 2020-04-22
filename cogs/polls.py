@@ -31,7 +31,7 @@ class ActivePoll:
             self.votes[user_id].remove(option_id)
 
     def count_votes(self):
-        totals = [0 for li in self.options]
+        totals = [0 for _ in self.options]
         for v in self.votes:
             for i in self.votes[v]:
                 totals[i] = totals[i] + 1
@@ -107,17 +107,19 @@ class Polls(Cog):
             plt.close()
 
             embed = Embed(description="Poll closed.")
-            # if message.embeds:
-                # data = message.embeds[0]
-                # if data.type == 'image':
-                    # embed.set_image(url=data.url)
+            '''
+            if message.embeds:
+                data = message.embeds[0]
+                if data.type == 'image':
+                    embed.set_image(url=data.url)
 
-            # if message.attachments:
-                # file = message.attachments[0]
-                # if file.url.lower().endswith(('png', 'jpeg', 'jpg', 'gif', 'webp')):
-                    # embed.set_image(url=file.url)
-                # else:
-                    # embed.add_field(name='Attachment', value='[{}]({})'.format(file.filename, file.url), inline=False)
+            if message.attachments:
+                file = message.attachments[0]
+                if file.url.lower().endswith(('png', 'jpeg', 'jpg', 'gif', 'webp')):
+                    embed.set_image(url=file.url)
+                else:
+                    embed.add_field(name='Attachment', value='[{}]({})'.format(file.filename, file.url), inline=False)
+            '''
 
             embed.set_image(url='http://laughlax.us.to/RynBot/poll_results_{}.png'.format(message_id))
             embed.set_author(name=self.bot.user.display_name, icon_url=self.bot.user.avatar_url_as(format='png'))
@@ -130,7 +132,7 @@ class Polls(Cog):
             await message.edit("Something went wrong, probably with scaling.")
 
     @command()
-    async def poll(self, ctx, *, items : str = None):
+    async def poll(self, ctx, *, items: str = None):
         # TODO What even *is* the first half of this if statement?
         if not isinstance(ctx.channel, TextChannel) or items is None:
             return
