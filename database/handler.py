@@ -159,12 +159,14 @@ class DBHandler:
 
     @async_via_threadpool
     def set_starboard_channel(self, server_id, channel_id):
+        self.get_starboard_channel.invalidate(self, server_id)
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, server_id)
             cfg.starboard = channel_id
             db.add(cfg)
 
     @async_via_threadpool
+    @region.cache_on_arguments()
     def get_starboard_channel(self, server_id):
         with self.get_session() as db:
             try:
