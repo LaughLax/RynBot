@@ -74,7 +74,7 @@ class DBHandler:
         self.get_prefix.invalidate(self, guild_id)
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
-            cfg.prefix = prefix if prefix is not None else sa.null()
+            cfg.prefix = prefix
             db.add(cfg)
 
     @async_via_threadpool
