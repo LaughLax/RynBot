@@ -2,11 +2,8 @@ import typing
 
 from discord import ActivityType, Embed, Member, TextChannel
 from discord.ext.commands import bot_has_permissions, Cog, command, group, guild_only, has_permissions
-from sqlalchemy.orm.exc import MultipleResultsFound
 
-from database.models import ServerConfig
 from util import config
-# TODO Make DB Model imports unnecessary here
 
 
 class Server(Cog):
@@ -32,7 +29,15 @@ class Server(Cog):
             await ctx.send(f'The command prefix for this guild has been set to "{prefix}". '
                            'Mentioning me also works as a prefix.')
         else:
-            await ctx.send(f'Prefix has been reset to default (Mention or "{config.prefix}")')
+            await ctx.send(f'The command prefix for this guild has been reset to default '
+                           '(Mention or "{config.prefix}")')
+
+    @cfg_get.command(name='prefix')
+    async def get_prefix(self, ctx):
+        pref = await self.bot.db.get_prefix(ctx.guild.id)
+        pref = config.prefix if pref is None else pref
+        await ctx.send(f'The command prefix for this guild is "{pref}". '
+                       'Mentioning me also works as a prefix.')
 
     @cfg_set.command(name='starboard')
     async def set_starboard(self, ctx, channel: typing.Optional[TextChannel] = None):
