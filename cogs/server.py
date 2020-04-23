@@ -96,6 +96,7 @@ class Server(Cog):
         
         A reason can be provided."""
 
+        # TODO Note who issued the command in the reason
         await member.kick(reason=reason)
         await ctx.message.delete()
 
@@ -107,8 +108,18 @@ class Server(Cog):
 
         A reason can be provided."""
 
+        # TODO Note who issued the command in the reason
         await member.ban(reason=reason)
         await ctx.message.delete()
+
+    @command(aliases=['nick', 'nickname'])
+    @has_permissions(manage_nicknames=True)
+    @bot_has_permissions(manage_nicknames=True)
+    async def rename(self, ctx, member: Member, new_nick: str = None):
+        # TODO Place a reason in the audit logs, note who issued the command
+        # TODO Test this command before deploying
+        pass
+        # await member.edit(nick=new_nick)
 
     @command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
