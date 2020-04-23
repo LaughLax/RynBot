@@ -158,7 +158,7 @@ class DBHandler:
             return rows
 
     @async_via_threadpool
-    def fetch_starboard_channel(self, server_id):
+    def get_starboard_channel(self, server_id):
         with self.get_session() as db:
             try:
                 starboard = db.query(ServerConfig.starboard).\

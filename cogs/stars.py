@@ -74,7 +74,7 @@ class Stars(Cog):
         """
 
         # Get the starboard channel for the server
-        starboard_channel = await self.bot.db.fetch_starboard_channel(channel.guild.id)
+        starboard_channel = await self.bot.db.get_starboard_channel(channel.guild.id)
         starboard_channel = self.bot.get_channel(starboard_channel)
 
         if (not starboard_channel) or (channel == starboard_channel):
