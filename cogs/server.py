@@ -13,21 +13,28 @@ class Server(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @group(aliases=['cfg'])
-    @has_permissions(manage_guild=True)
+    @group(name='set')
     @guild_only()
-    async def config(self, ctx):
+    @has_permissions(manage_guild=True)
+    async def cfg_set(self, ctx):
         pass
 
-    @config.command()
+    @group(name='get')
+    @guild_only()
+    @has_permissions(manage_guild=True)
+    async def cfg_get(self, ctx):
+        pass
+
+    @cfg_set.command(name='prefix')
     async def set_prefix(self, ctx, *, prefix=None):
         await self.bot.db.set_prefix(ctx.guild.id, prefix)
         if prefix is not None:
-            await ctx.send(f'Prefix has been set to "{prefix}". Mentioning me also works as a prefix.')
+            await ctx.send(f'The command prefix for this guild has been set to "{prefix}". '
+                           'Mentioning me also works as a prefix.')
         else:
             await ctx.send(f'Prefix has been reset to default (Mention or "{config.prefix}")')
 
-    @config.command()
+    @cfg_set.command(name='starboard')
     async def set_starboard(self, ctx, channel: typing.Optional[TextChannel] = None):
         if channel:
             perms = channel.permissions_for(ctx.guild.me)
@@ -41,7 +48,7 @@ class Server(Cog):
             await self.bot.db.set_starboard_channel(ctx.guild.id, channel)
             await ctx.send(f'This server\'s starboard has been disabled.')
 
-    @config.command()
+    @cfg_get.command(name='starboard')
     async def get_starboard(self, ctx):
         star_channel = await self.bot.db.get_starboard_channel(ctx.guild.id)
         star_channel = self.bot.get_channel(star_channel)
@@ -51,7 +58,7 @@ class Server(Cog):
         else:
             await ctx.send('This server has no assigned starboard.')
 
-    @config.command(aliases=['set_min_stars'])
+    @cfg_set.command(name='star_threshold', aliases=['min_stars'])
     async def set_star_threshold(self, ctx, min_stars: int = 1):
         if min_stars > 0:
             await self.bot.db.set_star_threshold(ctx.guild.id, min_stars)
@@ -59,10 +66,10 @@ class Server(Cog):
         else:
             await ctx.send('The star threshold must be a positive integer.')
 
-    @config.command(aliases=['get_min_stars'])
+    @cfg_get.command(name='star_threshold', aliases=['min_stars'])
     async def get_star_threshold(self, ctx):
         min_stars = await self.bot.db.get_star_threshold(ctx.guild.id)
-        await ctx.send(f'A message needs {min_stars} stars to reach the starboard.')
+        await ctx.send(f'A message needs {min_stars} star{"s" if min_stars > 1 else ""} to reach the starboard.')
 
     @command()
     @has_permissions(manage_messages=True)
