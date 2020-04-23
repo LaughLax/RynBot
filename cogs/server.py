@@ -42,43 +42,28 @@ class Server(Cog):
             await ctx.send(f'Prefix has been reset to default (Mention or "{config.prefix}")')
 
     @config.command()
-    async def starboard(self, ctx, channel: typing.Optional[TextChannel] = None):
-        with self.bot.db.get_session() as db:
-            try:
-                cfg = await self.get_cfg(db, ctx.guild)
-            except Exception as e:
-                await ctx.send('An unexpected error occurred.')
-                return
-
-            if channel:
-                perms = channel.permissions_for(ctx.guild.me)
-                if perms.send_messages and perms.attach_files:
-                    cfg.starboard = channel.id
-                    db.add(cfg)
-                    await ctx.send('This server\'s starboard has been set to {}.'.format(channel.mention))
-                else:
-                    await ctx.send('I don\'t have enough permissions in that channel. I need "Send Messages" and "Attach Files."')
+    async def set_starboard(self, ctx, channel: typing.Optional[TextChannel] = None):
+        if channel:
+            perms = channel.permissions_for(ctx.guild.me)
+            if perms.send_messages and perms.attach_files:
+                await self.bot.db.set_starboard_channel(ctx.guild.id, channel.id)
+                await ctx.send(f'This server\'s starboard has been set to {channel.mention}.')
             else:
-                if cfg.starboard:
-                    await ctx.send('This server\'s starboard is {}.'.format(self.bot.get_channel(cfg.starboard).mention))
-                else:
-                    await ctx.send('This server has no assigned starboard.')
+                await ctx.send('I don\'t have enough permissions in that channel. '
+                               'I need "Send Messages" and "Attach Files."')
+        else:
+            await self.bot.db.set_starboard_channel(ctx.guild.id, channel)
+            await ctx.send(f'This server\'s starboard has been disabled.')
 
     @config.command()
-    async def remove_starboard(self, ctx):
-        with self.bot.db.get_session() as db:
-            try:
-                cfg = await self.get_cfg(db, ctx.guild)
-            except Exception as e:
-                await ctx.send('An unexpected error occurred.')
-                return
+    async def get_starboard(self, ctx):
+        star_channel = await self.bot.db.get_starboard_channel(ctx.guild.id)
+        star_channel = self.bot.get_channel(star_channel)
 
-            if cfg.starboard:
-                cfg.starboard = None
-                db.add(cfg)
-                await ctx.send('This server\'s starboard has been disabled.')
-            else:
-                await ctx.send('This server has no assigned starboard.')
+        if star_channel:
+            await ctx.send(f'This server\'s starboard is {star_channel.mention}.')
+        else:
+            await ctx.send('This server has no assigned starboard.')
 
     @config.command(aliases=['min_stars'])
     async def star_threshold(self, ctx, min_stars: int = 1):
