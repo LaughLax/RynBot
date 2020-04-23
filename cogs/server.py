@@ -29,8 +29,8 @@ class Server(Cog):
             await ctx.send(f'The command prefix for this guild has been set to "{prefix}". '
                            'Mentioning me also works as a prefix.')
         else:
-            await ctx.send(f'The command prefix for this guild has been reset to default '
-                           '(Mention or "{config.prefix}")')
+            await ctx.send('The command prefix for this guild has been reset to default '
+                           f'(Mention or "{config.prefix}")')
 
     @cfg_get.command(name='prefix')
     async def get_prefix(self, ctx):
