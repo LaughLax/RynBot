@@ -18,21 +18,6 @@ class Server(Cog):
     async def config(self, ctx):
         pass
 
-    async def get_cfg(self, db, guild):
-        try:
-            cfg = db.query(ServerConfig).filter(ServerConfig.server == guild.id).one_or_none()
-        except MultipleResultsFound as e:
-            log = self.bot.get_cog('Logs')
-            if log:
-                await log.log(e)
-            raise e
-
-        if not cfg:
-            cfg = ServerConfig(server=guild.id)
-            db.add(cfg)
-
-        return cfg
-
     @config.command()
     async def set_prefix(self, ctx, *, prefix=None):
         await self.bot.db.set_prefix(ctx.guild.id, prefix)
@@ -65,18 +50,18 @@ class Server(Cog):
         else:
             await ctx.send('This server has no assigned starboard.')
 
-    @config.command(aliases=['min_stars'])
-    async def star_threshold(self, ctx, min_stars: int = 1):
-        with self.bot.db.get_session() as db:
-            try:
-                cfg = await self.get_cfg(db, ctx.guild)
-            except Exception as e:
-                await ctx.send('An unexpected error occurred.')
-                return
+    @config.command(aliases=['set_min_stars'])
+    async def set_star_threshold(self, ctx, min_stars: int = 1):
+        if min_stars > 0:
+            await self.bot.db.set_star_threshold(ctx.guild.id, min_stars)
+            await ctx.send(f'The number of stars needed to reach the starboard has been set to {min_stars}.')
+        else:
+            await ctx.send('The star threshold must be a positive integer.')
 
-            cfg.star_threshold = min_stars
-            db.add(cfg)
-            await ctx.send('The number of stars needed to reach the starboard has been set to {}.'.format(min_stars))
+    @config.command(aliases=['get_min_stars'])
+    async def get_star_threshold(self, ctx):
+        min_stars = await self.bot.db.get_star_threshold(ctx.guild.id)
+        await ctx.send(f'A message needs {min_stars} stars to reach the starboard.')
 
     @command()
     @has_permissions(manage_messages=True)

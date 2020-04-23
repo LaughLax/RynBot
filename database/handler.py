@@ -181,6 +181,13 @@ class DBHandler:
             return starboard
 
     @async_via_threadpool
+    def set_star_threshold(self, server_id, min_stars):
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, server_id)
+            cfg.star_threshold = min_stars
+            db.add(cfg)
+
+    @async_via_threadpool
     def get_star_threshold(self, server_id):
         with self.get_session() as db:
             try:
