@@ -224,18 +224,10 @@ class Server(Cog):
             await ctx.message.delete()
 
     @command()
-    async def nowstreaming(self, ctx, server_id: str = None):
+    async def nowstreaming(self, ctx):
         """Display a list of all users streaming on the server."""
-        if server_id is None or server_id.lower() == "here":
-            server = ctx.guild
-        else:
-            server = self.bot.get_guild(int(server_id))
-            if server is None:
-                await ctx.send("I'm not in that server.")
-                return
-
         streamers = []
-        for a in server.members:
+        for a in ctx.guild.members:
             if a.activity is not None and a.activity.type == ActivityType.streaming:
                 streamers.append(a)
 
@@ -246,19 +238,19 @@ class Server(Cog):
             num_segments = int(len(streamers)/display_size) + 1
             if num_segments <= 5:
                 for b in range(num_segments):
-                    em = Embed(title="Members Streaming (Server: {})".format(server.name), color=0xff0000, timestamp=ctx.message.created_at)
+                    em = Embed(title='Guild Members Streaming', color=0xff0000, timestamp=ctx.message.created_at)
                     em.set_thumbnail(url=server.icon_url)
                     for a in streamers[b*display_size:(b+1)*display_size-1]:
                         if a.url is not None:
-                            em.add_field(name=a.display_name, value="[{}]({})".format(a.activity.name, a.activity.url))
+                            em.add_field(name=a.display_name, value=f'[{a.activity.name}]({a.activity.url})')
                         else:
-                            em.add_field(name=a.display_name, value="{}".format(a.activity.name))
-                    em.set_footer(text="Page {}/{}".format(b+1, num_segments))
+                            em.add_field(name=a.display_name, value=f'{a.activity.name}')
+                    em.set_footer(text=f'Page {b+1}/{num_segments}')
                     await ctx.send(embed=em)
             else:
-                await ctx.send("{} members streaming on server: {}.".format(len(streamers), server.name))
+                await ctx.send(f'{len(streamers)} members streaming on this server.')
         else:
-            await ctx.send("No members streaming on server: {}.".format(server.name))
+            await ctx.send('No members streaming on this server.')
 
     @command(hidden=True)
     async def commonmembers(self, ctx, server1_id: int, server2_id: int = None):
