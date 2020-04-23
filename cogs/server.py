@@ -1,7 +1,7 @@
 import typing
 
 from discord import ActivityType, Embed, Member, TextChannel
-from discord.ext.commands import bot_has_permissions, Cog, command, group, has_permissions
+from discord.ext.commands import bot_has_permissions, Cog, command, group, guild_only, has_permissions
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from database.models import ServerConfig
@@ -15,6 +15,7 @@ class Server(Cog):
 
     @group(aliases=['cfg'])
     @has_permissions(manage_guild=True)
+    @guild_only()
     async def config(self, ctx):
         pass
 
