@@ -56,7 +56,7 @@ class Tasks(Cog):
     @has_permissions(manage_guild=True)
     async def list_tasks(self, ctx):
         try:
-            tasks = await self.bot.db.fetch_task_list(ctx.guild.id)
+            tasks = await self.bot.db.get_task_list(ctx.guild.id)
         except NoResultFound as e:
             tasks = []
         desc = []
@@ -75,7 +75,7 @@ class Tasks(Cog):
     @loop(hours=1)
     async def hourly_task_run(self):
         # TODO Add logging to hourly_task_run
-        tasks = await self.bot.db.fetch_task_list()
+        tasks = await self.bot.db.get_task_list()
         for task in tasks:
             try:
                 channel = self.bot.get_channel(task.channel)

@@ -93,12 +93,12 @@ class Stars(Cog):
         if (len(msg.content) == 0 and len(msg.attachments) == 0) or msg.type is not discord.MessageType.default:
             raise StarError('\N{NO ENTRY SIGN} This message cannot be starred.')
 
-        min_stars = await self.bot.db.fetch_star_threshold(channel.guild.id)
+        min_stars = await self.bot.db.get_star_threshold(channel.guild.id)
         reacts = dict([(r.emoji, r.count) for r in msg.reactions])
         star_count = reacts.get(emoji, 0)
 
         # star = await self.get_star_db_entry(db, msg)
-        star = await self.bot.db.fetch_star_entry(channel.guild.id, msg.id)
+        star = await self.bot.db.get_star_entry(channel.guild.id, msg.id)
 
         # at this point, we either edit the message or we create a message
         # with our star info

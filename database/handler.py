@@ -130,7 +130,7 @@ class DBHandler:
             db.delete(row)
 
     @async_via_threadpool
-    def fetch_task_list(self, guild_id = None):
+    def get_task_list(self, guild_id = None):
         with self.get_session() as db:
             try:
                 rows = db.query(ScheduledTasks.server,
@@ -148,7 +148,7 @@ class DBHandler:
             return rows
 
     @async_via_threadpool
-    def fetch_population_history(self, server_id):
+    def get_population_history(self, server_id):
         with self.get_session() as db:
             rows = db.query(Population.datetime, Population.user_count).\
                 filter(Population.server == server_id).\
@@ -181,7 +181,7 @@ class DBHandler:
             return starboard
 
     @async_via_threadpool
-    def fetch_star_threshold(self, server_id):
+    def get_star_threshold(self, server_id):
         with self.get_session() as db:
             try:
                 star_threshold = db.query(ServerConfig.star_threshold).\
@@ -195,7 +195,7 @@ class DBHandler:
             return star_threshold
 
     @async_via_threadpool
-    def fetch_star_entry(self, server_id, message_id):
+    def get_star_entry(self, server_id, message_id):
         with self.get_session() as db:
             try:
                 star = db.query(Star.card).\

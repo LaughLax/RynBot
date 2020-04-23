@@ -90,7 +90,7 @@ class Data(Cog):
                 await ctx.send('I\'m not in that server.')
                 return
 
-        rows = await self.bot.db.fetch_population_history(server.id)
+        rows = await self.bot.db.get_population_history(server.id)
         rows = np.array(rows)
 
         with BytesIO() as f:
@@ -112,7 +112,7 @@ class Data(Cog):
                 await ctx.send('I\'m not in that server.')
                 return
 
-        rows = await self.bot.db.fetch_population_history(server.id)
+        rows = await self.bot.db.get_population_history(server.id)
         rows = np.array(rows)
 
         tz_local = get_localzone()
