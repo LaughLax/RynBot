@@ -1,13 +1,20 @@
 from contextlib import contextmanager
 from functools import wraps
 
-import sqlalchemy as sa
 from dogpile.cache import make_region
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from database.models import *
 from util import config
+
+
+def async_via_threadpool(func):
+    @wraps(func)
+    async def wrapper_make_async(self, *args, **kwargs):
+        return await self.execute(None, func, self, *args, **kwargs)
+
+    return wrapper_make_async
 
 
 class DBHandler:
@@ -30,12 +37,6 @@ class DBHandler:
             raise
         finally:
             session.close()
-
-    def async_via_threadpool(func):
-        @wraps(func)
-        async def wrapper_make_async(self, *args, **kwargs):
-            return await self.execute(None, func, self, *args, **kwargs)
-        return wrapper_make_async
 
     @staticmethod
     def get_server_cfg(db, guild_id):
@@ -130,7 +131,7 @@ class DBHandler:
             db.delete(row)
 
     @async_via_threadpool
-    def get_task_list(self, guild_id = None):
+    def get_task_list(self, guild_id=None):
         with self.get_session() as db:
             try:
                 rows = db.query(ScheduledTasks.server,
