@@ -62,6 +62,8 @@ class ServerConfig(Base):
                         nullable=False)
     prefix = sql.Column(sql.String,
                         nullable=True)
+    mute_role = sql.Column(sql.BigInteger,
+                           nullable=True)
     starboard = sql.Column(sql.BigInteger,
                            nullable=True)
     star_threshold = sql.Column(sql.SmallInteger,

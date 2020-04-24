@@ -79,6 +79,19 @@ class DBHandler:
             db.add(cfg)
 
     @async_via_threadpool
+    def set_mute_role(self, guild_id, role_id):
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, guild_id)
+            cfg.mute_role = role_id
+            db.add(cfg)
+
+    @async_via_threadpool
+    def get_mute_role(self, guild_id):
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, guild_id)
+            return cfg.mute_role
+
+    @async_via_threadpool
     def get_custom_role_list(self, guild_id):
         with self.get_session() as db:
             try:
