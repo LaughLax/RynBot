@@ -116,10 +116,10 @@ class Server(Cog):
     @has_permissions(manage_nicknames=True)
     @bot_has_permissions(manage_nicknames=True)
     async def rename(self, ctx, member: Member, new_nick: str = None):
+        """Change a user's nickname."""
+
         # TODO Place a reason in the audit logs, note who issued the command
-        # TODO Test this command before deploying
-        pass
-        # await member.edit(nick=new_nick)
+        await member.edit(nick=new_nick)
 
     @command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
