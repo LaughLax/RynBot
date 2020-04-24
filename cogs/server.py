@@ -250,7 +250,7 @@ class Server(Cog):
             if num_segments <= 5:
                 for b in range(num_segments):
                     em = Embed(title='Guild Members Streaming', color=0xff0000, timestamp=ctx.message.created_at)
-                    em.set_thumbnail(url=server.icon_url)
+                    em.set_thumbnail(url=ctx.guild.icon_url)
                     for a in streamers[b*display_size:(b+1)*display_size-1]:
                         if a.url is not None:
                             em.add_field(name=a.display_name, value=f'[{a.activity.name}]({a.activity.url})')
