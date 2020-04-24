@@ -1,8 +1,11 @@
+# import logging
+from concurrent.futures import ProcessPoolExecutor
+
 from discord import Activity, ActivityType
 from discord.ext.commands import Bot, DefaultHelpCommand
+
 from util import config
-from concurrent.futures import ProcessPoolExecutor
-# import logging
+
 
 async def prefix_func(_bot, msg):
     prefs = [f'<@{_bot.user.id}> ', f'<@!{_bot.user.id}> ']
