@@ -66,6 +66,8 @@ class ServerConfig(Base):
                           nullable=True)
     mute_role = sql.Column(sql.BigInteger,
                            nullable=True)
+    log_channel = sql.Column(sql.BigInteger,
+                             nullable=True)
     starboard = sql.Column(sql.BigInteger,
                            nullable=True)
     star_threshold = sql.Column(sql.SmallInteger,

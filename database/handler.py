@@ -105,6 +105,19 @@ class DBHandler:
             return cfg.mute_role
 
     @async_via_threadpool
+    def set_log_channel(self, guild_id, channel_id):
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, guild_id)
+            cfg.log_channel = channel_id
+            db.add(cfg)
+
+    @async_via_threadpool
+    def get_log_channel(self, guild_id):
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, guild_id)
+            return cfg.log_channel
+
+    @async_via_threadpool
     def get_custom_role_list(self, guild_id):
         with self.get_session() as db:
             try:

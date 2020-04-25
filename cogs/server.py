@@ -85,6 +85,32 @@ class Server(Cog):
         else:
             await ctx.send('The mute role for this guild is not set.')
 
+    @cfg_set.command(name='log_channel')
+    async def set_log_channel(self, ctx, channel: TextChannel = None):
+        if channel is not None:
+            perms = channel.permissions_for(ctx.guild.me)
+            if perms.send_messages and perms.attach_files:
+                await self.bot.db.set_log_channel(ctx.guild.id, channel.id)
+                await ctx.send(f'The log channel for this guild has been set to {channel.mention}.')
+            else:
+                await ctx.send(f'I don\'t have enough permissions in {channel.mention}. '
+                               'I need "Send Messages" and "Attach Files."')
+        else:
+            await self.bot.db.set_log_channel(ctx.guild.id, channel)
+            await ctx.send('The log channel for this guild has been unset.')
+
+    @cfg_get.command(name='log_channel')
+    async def get_log_channel(self, ctx):
+        c_id = await self.bot.db.get_log_channel(ctx.guild.id)
+        if c_id:
+            channel = ctx.guild.get_channel(c_id)
+            if channel:
+                await ctx.send(f'The log channel for this guild is {channel.mention}.')
+            else:
+                await ctx.send('There is a log channel set, but it appears to be invalid.')
+        else:
+            await ctx.send('The log channel for this guild is not set.')
+
     @cfg_set.command(name='starboard')
     async def set_starboard(self, ctx, channel: typing.Optional[TextChannel] = None):
         if channel:
