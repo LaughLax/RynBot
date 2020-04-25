@@ -62,6 +62,8 @@ class ServerConfig(Base):
                         nullable=False)
     prefix = sql.Column(sql.String,
                         nullable=True)
+    mod_role = sql.Column(sql.BigInteger,
+                          nullable=True)
     mute_role = sql.Column(sql.BigInteger,
                            nullable=True)
     starboard = sql.Column(sql.BigInteger,
