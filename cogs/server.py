@@ -14,13 +14,19 @@ class Server(Cog):
     @guild_only()
     @has_permissions(manage_guild=True)
     async def cfg_set(self, ctx):
-        pass
+        """Set server configuration."""
+
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
 
     @group(name='get')
     @guild_only()
     @has_permissions(manage_guild=True)
     async def cfg_get(self, ctx):
-        pass
+        """View server configuration."""
+
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
 
     @cfg_set.command(name='prefix')
     async def set_prefix(self, ctx, *, prefix=None):
