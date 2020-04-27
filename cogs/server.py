@@ -48,13 +48,9 @@ class Server(Cog):
     @cfg_set.command(name='mod_role')
     async def set_mod_role(self, ctx, role: Role = None):
         if role is not None:
-            if ctx.guild.me.top_role > role:
-                # TODO Make this a proper mention (but not actual mention) when d.py 1.4 comes out
-                await self.bot.db.set_mod_role(ctx.guild.id, role.id)
-                await ctx.send(f'The moderator role for this guild has been set to {role}.')
-            else:
-                await ctx.send(f'The moderator role must be lower than my highest role. '
-                               'The moderator role for this guild has not been changed.')
+            # TODO Make this a proper mention (but not actual mention) when d.py 1.4 comes out
+            await self.bot.db.set_mod_role(ctx.guild.id, role.id)
+            await ctx.send(f'The moderator role for this guild has been set to {role}.')
         else:
             await self.bot.db.set_mod_role(ctx.guild.id, role)
             await ctx.send('The moderator role for this guild has been unset.')
