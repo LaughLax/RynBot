@@ -171,6 +171,62 @@ class Server(Cog):
         await ctx.channel.purge(limit=num)
 
     @command()
+    @guild_only()
+    @has_permissions(manage_roles=True)
+    @bot_has_permissions(manage_roles=True)
+    async def mute(self, ctx, member: Member, *, reason: str = None):
+        """Apply a "muted" role to a user.
+
+        The server must have a Muted role set, and that role must be below the bot's highest role."""
+
+        r_id = await self.bot.db.get_mute_role(ctx.guild.id)
+        if r_id:
+            role = ctx.guild.get_role(r_id)
+            if role:
+                if ctx.guild.me.top_role > role:
+                    # TODO Note who issued the command in the reason
+                    await member.add_roles(role, reason=reason)
+                    # TODO Move messages to the log channel
+                    await ctx.send(f'Muted role applied to {member}.')
+                else:
+                    await ctx.send(f'I can\'t apply the {role} role.')
+            else:
+                await ctx.send('I have a Muted role set, but it appears to be invalid.')
+        else:
+            await ctx.send('I don\'t have a Muted role set for this server.')
+
+        await ctx.message.delete()
+
+    @command()
+    @has_permissions(manage_roles=True)
+    @bot_has_permissions(manage_roles=True)
+    async def unmute(self, ctx, member: Member, *, reason: str = None):
+        """Remove a "muted" role from a user.
+
+        The server must have a Muted role set, and that role must be below the bot's highest role."""
+
+        r_id = await self.bot.db.get_mute_role(ctx.guild.id)
+        if r_id:
+            role = ctx.guild.get_role(r_id)
+            if role:
+                if role in member.roles:
+                    if ctx.guild.me.top_role > role:
+                        # TODO Note who issued the command in the reason
+                        await member.remove_roles(role)
+                        # TODO Move messages to the log channel
+                        await ctx.send(f'{member} has been un-muted.')
+                    else:
+                        await ctx.send(f'I can\'t remove the {role} role.')
+                else:
+                    await ctx.send(f'That user isn\'t muted.')
+            else:
+                await ctx.send('I have a Muted role set, but it appears to be invalid.')
+        else:
+            await ctx.send('I don\'t have a Muted role set for this server.')
+
+        await ctx.message.delete()
+
+    @command()
     @has_permissions(kick_members=True)
     @bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: Member, reason: str = None):
