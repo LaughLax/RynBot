@@ -132,7 +132,15 @@ class Base(Cog):
         em.add_field(name='Owner/Creator', value='<@185095270986547200>')
         em.add_field(name='Short Description', value='A bot to provide some server info and analytics.')
         em.add_field(name='Library', value='discord.py')
-        em.add_field(name='Prefix', value=self.bot.command_prefix)
+
+        if ctx.guild:
+            pref = await self.bot.db.get_prefix(ctx.guild.id)
+            if pref is None:
+                pref = config.prefix
+        else:
+            pref = config.prefix
+        em.add_field(name='Prefix', value=pref)
+
         em.add_field(name='Server Count', value=str(len(self.bot.guilds)))
         em.add_field(name='Links', value='[Invite](https://discordapp.com/oauth2/authorize?client_id=357695787792334848&scope=bot&permissions=32768)\n'
                                          '[Support Server](https://discord.gg/wSntGKR)\n'
