@@ -229,7 +229,7 @@ class Server(Cog):
     @command()
     @has_permissions(kick_members=True)
     @bot_has_permissions(kick_members=True)
-    async def kick(self, ctx, member: Member, reason: str = None):
+    async def kick(self, ctx, member: Member, *, reason: str = None):
         """Kick a member from the server.
         
         A reason can be provided."""
@@ -241,7 +241,7 @@ class Server(Cog):
     @command()
     @has_permissions(ban_members=True)
     @bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, member: Member, reason: str = None):
+    async def ban(self, ctx, member: Member, *, reason: str = None):
         """Ban a member from the server.
 
         A reason can be provided."""
@@ -253,10 +253,11 @@ class Server(Cog):
     @command(aliases=['nick', 'nickname'])
     @has_permissions(manage_nicknames=True)
     @bot_has_permissions(manage_nicknames=True)
-    async def rename(self, ctx, member: Member, new_nick: str = None):
+    async def rename(self, ctx, member: Member, *, new_nick: str = None):
         """Change a user's nickname."""
 
         # TODO Place a reason in the audit logs, note who issued the command
+        # TODO Crop new nickname to max length
         await member.edit(nick=new_nick)
 
     @command(aliases=['whoisplaying'])
