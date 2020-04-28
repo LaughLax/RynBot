@@ -142,7 +142,7 @@ class Base(Cog):
         em.add_field(name='Prefix', value=pref)
 
         em.add_field(name='Server Count', value=str(len(self.bot.guilds)))
-        em.add_field(name='Links', value='[Invite](https://discordapp.com/oauth2/authorize?client_id=357695787792334848&scope=bot&permissions=32768)\n'
+        em.add_field(name='Links', value='[Invite](https://discordapp.com/oauth2/authorize?client_id=357695787792334848&scope=bot&permissions=469888214)\n'
                                          '[Support Server](https://discord.gg/wSntGKR)\n'
                                          '[Top.GG Page](https://top.gg/bot/357695787792334848)')
 
