@@ -41,7 +41,7 @@ class Server(Cog):
     @cfg_get.command(name='prefix')
     async def get_prefix(self, ctx):
         pref = await self.bot.db.get_prefix(ctx.guild.id)
-        pref = config.prefix if pref is None else pref
+        pref = pref or config.prefix
         await ctx.send(f'The command prefix for this guild is "{pref}". '
                        'Mentioning me also works as a prefix.')
 

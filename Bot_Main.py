@@ -11,7 +11,7 @@ async def prefix_func(_bot, msg):
     prefs = [f'<@{_bot.user.id}> ', f'<@!{_bot.user.id}> ']
     if msg.guild and hasattr(_bot, 'db'):
         pref = await _bot.db.get_prefix(msg.guild.id)
-        prefs.append(config.prefix if pref is None else pref)
+        prefs.append(pref or config.prefix)
     else:
         prefs.append(config.prefix)
 
