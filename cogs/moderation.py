@@ -1,5 +1,29 @@
 from discord import Member
-from discord.ext.commands import bot_has_permissions, Cog, command, guild_only, has_permissions
+from discord.ext.commands import bot_has_permissions
+from discord.ext.commands import check
+from discord.ext.commands import Cog
+from discord.ext.commands import command
+from discord.ext.commands import has_permissions
+
+
+def mod_or_has_permissions(**perms):
+    perm_check = has_permissions(**perms).predicate
+    bot_perm_check = bot_has_permissions(**perms).predicate
+
+    async def extended_check(ctx):
+        if ctx.guild is None:
+            return False
+
+        mod_role_id = await ctx.bot.db.get_mod_role(ctx.guild.id)
+        mod_role = ctx.guild.get_role(mod_role_id)
+        is_mod = mod_role in ctx.author.roles
+
+        if not (is_mod or await perm_check(ctx)):
+            return False
+
+        return await bot_perm_check(ctx)
+
+    return check(extended_check)
 
 
 class Moderation(Cog):
@@ -7,8 +31,7 @@ class Moderation(Cog):
         self.bot = bot
 
     @command()
-    @has_permissions(manage_messages=True)
-    @bot_has_permissions(manage_messages=True)
+    @mod_or_has_permissions(manage_messages=True)
     async def purge(self, ctx, num: int = 10):
         """Purge up to 100 messages from a channel at once.
 
@@ -19,9 +42,7 @@ class Moderation(Cog):
         await ctx.channel.purge(limit=num)
 
     @command()
-    @guild_only()
-    @has_permissions(manage_roles=True)
-    @bot_has_permissions(manage_roles=True)
+    @mod_or_has_permissions(manage_roles=True)
     async def mute(self, ctx, member: Member, *, reason: str = None):
         """Apply a "muted" role to a user.
 
@@ -46,8 +67,7 @@ class Moderation(Cog):
         await ctx.message.delete()
 
     @command()
-    @has_permissions(manage_roles=True)
-    @bot_has_permissions(manage_roles=True)
+    @mod_or_has_permissions(manage_roles=True)
     async def unmute(self, ctx, member: Member, *, reason: str = None):
         """Remove a "muted" role from a user.
 
@@ -75,8 +95,7 @@ class Moderation(Cog):
         await ctx.message.delete()
 
     @command()
-    @has_permissions(kick_members=True)
-    @bot_has_permissions(kick_members=True)
+    @mod_or_has_permissions(kick_members=True)
     async def kick(self, ctx, member: Member, *, reason: str = None):
         """Kick a member from the server.
 
@@ -87,8 +106,7 @@ class Moderation(Cog):
         await ctx.message.delete()
 
     @command()
-    @has_permissions(ban_members=True)
-    @bot_has_permissions(ban_members=True)
+    @mod_or_has_permissions(ban_members=True)
     async def ban(self, ctx, member: Member, *, reason: str = None):
         """Ban a member from the server.
 
@@ -99,8 +117,7 @@ class Moderation(Cog):
         await ctx.message.delete()
 
     @command(aliases=['nick', 'nickname'])
-    @has_permissions(manage_nicknames=True)
-    @bot_has_permissions(manage_nicknames=True)
+    @mod_or_has_permissions(manage_nicknames=True)
     async def rename(self, ctx, member: Member, *, new_nick: str = None):
         """Change a user's nickname."""
 

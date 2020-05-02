@@ -3,8 +3,14 @@ from datetime import datetime
 
 from discord import Embed, Member
 from discord.errors import Forbidden
-from discord.ext.commands import Cog, command, ExtensionAlreadyLoaded
-from discord.ext.commands.errors import CommandInvokeError, CommandNotFound, MissingRequiredArgument
+from discord.ext.commands import Cog
+from discord.ext.commands import ExtensionAlreadyLoaded
+from discord.ext.commands import command
+from discord.ext.commands.errors import BotMissingPermissions
+from discord.ext.commands.errors import CheckFailure
+from discord.ext.commands.errors import CommandInvokeError
+from discord.ext.commands.errors import CommandNotFound
+from discord.ext.commands.errors import MissingRequiredArgument
 
 from util import config
 
@@ -33,6 +39,15 @@ class Base(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
+            return
+
+        if isinstance(error, CheckFailure):
+            if isinstance(error, BotMissingPermissions):
+                try:
+                    await ctx.send('I don\'t have permissions to do that. Missing Permissions: `' +
+                                   '`, `'.join(error.missing_perms) + '`')
+                except Forbidden:
+                    pass
             return
 
         # Add a reaction to show it failed, if allowed
