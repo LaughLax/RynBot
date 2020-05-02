@@ -560,9 +560,9 @@ class Owner(Cog):
         em.add_field(name='Main Process Memory Usage', value=f'{main_proc_mem:3.1f} MB')
         em.add_field(name='Children Memory Usage', value=f'{children_mem:3.1f} MB ({len(children)} children)')
         if redis is not None:
-            em.add_field(name='Redis Memory Usage', value=f'{redis_mem:3.1f} MB')
+            em.add_field(name='Cache Memory Usage', value=f'{redis_mem:3.1f} MB')
         else:
-            em.add_field(name='Redis Memory Usage', value='Unknown')
+            em.add_field(name='Cache Memory Usage', value='Unknown')
         em.add_field(name='Database Disk Usage', value=f'{db_size:3.1f} MB')
         
         await ctx.send(embed=em)
