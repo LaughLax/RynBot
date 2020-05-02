@@ -64,13 +64,6 @@ class DBHandler:
             return float(res)
 
     @async_via_threadpool
-    @region.cache_on_arguments()
-    def get_prefix(self, guild_id):
-        with self.get_session() as db:
-            cfg = self.get_server_cfg(db, guild_id)
-            return cfg.prefix
-
-    @async_via_threadpool
     def set_prefix(self, guild_id, prefix):
         self.get_prefix.invalidate(self, guild_id)
         with self.get_session() as db:
@@ -79,13 +72,22 @@ class DBHandler:
             db.add(cfg)
 
     @async_via_threadpool
+    @region.cache_on_arguments()
+    def get_prefix(self, guild_id):
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, guild_id)
+            return cfg.prefix
+
+    @async_via_threadpool
     def set_mod_role(self, guild_id, role_id):
+        self.get_mod_role.invalidate(self, guild_id)
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
             cfg.mod_role = role_id
             db.add(cfg)
 
     @async_via_threadpool
+    @region.cache_on_arguments()
     def get_mod_role(self, guild_id):
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
@@ -93,12 +95,14 @@ class DBHandler:
 
     @async_via_threadpool
     def set_mute_role(self, guild_id, role_id):
+        self.get_mute_role.invalidate(self, guild_id)
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
             cfg.mute_role = role_id
             db.add(cfg)
 
     @async_via_threadpool
+    @region.cache_on_arguments()
     def get_mute_role(self, guild_id):
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
@@ -106,12 +110,14 @@ class DBHandler:
 
     @async_via_threadpool
     def set_log_channel(self, guild_id, channel_id):
+        self.get_log_channel.invalidate(self, guild_id)
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
             cfg.log_channel = channel_id
             db.add(cfg)
 
     @async_via_threadpool
+    @region.cache_on_arguments()
     def get_log_channel(self, guild_id):
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
