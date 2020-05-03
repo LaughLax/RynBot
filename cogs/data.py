@@ -5,13 +5,12 @@ from io import BytesIO
 import matplotlib
 import numpy as np
 from discord import File
-from discord.ext.commands import bot_has_permissions, Cog, group
-from sqlalchemy.exc import IntegrityError
+from discord.ext.commands import Cog
+from discord.ext.commands import bot_has_permissions
+from discord.ext.commands import group
 from tzlocal import get_localzone
 
 from util import config
-from database.models import Population
-# TODO Make DB Model imports unnecessary here
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -34,21 +33,10 @@ class Data(Cog):
             try:
                 now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
                 if now.hour != last_hour:
-                    try:
-                        # TODO Move population DB write into util.database
-                        with self.bot.db.get_session() as db:
-                            pops = []
-                            for server in self.bot.guilds:
-                                pops.append(Population(server=server.id,
-                                                       datetime=now,
-                                                       user_count=server.member_count))
-                            db.add_all(pops)
-                    except IntegrityError as e:
-                        if 'Duplicate entry' not in str(e):
-                            log = self.bot.get_cog('Logs')
-                            if log:
-                                await log.log('Integrity error: {}'.format(e))
-
+                    for server in self.bot.guilds:
+                        await self.bot.db.add_population_row(server.id,
+                                                             now,
+                                                             server.member_count)
                     last_hour = now.hour
                 await asyncio.sleep(60 * 10)
             except KeyboardInterrupt:

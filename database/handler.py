@@ -2,8 +2,10 @@ from contextlib import contextmanager
 from functools import wraps
 
 from dogpile.cache import make_region
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.orm.exc import MultipleResultsFound
+from sqlalchemy.orm.exc import NoResultFound
 
 from database.models import *
 from util import config
@@ -32,11 +34,27 @@ class DBHandler:
         try:
             yield session
             session.commit()
-        except:
+        except Exception:
             session.rollback()
             raise
         finally:
             session.close()
+
+    @async_via_threadpool
+    def get_db_size(self):
+        with self.get_session() as db:
+            res = db.execute(
+                "SELECT sum((data_length + index_length) / 1024 / 1024) "
+                "AS Size "
+                "FROM information_schema.tables "
+                "WHERE table_schema = 'rynbot' "
+                "GROUP BY table_schema;"
+            ).first().values()[0]
+            return float(res)
+
+    '''
+    BEGIN GUILD CONFIGURATION METHODS
+    '''
 
     @staticmethod
     def get_server_cfg(db, guild_id):
@@ -50,18 +68,6 @@ class DBHandler:
             db.add(cfg)
 
         return cfg
-
-    @async_via_threadpool
-    def get_db_size(self):
-        with self.get_session() as db:
-            res = db.execute(
-                "SELECT sum((data_length + index_length) / 1024 / 1024) "
-                "AS Size "
-                "FROM information_schema.tables "
-                "WHERE table_schema = 'rynbot' "
-                "GROUP BY table_schema;"
-            ).first().values()[0]
-            return float(res)
 
     @async_via_threadpool
     def set_prefix(self, guild_id, prefix):
@@ -122,6 +128,58 @@ class DBHandler:
         with self.get_session() as db:
             cfg = self.get_server_cfg(db, guild_id)
             return cfg.log_channel
+
+    @async_via_threadpool
+    def set_starboard_channel(self, server_id, channel_id):
+        self.get_starboard_channel.invalidate(self, server_id)
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, server_id)
+            cfg.starboard = channel_id
+            db.add(cfg)
+
+    @async_via_threadpool
+    @region.cache_on_arguments()
+    def get_starboard_channel(self, server_id):
+        with self.get_session() as db:
+            try:
+                starboard = db.query(ServerConfig.starboard).\
+                    filter(ServerConfig.server == server_id).\
+                    one()[0]
+            except NoResultFound:
+                starboard = None
+            except MultipleResultsFound as e:
+                raise e
+
+            return starboard
+
+    @async_via_threadpool
+    def set_star_threshold(self, server_id, min_stars):
+        self.get_star_threshold.invalidate(self, server_id)
+        with self.get_session() as db:
+            cfg = self.get_server_cfg(db, server_id)
+            cfg.star_threshold = min_stars
+            db.add(cfg)
+
+    @async_via_threadpool
+    @region.cache_on_arguments()
+    def get_star_threshold(self, server_id):
+        with self.get_session() as db:
+            try:
+                star_threshold = db.query(ServerConfig.star_threshold).\
+                    filter(ServerConfig.server == server_id).\
+                    one()[0]
+            except NoResultFound:
+                star_threshold = 1
+            except MultipleResultsFound as e:
+                raise e
+
+            return star_threshold
+
+    '''
+    END GUILD CONFIGURATION METHODS
+    
+    BEGIN TASK METHODS
+    '''
 
     @async_via_threadpool
     def get_custom_role_list(self, guild_id):
@@ -193,6 +251,20 @@ class DBHandler:
 
             return rows
 
+    '''
+    END TASK METHODS
+    
+    BEGIN POPULATION TRACKING METHODS
+    '''
+
+    @async_via_threadpool
+    def add_population_row(self, guild_id, time, user_count):
+        with self.get_session() as db:
+            row = Population(server=guild_id,
+                             datetime=time,
+                             user_count=user_count)
+            db.merge(row)
+
     @async_via_threadpool
     def get_population_history(self, server_id):
         with self.get_session() as db:
@@ -203,51 +275,11 @@ class DBHandler:
 
             return rows
 
-    @async_via_threadpool
-    def set_starboard_channel(self, server_id, channel_id):
-        self.get_starboard_channel.invalidate(self, server_id)
-        with self.get_session() as db:
-            cfg = self.get_server_cfg(db, server_id)
-            cfg.starboard = channel_id
-            db.add(cfg)
-
-    @async_via_threadpool
-    @region.cache_on_arguments()
-    def get_starboard_channel(self, server_id):
-        with self.get_session() as db:
-            try:
-                starboard = db.query(ServerConfig.starboard).\
-                    filter(ServerConfig.server == server_id).\
-                    one()[0]
-            except NoResultFound:
-                starboard = None
-            except MultipleResultsFound as e:
-                raise e
-
-            return starboard
-
-    @async_via_threadpool
-    def set_star_threshold(self, server_id, min_stars):
-        self.get_star_threshold.invalidate(self, server_id)
-        with self.get_session() as db:
-            cfg = self.get_server_cfg(db, server_id)
-            cfg.star_threshold = min_stars
-            db.add(cfg)
-
-    @async_via_threadpool
-    @region.cache_on_arguments()
-    def get_star_threshold(self, server_id):
-        with self.get_session() as db:
-            try:
-                star_threshold = db.query(ServerConfig.star_threshold).\
-                    filter(ServerConfig.server == server_id).\
-                    one()[0]
-            except NoResultFound:
-                star_threshold = 1
-            except MultipleResultsFound as e:
-                raise e
-
-            return star_threshold
+    '''
+    END POPULATION TRACKING METHODS
+    
+    BEGIN STARBOARD METHODS
+    '''
 
     @async_via_threadpool
     def get_star_entry(self, server_id, message_id):
