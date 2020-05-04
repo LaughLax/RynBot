@@ -1,5 +1,3 @@
-import typing
-
 from discord import Role, TextChannel
 from discord.ext.commands import Cog, group, guild_only, has_permissions
 
@@ -122,7 +120,7 @@ class ServerAdmin(Cog):
             await ctx.send('The log channel for this guild is not set.')
 
     @cfg_set.command(name='starboard')
-    async def set_starboard(self, ctx, channel: typing.Optional[TextChannel] = None):
+    async def set_starboard(self, ctx, channel: TextChannel = None):
         if channel:
             perms = channel.permissions_for(ctx.guild.me)
             if perms.send_messages and perms.attach_files:
