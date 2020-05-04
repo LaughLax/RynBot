@@ -10,6 +10,8 @@ from discord.ext.commands import bot_has_permissions
 from discord.ext.commands import group
 from tzlocal import get_localzone
 
+from discord.ext.tasks import loop
+
 from util import config
 
 matplotlib.use('Agg')
@@ -20,30 +22,28 @@ class Data(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.hourly_check_task = self.bot.loop.create_task(self.hourly_pop_check())
+        self.pop_check.start()
 
     def cog_unload(self):
-        self.hourly_check_task.cancel()
+        self.pop_check.cancel()
 
-    async def hourly_pop_check(self):
-        # TODO Convert population check to use discord.ext.tasks framework
+    @loop(hours=1)
+    async def pop_check(self):
+        t = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
+        for g in self.bot.guilds:
+            await self.bot.db.add_population_row(g.id,
+                                                 t,
+                                                 g.member_count)
+
+    @pop_check.before_loop
+    async def before_pop_check(self):
         await self.bot.wait_until_ready()
-        last_hour = -1
-        while not self.bot.is_closed():
-            try:
-                now = datetime.now(get_localzone()).replace(minute=0, second=0, microsecond=0)
-                if now.hour != last_hour:
-                    for server in self.bot.guilds:
-                        await self.bot.db.add_population_row(server.id,
-                                                             now,
-                                                             server.member_count)
-                    last_hour = now.hour
-                await asyncio.sleep(60 * 10)
-            except KeyboardInterrupt:
-                raise
-            except Exception as e:
-                print(e)
-                pass
+
+    @pop_check.after_loop
+    async def after_pop_check(self):
+        if self.pop_check.failed:
+            await asyncio.sleep(60 * 10)
+            self.pop_check.restart()
 
     @group()
     async def data(self, ctx):
