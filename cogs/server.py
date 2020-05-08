@@ -1,5 +1,8 @@
-from discord import ActivityType, Embed, TextChannel
-from discord.ext.commands import Cog, command, has_permissions
+from discord import ActivityType
+from discord import Embed
+from discord.ext.commands import Cog
+from discord.ext.commands import command
+from discord.ext.commands import has_permissions
 
 
 class Server(Cog):
@@ -32,58 +35,6 @@ class Server(Cog):
                     await ctx.message.delete()
         else:
             await ctx.send("No game specified.")
-
-    @command()
-    @has_permissions(manage_channels=True)
-    async def channels(self, ctx):
-        """Display a list of all channels on the server to use.
-
-        This command requires the "Manage Channels" permission.
-        If your server has channels you don't want people to know about,
-        be careful using this command!"""
-        server = ctx.guild
-
-        title = str.format("Server: {0.name} (ID {0.id})", server)
-
-        chans = server.channels
-        text_avail = []
-        text_hidden = []
-        for a in chans:
-            if type(a) is TextChannel:
-                if a.permissions_for(server.me).read_messages:
-                    text_avail.append(a.name)
-                else:
-                    text_hidden.append(a.name)
-
-        text_avail.sort()
-        text_hidden.sort()
-
-        display_size = 40
-        num_segments = int(max(len(text_avail)/display_size, len(text_hidden)/display_size)) + 1
-
-        for b in range(num_segments):
-            start = b*display_size
-            end = (b+1)*display_size - 1
-            em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
-
-            if text_avail[start:end]:
-                text_avail_body = "\n".join(text_avail[start:end])
-                em.add_field(name='Unhidden text channels', value=text_avail_body)
-
-            if text_hidden[start:end]:
-                text_hidden_body = "\n".join(text_hidden[start:end])
-                em.add_field(name='Hidden text channels', value=text_hidden_body)
-
-            icon_url = server.icon_url
-            em.set_thumbnail(url=icon_url)
-
-            footer = "Page {}/{}".format(b+1, num_segments)
-            em.set_footer(text=footer)
-
-            await ctx.send(embed=em)
-
-        if ctx.me.permissions_in(ctx.channel).manage_messages:
-            await ctx.message.delete()
 
     @command()
     @has_permissions(manage_roles=True)
