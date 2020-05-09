@@ -128,8 +128,10 @@ class Moderation(Cog):
         """Change a user's nickname."""
 
         # TODO Place a reason in the audit logs, note who issued the command
-        # TODO Crop new nickname to max length
-        await member.edit(nick=new_nick)
+        if new_nick and len(new_nick) > 32:
+            await ctx.send('That nickname is too long; nicknames must be 32 characters or less.')
+        else:
+            await member.edit(nick=new_nick)
 
     @command()
     @mod_or_has_permissions(manage_channels=True)
