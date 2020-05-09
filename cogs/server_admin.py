@@ -1,7 +1,11 @@
+import asyncio
+
 from discord import Role
 from discord import TextChannel
-from discord.ext.commands import bot_has_permissions
+from discord.errors import Forbidden
 from discord.ext.commands import Cog
+from discord.ext.commands import bot_has_permissions
+from discord.ext.commands import command
 from discord.ext.commands import group
 from discord.ext.commands import has_permissions
 
@@ -169,6 +173,34 @@ class ServerAdmin(Cog):
     async def get_star_threshold(self, ctx):
         min_stars = await self.bot.db.get_star_threshold(ctx.guild.id)
         await ctx.send(f'A message needs {min_stars} star{"s" if min_stars > 1 else ""} to reach the starboard.')
+
+    @command()
+    async def leave(self, ctx):
+        """Ask the bot to leave the server."""
+
+        confirm_msg = await ctx.send('Are you sure you want me to leave the server? '
+                                     'React with ✅ within 60 seconds to confirm. '
+                                     'React with ❌ to cancel.')
+        try:
+            await confirm_msg.add_reaction('✅')
+            await confirm_msg.add_reaction('❌')
+        except Forbidden:
+            pass
+
+        def check(r, u):
+            return u == ctx.author \
+                   and str(r.emoji) in ['✅', '❌'] \
+                   and r.message.id == confirm_msg.id
+
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=60, check=check)
+            if str(reaction.emoji) == '✅':
+                await confirm_msg.edit(content='Request to leave server confirmed. Leaving...')
+                await ctx.guild.leave()
+            else:
+                await confirm_msg.edit(content='Request to leave server cancelled.')
+        except asyncio.TimeoutError:
+            await confirm_msg.edit(content='Request to leave server timed out.')
 
 
 def setup(bot):
