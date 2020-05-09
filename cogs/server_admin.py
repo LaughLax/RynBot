@@ -3,7 +3,6 @@ from discord import TextChannel
 from discord.ext.commands import bot_has_permissions
 from discord.ext.commands import Cog
 from discord.ext.commands import group
-from discord.ext.commands import guild_only
 from discord.ext.commands import has_permissions
 
 from util import config
@@ -13,9 +12,11 @@ class ServerAdmin(Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        perm_check = has_permissions(manage_guild=True).predicate
+        return ctx.guild is not None and await perm_check(ctx)
+
     @group(name='set')
-    @guild_only()
-    @has_permissions(manage_guild=True)
     async def cfg_set(self, ctx):
         """Set server configuration."""
 
@@ -23,8 +24,6 @@ class ServerAdmin(Cog):
             await ctx.send_help(ctx.command)
 
     @group(name='get')
-    @guild_only()
-    @has_permissions(manage_guild=True)
     async def cfg_get(self, ctx):
         """View server configuration."""
 
