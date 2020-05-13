@@ -89,7 +89,9 @@ class Base(Cog):
         td = datetime.now() - start
         await ctx.send("Pong. Response time: {} ms".format(td.total_seconds() * 1000))
 
-    @command()
+    # @command()
+    # This code is broken on this line:
+    #   if user.avatar_url[54:].startswith('a_'):
     async def userinfo(self, ctx, name: str = None):
         """Get user info. Ex: _info @user
 
