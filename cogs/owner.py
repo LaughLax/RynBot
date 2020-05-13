@@ -7,14 +7,22 @@ import subprocess
 
 import discord
 import psutil
-from discord import Activity, ActivityType, Embed, TextChannel
+from discord import Activity
+from discord import ActivityType
+from discord import Embed
+from discord import Member
+from discord import Role
+from discord import TextChannel
 from discord.errors import NotFound
 from discord.ext import commands
-from discord.ext.commands import Cog, command, group, Group, Paginator
+from discord.ext.commands import Cog
+from discord.ext.commands import Group
+from discord.ext.commands import Paginator
+from discord.ext.commands import command
+from discord.ext.commands import group
 
 from util import config
-
-
+from util.misc import MyEmbed
 # TODO Clean up imports
 
 
@@ -525,10 +533,8 @@ class Owner(Cog):
 
         result = str(await eval("{}()".format(fn_name), env))
 
-        embed = Embed()
+        embed = MyEmbed(bot=ctx.me)
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url_as(format='png'))
-        embed.timestamp = ctx.message.created_at
-        embed.colour = 0xff0000
 
         embed.add_field(name='Code', value=('```python\n' + cmd_orig + '```'), inline=False)
         embed.add_field(name='Result', value=('```\n' + result + '```'), inline=False)
@@ -552,10 +558,7 @@ class Owner(Cog):
 
         db_size = await self.bot.db.get_db_size()
 
-        em = Embed()
-        em.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url_as(format='png'))
-        em.timestamp = ctx.message.created_at
-        em.colour = 0xff0000
+        em = MyEmbed(bot=ctx.me)
 
         em.add_field(name='Main Process Memory Usage', value=f'{main_proc_mem:3.1f} MB')
         em.add_field(name='Children Memory Usage', value=f'{children_mem:3.1f} MB ({len(children)} children)')

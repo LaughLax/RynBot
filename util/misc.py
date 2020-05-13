@@ -1,5 +1,9 @@
-from discord import Embed, Object
+from datetime import datetime
+
+from discord import Embed
+from discord import Object
 from discord.ext import commands
+from tzlocal import get_localzone
 
 from util import config
 
@@ -75,3 +79,18 @@ def embedify_message(message):
     embed.timestamp = message.created_at
     embed.colour = 0xff0000
     return embed
+
+
+class MyEmbed(Embed):
+
+    def __init__(self, bot=None, **kwargs):
+        if 'color' not in kwargs and 'colour' not in kwargs:
+            kwargs['color'] = 0xff0000
+        if 'timestamp' not in kwargs:
+            kwargs['timestamp'] = datetime.now(get_localzone())
+
+        super().__init__(**kwargs)
+
+        if bot:
+            self.set_author(name=bot.display_name, icon_url=bot.avatar_url)
+

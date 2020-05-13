@@ -1,13 +1,14 @@
 import typing
 
 from discord import ChannelType
-from discord import Embed
 from discord import Member
 from discord.ext.commands import Cog
 from discord.ext.commands import bot_has_permissions
 from discord.ext.commands import check
 from discord.ext.commands import command
 from discord.ext.commands import has_permissions
+
+from util.misc import MyEmbed
 
 
 def mod_or_has_permissions(**perms):
@@ -143,8 +144,7 @@ class Moderation(Cog):
         guild = ctx.guild
         member = member or ctx.author
 
-        em = Embed(title=f'Channels viewable by {member}', color=0xff0000)
-        em.set_author(name=ctx.guild.me.display_name, icon_url=self.bot.user.avatar_url)
+        em = MyEmbed(bot=ctx.me, title=f'Channels viewable by {member}')
         em.set_thumbnail(url=member.avatar_url)
 
         channels = guild.by_category()

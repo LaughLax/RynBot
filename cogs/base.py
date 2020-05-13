@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime
 
-from discord import Embed, Member
+from discord import Member
 from discord.errors import Forbidden
 from discord.ext.commands import Cog
 from discord.ext.commands import ExtensionAlreadyLoaded
@@ -13,6 +13,7 @@ from discord.ext.commands.errors import CommandNotFound
 from discord.ext.commands.errors import MissingRequiredArgument
 
 from util import config
+from util.misc import MyEmbed
 
 
 class Base(Cog):
@@ -119,7 +120,7 @@ class Base(Cog):
         if role == "@everyone":
             role = "N/A"
         voice_state = None if not user.voice else user.voice.channel
-        em = Embed(timestamp=ctx.message.created_at, colour=0xff0000)
+        em = MyEmbed(bot=ctx.me)
         em.add_field(name='User ID', value=user.id, inline=True)
         if isinstance(user, Member):
             em.add_field(name='Nick', value=user.nick, inline=True)
@@ -140,11 +141,8 @@ class Base(Cog):
     async def info(self, ctx):
         """Info about RynBot."""
 
-        em = Embed()
-        em.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url_as(format='png'))
+        em = MyEmbed(bot=ctx.me)
         em.set_thumbnail(url=ctx.me.avatar_url_as(format='png'))
-        em.timestamp = ctx.message.created_at
-        em.colour = 0xff0000
 
         em.add_field(name='Owner/Creator', value='<@185095270986547200>')
         em.add_field(name='Short Description', value='A bot to provide some server info and analytics.')

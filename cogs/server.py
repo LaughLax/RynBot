@@ -1,8 +1,9 @@
 from discord import ActivityType
-from discord import Embed
 from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord.ext.commands import has_permissions
+
+from util.misc import MyEmbed
 
 
 class Server(Cog):
@@ -27,7 +28,7 @@ class Server(Cog):
                 users.sort()
                 body = "\n".join(users)
 
-                em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+                em = MyEmbed(bot=ctx.me, title=title)
                 em.add_field(name=header, value=body)
 
                 await ctx.send(embed=em)
@@ -57,7 +58,7 @@ class Server(Cog):
         display_size = 60
         num_segments = int(len(role_list)/display_size) + 1
         for b in range(num_segments):
-            embed = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            embed = MyEmbed(title=title)
             embed.set_thumbnail(url=server.icon_url)
 
             embed.add_field(name='Roles', value=', '.join(role_list[b*display_size:(b+1)*display_size-1]))
@@ -85,7 +86,7 @@ class Server(Cog):
             num_segments = int(len(streamers)/display_size) + 1
             if num_segments <= 5:
                 for b in range(num_segments):
-                    em = Embed(title='Guild Members Streaming', color=0xff0000, timestamp=ctx.message.created_at)
+                    em = MyEmbed(bot=ctx.me, title='Guild Members Streaming')
                     em.set_thumbnail(url=ctx.guild.icon_url)
                     for a in streamers[b*display_size:(b+1)*display_size-1]:
                         if a.url is not None:
@@ -126,7 +127,7 @@ class Server(Cog):
                     both_members.append(str(a))
             both_members.sort()
 
-            em = Embed(title="Common Members", color=0xff0000)
+            em = MyEmbed(bot=ctx.me, title="Common Members")
             em.add_field(name="Server 1: \"{}\"".format(server1.name), value="{} members".format(server1.member_count))
             em.add_field(name="Server 2: \"{}\"".format(server2.name), value="{} members".format(server2.member_count))
             em.add_field(name="{} users are in both servers:".format(len(both_members)), value="\n".join(both_members), inline=False)
