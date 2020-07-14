@@ -1,6 +1,8 @@
 from discord import ActivityType
 from discord.ext.commands import Cog
+from discord.ext.commands import bot_has_permissions
 from discord.ext.commands import command
+from discord.ext.commands import guild_only
 from discord.ext.commands import has_permissions
 
 from util.misc import MyEmbed
@@ -9,6 +11,26 @@ from util.misc import MyEmbed
 class Server(Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @command()
+    @guild_only()
+    @bot_has_permissions(manage_roles=True)
+    async def iam(self, ctx, *, i_want: str = None):
+        if i_want is None:
+            roles = await self.bot.db.get_self_assign_roles(ctx.guild.id)
+            await ctx.send('\n'.join(['Available roles:'] + [f'"{r[1]}": {ctx.guild.get_role(r[0])}' for r in roles]))
+            return
+        role_id = await self.bot.db.get_self_assign_role(ctx.guild.id, i_want)
+        if role_id is None:
+            await ctx.send('No role available with that name!')
+            return
+        role = ctx.guild.get_role(role_id)
+        if role in ctx.author.roles:
+            await ctx.author.remove_roles(role)
+            await ctx.send(f'"{role}" role removed.')
+        else:
+            await ctx.author.add_roles(role)
+            await ctx.send(f'"{role}" role added.')
 
     @command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):

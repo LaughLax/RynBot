@@ -178,6 +178,67 @@ class DBHandler:
     '''
     END GUILD CONFIGURATION METHODS
     
+    BEGIN SELF-ASSIGN ROLE METHODS
+    '''
+
+    @async_via_threadpool
+    def set_self_assign_role(self, guild_id, role_id, role_name):
+        self.get_self_assign_role.invalidate(self, guild_id, role_name)
+        with self.get_session() as db:
+            self.get_server_cfg(db, guild_id)
+
+            row = SelfAssignRole(guild=guild_id,
+                                 role=role_id,
+                                 role_name=role_name)
+            db.merge(row)
+
+    @async_via_threadpool
+    @region.cache_on_arguments()
+    def get_self_assign_role(self, guild_id, role_name):
+        with self.get_session() as db:
+            try:
+                role_id = db.query(SelfAssignRole.role). \
+                    filter(SelfAssignRole.guild == guild_id). \
+                    filter(SelfAssignRole.role_name == role_name). \
+                    one()[0]
+            except NoResultFound:
+                role_id = None
+            except MultipleResultsFound as e:
+                raise e
+
+            return role_id
+
+    @async_via_threadpool
+    def get_self_assign_roles(self, guild_id):
+        with self.get_session() as db:
+            try:
+                rows = db.query(SelfAssignRole.role,
+                                SelfAssignRole.role_name).\
+                    filter(SelfAssignRole.guild == guild_id)
+                rows = rows.all()
+            except NoResultFound:
+                rows = []
+
+            return rows
+
+    @async_via_threadpool
+    def delete_self_assign_role(self, guild_id, role_name):
+        self.get_self_assign_role.invalidate(self, guild_id, role_name)
+        with self.get_session() as db:
+            try:
+                role = db.query(SelfAssignRole). \
+                    filter(SelfAssignRole.guild == guild_id). \
+                    filter(SelfAssignRole.role_name == role_name). \
+                    one()
+                db.delete(role)
+            except NoResultFound:
+                pass
+            except MultipleResultsFound as e:
+                raise e
+
+    '''
+    END SELF-ASSIGN ROLE METHODS
+
     BEGIN TASK METHODS
     '''
 

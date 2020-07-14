@@ -53,6 +53,22 @@ class ScheduledTasks(Base):
     server_rel = relationship('ServerConfig', back_populates='scheduled_tasks')
 
 
+class SelfAssignRole(Base):
+    __tablename__ = 'self_assign_roles'
+
+    guild = sql.Column(sql.BigInteger,
+                       sql.ForeignKey('server_config.server'),
+                       primary_key=True,
+                       nullable=False)
+    role = sql.Column(sql.BigInteger,
+                      nullable=False)
+    role_name = sql.Column(sql.String(32),
+                           primary_key=True,
+                           nullable=False)
+
+    server_rel = relationship('ServerConfig', back_populates='self_assign_roles')
+
+
 class ServerConfig(Base):
     __tablename__ = 'server_config'
 
@@ -77,6 +93,7 @@ class ServerConfig(Base):
     stars = relationship('Star', back_populates='server_rel')
     custom_role_chart = relationship('CustomRoleChart', back_populates='server_rel')
     scheduled_tasks = relationship('ScheduledTasks', back_populates='server_rel')
+    self_assign_roles = relationship('SelfAssignRole', back_populates='server_rel')
 
 
 class Star(Base):

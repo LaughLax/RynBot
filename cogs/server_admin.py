@@ -1,4 +1,5 @@
 import asyncio
+import typing
 
 from discord import Role
 from discord import TextChannel
@@ -136,6 +137,23 @@ class ServerAdmin(Cog):
         pref = pref or config.prefix
         await ctx.send(f'The command prefix for this guild is "{pref}". '
                        'Mentioning me also works as a prefix.')
+
+    @cfg_set.command(name='role')
+    async def set_self_assign_role(self, ctx, role: typing.Optional[Role] = None, *, role_name: str):
+        if role is not None:
+            if ctx.me.top_role > role:
+                await self.bot.db.set_self_assign_role(ctx.guild.id, role.id, role_name)
+                await ctx.send(f'Self-assignable role "{role_name}" set to {role}!')
+            else:
+                await ctx.send('That role is higher than my highest; I can\'t give it or take it.')
+        else:
+            await self.bot.db.delete_self_assign_role(ctx.guild.id, role_name)
+            await ctx.send(f'Self-assignable role "{role_name}" cleared!')
+
+    @cfg_get.command(name='roles')
+    async def get_self_assign_roles(self, ctx):
+        roles = await self.bot.db.get_self_assign_roles(ctx.guild.id)
+        await ctx.send('\n'.join([f'"{r[1]}": {ctx.guild.get_role(r[0])}' for r in roles]))
 
     @cfg_set.command(name='starboard')
     async def set_starboard(self, ctx, channel: TextChannel = None):
