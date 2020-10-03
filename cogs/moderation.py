@@ -1,5 +1,3 @@
-import typing
-
 from discord import ChannelType
 from discord import Member
 from discord.ext.commands import Cog
@@ -136,7 +134,7 @@ class Moderation(Cog):
 
     @command()
     @mod_or_has_permissions(manage_channels=True)
-    async def channels(self, ctx, *, member: typing.Optional[Member] = None):
+    async def channels(self, ctx, *, member: Member = None):
         """Display a list of channels a user can see.
 
         If your guild has channels you don't want people to know about,
