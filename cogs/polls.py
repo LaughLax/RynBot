@@ -3,6 +3,7 @@ from discord import Embed, TextChannel
 from discord.ext.commands import Cog, command
 
 from util import misc
+from util.misc import MyEmbed
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -103,10 +104,10 @@ class Polls(Cog):
         try:
             plt.tight_layout()
 
-            plt.savefig('/var/www/html/RynBot/poll_results_{}.png'.format(message_id), format='png')
+            # plt.savefig('/var/www/html/RynBot/poll_results_{}.png'.format(message_id), format='png')
             plt.close()
 
-            embed = Embed(description="Poll closed.")
+            embed = MyEmbed(bot=channel.guild.me, description="Poll closed.")
             '''
             if message.embeds:
                 data = message.embeds[0]
@@ -122,7 +123,6 @@ class Polls(Cog):
             '''
 
             embed.set_image(url='http://laughlax.us.to/RynBot/poll_results_{}.png'.format(message_id))
-            embed.set_author(name=self.bot.user.display_name, icon_url=self.bot.user.avatar_url_as(format='png'))
             # embed.timestamp = message.created_at
             embed.colour = 0xff0000
 
@@ -151,7 +151,6 @@ class Polls(Cog):
 
             embed.add_field(name="Creator controls:", value="\U000023f9: End poll", inline=False)
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url_as(format='png'))
-            embed.timestamp = ctx.message.created_at
 
             message = await ctx.send(embed=embed)
 

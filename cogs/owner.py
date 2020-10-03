@@ -214,7 +214,7 @@ class Owner(Cog):
 
         num_segments = int(len(hidden_channels)/25) + 1
         for b in range(num_segments):
-            em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            em = MyEmbed(bot=ctx.me)
             em.set_thumbnail(url=server.icon_url)
 
             footer = "Page {}/{}".format(b+1, num_segments)
@@ -264,7 +264,7 @@ class Owner(Cog):
         for b in range(num_segments):
             start = b*display_size
             end = (b+1)*display_size - 1
-            em = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            em = MyEmbed(bot=ctx.me, title=title)
 
             if text_avail[start:end]:
                 text_avail_body = "\n".join(text_avail[start:end])
@@ -310,7 +310,7 @@ class Owner(Cog):
         display_size = 60
         num_segments = int(len(role_list)/display_size) + 1
         for b in range(num_segments):
-            embed = Embed(title=title, color=0xff0000, timestamp=ctx.message.created_at)
+            embed = MyEmbed(bot=ctx.me, title=title)
             embed.set_thumbnail(url=server.icon_url)
 
             embed.add_field(name='Roles', value='\n'.join(role_list[b*display_size:(b+1)*display_size-1]))
