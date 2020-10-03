@@ -1,8 +1,11 @@
 # import logging
 from concurrent.futures import ProcessPoolExecutor
 
-from discord import Activity, ActivityType
-from discord.ext.commands import Bot, DefaultHelpCommand
+from discord import Activity
+from discord import ActivityType
+from discord import Intents
+from discord.ext.commands import Bot
+from discord.ext.commands import DefaultHelpCommand
 
 from util import config
 
@@ -19,8 +22,10 @@ async def prefix_func(_bot, msg):
 
 if __name__ == '__main__':
     game = Activity(type=ActivityType.playing, name=config.activity)
+    intents = Intents.all()
 
     bot = Bot(command_prefix=prefix_func,
+              intents=intents,
               owner_id=config.owner_id,
               activity=game,
               help_command=DefaultHelpCommand(command_attrs={'aliases': ['halp']}))
