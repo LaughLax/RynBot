@@ -1,6 +1,7 @@
 import asyncio
 import typing
 
+from discord import AllowedMentions
 from discord import Role
 from discord import TextChannel
 from discord.errors import Forbidden
@@ -143,7 +144,8 @@ class ServerAdmin(Cog):
         if role is not None:
             if ctx.me.top_role > role:
                 await self.bot.db.set_self_assign_role(ctx.guild.id, role.id, role_name)
-                await ctx.send(f'Self-assignable role "{role_name}" set to {role}!')
+                await ctx.send(f'Self-assignable role "{role_name}" set to {role.mention}!',
+                               allowed_mentions=AllowedMentions.none())
             else:
                 await ctx.send('That role is higher than my highest; I can\'t give it or take it.')
         else:
@@ -153,7 +155,8 @@ class ServerAdmin(Cog):
     @cfg_get.command(name='roles')
     async def get_self_assign_roles(self, ctx):
         roles = await self.bot.db.get_self_assign_roles(ctx.guild.id)
-        await ctx.send('\n'.join([f'"{r[1]}": {ctx.guild.get_role(r[0])}' for r in roles]))
+        await ctx.send('\n'.join([f'"{r[1]}": {ctx.guild.get_role(r[0]).mention}' for r in roles]),
+                       allowed_mentions=AllowedMentions.none())
 
     @cfg_set.command(name='starboard')
     async def set_starboard(self, ctx, channel: TextChannel = None):

@@ -1,4 +1,5 @@
 from discord import ActivityType
+from discord import AllowedMentions
 from discord.ext.commands import Cog
 from discord.ext.commands import bot_has_permissions
 from discord.ext.commands import command
@@ -18,7 +19,8 @@ class Server(Cog):
     async def iam(self, ctx, *, i_want: str = None):
         if i_want is None:
             roles = await self.bot.db.get_self_assign_roles(ctx.guild.id)
-            await ctx.send('\n'.join(['Available roles:'] + [f'"{r[1]}": {ctx.guild.get_role(r[0])}' for r in roles]))
+            await ctx.send('\n'.join(['Available roles:'] + [f'"{r[1]}": {ctx.guild.get_role(r[0]).mention}' for r in roles]),
+                           allowed_mentions=AllowedMentions.none())
             return
         role_id = await self.bot.db.get_self_assign_role(ctx.guild.id, i_want)
         if role_id is None:
@@ -27,10 +29,12 @@ class Server(Cog):
         role = ctx.guild.get_role(role_id)
         if role in ctx.author.roles:
             await ctx.author.remove_roles(role)
-            await ctx.send(f'"{role}" role removed.')
+            await ctx.send(f'{role.mention} role removed.',
+                           allowed_mentions=AllowedMentions.none())
         else:
             await ctx.author.add_roles(role)
-            await ctx.send(f'"{role}" role added.')
+            await ctx.send(f'{role.mention} role added.',
+                           allowed_mentions=AllowedMentions.none())
 
     @command(aliases=['whoisplaying'])
     async def nowplaying(self, ctx, *, game_title: str):
